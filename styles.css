@@ -1,11 +1,7 @@
 body{
-  text-align:center;
-}
-@media screen and (max-width: 600px) {
-  body {
+    text-align:center;
     background-color: #5CDB95;
-  }
-}
+    }
 nav {
   position: fixed;
   top: 0;
