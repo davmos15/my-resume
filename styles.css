@@ -3,14 +3,13 @@ body{
 }
 @media screen and (max-width: 600px) {
   body {
-    background-color: green;
+    background-color: #5CDB95;
   }
 }
 nav {
   position: fixed;
   top: 0;
   display: flex;
-  background-color: green;
   align-items: center;
   align-content: center;
 }
@@ -18,13 +17,11 @@ nav ul {
   text-align: center;
   position: fixed;
   width: 100%;
-  background-color: green;
   font-weight: bold;
-  padding: 15px 0px 10px 0px;
+  padding: 40px 0px 10px 0px;
 }
 nav ul li {
   display: inline-block;
-  background-color: white;
   border-radius: 10%;
   padding: 10px;
 }
@@ -32,7 +29,6 @@ nav ul li {
   height: 100vh;
   min-height: 55vh;
   padding-top: 45vh;
-  background-color: #AED6F1;
   text-align: center;
   box-sizing: border-box;
 }
