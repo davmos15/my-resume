@@ -1,9 +1,11 @@
+top{
+   color: #379683;
+  }
 body{
-    text-align:center;
-    background-color: #5CDB95;
-    color: #EDF5E1;
-    }
-nav {
+  text-align:center;
+  color: #EDF5E1;
+}
+ nav{
   position: fixed;
   top: 0;
   display: flex;
@@ -15,7 +17,7 @@ nav ul {
   position: fixed;
   width: 100%;
   font-weight: bold;
-  padding: 40px 0px 10px 0px;
+  padding: 40px 0px 0px 0px;
 }
 nav ul li {
   display: inline-block;
@@ -28,6 +30,7 @@ nav ul li {
   padding-top: 45vh;
   text-align: center;
   box-sizing: border-box;
+  background-color: #5CDB95;
 }
 a {
   color: #05386B;
@@ -35,3 +38,20 @@ a {
 img{
   width: 10%;
  }
+.ul{
+  style="list-style-type:none";
+}
+#resume{
+  background-color: #fff;
+  color: #05386B;
+}
+#resume-main{
+  background-color: #fff;
+  color: #05386B;
+  width: 60%;
+  text-align: justify;
+  transform: translate(40%, 0%);
+}
+#contact{
+  Background-color:#5CDB95;
+}
