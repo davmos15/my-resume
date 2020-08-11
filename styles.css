@@ -11,7 +11,7 @@ nav {
   align-content: center;
 }
 nav ul {
-  text-align: center;
+  text-align: left;
   position: fixed;
   width: 100%;
   font-weight: bold;
