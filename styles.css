@@ -1,4 +1,5 @@
 top{
+<<<<<<< HEAD
   color: #379683;
  }
 body{
@@ -18,6 +19,27 @@ nav ul {
  width: 100%;
  font-weight: bold;
  padding: 40px 0px 0px 0px;
+=======
+   color: #379683;
+  }
+body{
+  text-align:center;
+  color: #EDF5E1;
+}
+ nav{
+  position: fixed;
+  top: 0;
+  display: flex;
+  align-items: center;
+  align-content: center;
+}
+nav ul {
+  text-align: left;
+  position: fixed;
+  width: 100%;
+  font-weight: bold;
+  padding: 40px 0px 0px 0px;
+>>>>>>> 6d5acaff3f51cfcec6698a831c66547d3411a2b2
 }
 nav ul li {
  display: inline-block;
@@ -25,12 +47,21 @@ nav ul li {
  padding: 10px;
 }
 #welcome-section {
+<<<<<<< HEAD
  height: 100vh;
  min-height: 120vh;
  padding-top: 45vh;
  text-align: center;
  box-sizing: border-box;
  background-color: #5CDB95;
+=======
+  height: 100vh;
+  min-height: 120vh;
+  padding-top: 45vh;
+  text-align: center;
+  box-sizing: border-box;
+  background-color: #5CDB95;
+>>>>>>> 6d5acaff3f51cfcec6698a831c66547d3411a2b2
 }
 a {
  color: #05386B;
@@ -61,6 +92,35 @@ h1{
 footer{
  color: #05386B;
 }
+<<<<<<< HEAD
 .content {
   display: none;
 }
+=======
+img{
+  width: 10%;
+ }
+.ul{
+  style="list-style-type:none";
+}
+#resume{
+  background-color: #fff;
+  color: #05386B;
+}
+#resume-main{
+  background-color: #fff;
+  color: #05386B;
+  width: 60%;
+  text-align: justify;
+  margin:0 auto;
+}
+#contact{
+  Background-color:#5CDB95;
+}
+h1{
+  text-align:center;
+}
+footer{
+  color: #05386B;
+}
+>>>>>>> 6d5acaff3f51cfcec6698a831c66547d3411a2b2
