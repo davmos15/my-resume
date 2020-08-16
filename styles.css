@@ -1,34 +1,66 @@
+top{
+  color: #379683;
+ }
 body{
-    text-align:center;
-    background-color: #5CDB95;
-    color: #EDF5E1;
-    }
-nav {
-  position: fixed;
-  top: 0;
-  display: flex;
-  align-items: center;
-  align-content: center;
+ text-align:center;
+ color: #EDF5E1;
+}
+nav{
+ position: fixed;
+ top: 0;
+ display: flex;
+ align-items: center;
+ align-content: center;
 }
 nav ul {
-  text-align: center;
-  position: fixed;
-  width: 100%;
-  font-weight: bold;
-  padding: 40px 0px 10px 0px;
+ text-align: left;
+ position: fixed;
+ width: 100%;
+ font-weight: bold;
+ padding: 40px 0px 0px 0px;
 }
 nav ul li {
-  display: inline-block;
-  border-radius: 10%;
-  padding: 10px;
+ display: inline-block;
+ border-radius: 10%;
+ padding: 10px;
 }
 #welcome-section {
-  height: 100vh;
-  min-height: 55vh;
-  padding-top: 45vh;
-  text-align: center;
-  box-sizing: border-box;
+ height: 100vh;
+ min-height: 120vh;
+ padding-top: 45vh;
+ text-align: center;
+ box-sizing: border-box;
+ background-color: #5CDB95;
 }
 a {
-  color: #05386B;
+ color: #05386B;
+}
+img{
+ width: 10%;
+}
+.ul{
+ style="list-style-type:none";
+}
+#resume{
+ background-color: #fff;
+ color: #05386B;
+}
+#resume-main{
+ background-color: #fff;
+ color: #05386B;
+ width: 60%;
+ text-align: justify;
+ margin:0 auto;
+}
+#contact{
+ Background-color:#5CDB95;
+}
+h1{
+ text-align:center;
+}
+footer{
+ color: #05386B;
+}
+.content {
+  display: none;
 }
