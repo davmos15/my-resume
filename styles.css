@@ -60,9 +60,6 @@ a {
 img{
  width: 10%;
 }
-.ul{
- style= list-style-type:none;
-}
 #resume{
  background-color: #fff;
  color: #05386B;
@@ -89,9 +86,6 @@ footer{
 img{
   width: 10%;
  }
-.ul{
-  style= list-style-type:none;
-}
 #resume{
   background-color: #fff;
   color: #05386B;
