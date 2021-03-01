@@ -18,8 +18,7 @@ nav ul {
  width: 100%;
  font-weight: bold;
  padding: 40px 0px 0px 0px;
-   color: #379683;
-  }
+ color: #379683;
 }
  nav{
   position: fixed;
@@ -47,12 +46,6 @@ nav ul li {
  text-align: center;
  box-sizing: border-box;
  background-color: #5CDB95;
-  height: 100vh;
-  min-height: 120vh;
-  padding-top: 45vh;
-  text-align: center;
-  box-sizing: border-box;
-  background-color: #5CDB95;
 }
 a {
  color: #05386B;
