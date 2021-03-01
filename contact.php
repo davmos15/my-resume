@@ -10,6 +10,6 @@ if (isset($_POST['submit']))    {
     $txt = "You've recieved an email from ".$name.".\n\n".$message;
 
     mail($mailTo, $txt, $headers);
-    header("Location: https://nadavsresume.netlify.app/contact.html?mailsent");
+    header("Location: https://nadavsresume.netlify.app/contact.html");
 
 }
