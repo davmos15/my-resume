@@ -10,6 +10,6 @@ if (isset($_POST['submit']))    {
     $txt = "You've recieved an email from ".$name.".\n\n".$message;
 
     mail($mailTo, $txt, $headers);
-    header("Location: Contactme.html?mailsent");
+    header("Location: contact.html?mailsent");
 
 }
