@@ -53,7 +53,8 @@ img{
  margin: auto;
 }
 hr{
- Background-color:#5CDB95;
+ background-color:#5CDB95;
+ border-color: #5CDB95;
 }
 h1{
  text-align:center;
