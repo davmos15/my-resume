@@ -6,6 +6,7 @@ body{
  text-align:center;
  color: #05386B;
  margin: 0;
+ font-family: 'Open Sans', sans-serif;
 }
 nav{
  position: fixed;
