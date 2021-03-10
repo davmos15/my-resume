@@ -38,6 +38,7 @@ a {
  text-align: center;
  box-sizing: border-box;
  background-color: #5CDB95;
+ clip-path: polygon(0 0, 100% 0%, 100% calc(100% - 6vw), 0% 100%);
 }
 img{
  width: 10%;
