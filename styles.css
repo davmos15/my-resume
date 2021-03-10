@@ -1,32 +1,33 @@
 /* CSS for all pages*/
-top{
-  color: #379683;
- }
+
 body{
  text-align:center;
  color: #05386B;
  margin: 0;
  font-family: 'Open Sans', sans-serif;
 }
-nav{
- position: fixed;
- top: 0;
- display: flex;
- align-items: center;
- align-content: center;
+/*Navigation Bar CSS */
+.topnav {
+  overflow: hidden;
+  background-color: #fff;
 }
-nav ul {
- text-align: left;
- position: fixed;
- width: 100%;
- font-weight: bold;
- padding: 40px 0px 0px 0px;
- color: #379683;
+.topnav a {
+  float: left;
+  color: #05386b;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
 }
-nav ul li {
- display: inline-block;
- border-radius: 10%;
- padding: 10px;
+
+.topnav a:hover {
+  background-color: #ddd;
+  color: black;
+}
+
+.topnav a.active {
+  background-color: #5cdb95;
+  color: white;
 }
 a {
   color: #05386B;
