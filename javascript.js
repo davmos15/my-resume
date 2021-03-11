@@ -1,3 +1,4 @@
+import "./styles.css";
 window.onscroll = function() {myFunction()};
 
 var navbar = document.getElementById("top");
