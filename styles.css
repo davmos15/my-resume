@@ -66,6 +66,7 @@ img{
 #resume{
  background-color: #fff;
  color: #05386B;
+ padding-bottom: 6vh;
 }
 #resume-main{
  background-color: #fff;
@@ -78,7 +79,7 @@ img{
 /*Contact Page*/
 
 .contactform{
-  padding:10px;
+  padding:2vh;
 }
 .form-style{
 	max-width: 400px;
