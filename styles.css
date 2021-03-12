@@ -5,6 +5,16 @@ body{
  margin: 0;
  font-family: 'Open Sans', sans-serif;
 }
+hr{
+  background-color:#5CDB95;
+  border-color: #5CDB95;
+ }
+ h1{
+  text-align:center;
+ }
+ footer{
+  color: #05386B;
+ }
 /*Navigation Bar CSS */
 .topnav {
   overflow: hidden;
@@ -35,9 +45,12 @@ body{
 nav ul li {
  display: block;
 }
+/*Link colour*/
 a {
   color: #05386B;
  }
+
+/*homepage*/
 #welcome-section {
  height: 100vh;
  min-height: 120vh;
@@ -60,20 +73,4 @@ img{
  width: 60%;
  text-align: justify;
  margin: auto;
-}
-hr{
- background-color:#5CDB95;
- border-color: #5CDB95;
-}
-h1{
- text-align:center;
-}
-footer{
- color: #05386B;
-}
-.content {
-  display: none;
-}
-#contact{
-  Background-color:#5CDB95;
 }
