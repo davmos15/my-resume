@@ -32,15 +32,6 @@ body{
 nav ul li {
  display: inline-block;
 }
-.sticky {
-  position: fixed;
-  top: 0;
-  width: 100%;
-}
-
-.sticky + .content {
-  padding-top: 60px;
-}
 a {
   color: #05386B;
  }
