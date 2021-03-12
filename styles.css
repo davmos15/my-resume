@@ -33,7 +33,7 @@ body{
   font-weight:bold;
 }
 nav ul li {
- display: inline-block;
+ display: block;
 }
 a {
   color: #05386B;
