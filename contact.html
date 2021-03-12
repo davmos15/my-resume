@@ -22,15 +22,15 @@
     <h1>Contact Me</h1>
     <p>Want to get in touch? You can either send me an email at <a href="mailto:moskownadav@gmail.com">moskownadav@gmail.com</a> or fill out a form below</p>
   <div id = "contact-form" class="contactform">
-    <form class = "contact-form" name = "main-contact" method="post" data-netlify="true">
-        <label for="name">Name:</label><br>
-          <input type="text" id="name" name="name" placeholder="Your Name"><br>
-        <label for="email">Email:</label><br>
-          <input type="email" id="email" name="email" placeholder="Your Email"><br>
-        <label for="message">Message:</label><br>
-          <textarea id="message" name="message" placeholder="Your Message"></textarea><br><br>
-          <button type="submit" name="submit">Submit</button>
-      </form> 
+    <div class="form-style">
+      <h1>Contact Me</h1>
+      <form method="post" data-netlify="true">
+      <input type="text" name="field1" placeholder="Your Name" />
+      <input type="email" name="field2" placeholder="Email Address" />
+      <textarea name="field3" placeholder="Type your Message"></textarea>
+      <input type="submit" value="Send" />
+      </form>
+      </div>
   </div>
 </div>
   <hr></hr>
