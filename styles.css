@@ -48,6 +48,8 @@ nav ul li {
 /*Link colour*/
 a {
   color: #05386B;
+  font-weight: bold;
+  cursor: pointer;
  }
 
 /*homepage*/
@@ -136,4 +138,5 @@ img{
 .form-style input[type="submit"]:hover,
 .form-style input[type="button"]:hover{
 	background: #2EBC99;
+	cursor: pointer;
 }
