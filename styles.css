@@ -65,9 +65,27 @@ a {
 img{
  width: 10%;
 }
+/*Resume Page*/
+.resumedownload {
+    padding: 2%;
+    background: #5cdb95;
+    border-bottom: 2px solid #30C29E;
+    border-top-style: none;
+    border-right-style: none;
+    border-left-style: none;
+    color: #fff;
+}
+.resumedownload:hover {
+	background: #2EBC99;
+	cursor: pointer;
+}
+form{
+	text-align: center;
+}
 #resume{
  background-color: #fff;
  color: #05386B;
+ padding-top: 6vh;
  padding-bottom: 6vh;
 }
 #resume-main{
@@ -77,9 +95,15 @@ img{
  text-align: justify;
  margin: auto;
 }
-
+/*FAQ page*/
+#faq-page{
+   padding-top: 6vh;
+}
 /*Contact Page*/
 
+#contact-section{
+   padding-top: 6vh;
+}
 .contactform{
   padding:2vh;
 }
@@ -139,21 +163,4 @@ img{
 .form-style input[type="button"]:hover{
 	background: #2EBC99;
 	cursor: pointer;
-}
-/*Resume Page*/
-.resumedownload {
-    padding: 2%;
-    background: #5cdb95;
-    border-bottom: 2px solid #30C29E;
-    border-top-style: none;
-    border-right-style: none;
-    border-left-style: none;
-    color: #fff;
-}
-.resumedownload:hover {
-	background: #2EBC99;
-	cursor: pointer;
-}
-form{
-	text-align: center;
 }
