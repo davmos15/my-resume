@@ -140,3 +140,20 @@ img{
 	background: #2EBC99;
 	cursor: pointer;
 }
+/*Resume Page*/
+.resumedownload {
+    padding: 2%;
+    background: #5cdb95;
+    border-bottom: 2px solid #30C29E;
+    border-top-style: none;
+    border-right-style: none;
+    border-left-style: none;
+    color: #fff;
+}
+.resumedownload:hover {
+	background: #2EBC99;
+	cursor: pointer;
+}
+form{
+	text-align: center;
+}
