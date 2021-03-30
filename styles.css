@@ -104,6 +104,10 @@ form{
 #faq-page{
    padding-top: 6vh;
 }
+ol{
+	display: inline-block;
+    text-align: start;
+}
 /*Contact Page*/
 
 #contact-section{
