@@ -71,13 +71,14 @@ img{
 }
 /*Resume Page*/
 .resumedownload {
-    padding: 2%;
+    padding: 4vh;
     background: #5cdb95;
     border-bottom: 2px solid #30C29E;
     border-top-style: none;
     border-right-style: none;
     border-left-style: none;
     color: #fff;
+    font-size: 3vh;
 }
 .resumedownload:hover {
 	background: #2EBC99;
@@ -96,7 +97,7 @@ form{
  background-color: #fff;
  color: #05386B;
  width: 60%;
- text-align: justify;
+ text-align: left;
  margin: auto;
 }
 /*FAQ page*/
