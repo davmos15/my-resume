@@ -166,3 +166,10 @@ form{
 	background: #2EBC99;
 	cursor: pointer;
 }
+
+/*For Mobile devices*/
+@media screen and (max-width: 600px) {
+  body {
+    font-size: 250%;
+  }
+} 
