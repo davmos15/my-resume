@@ -66,9 +66,7 @@ a {
  background-color: #5CDB95;
  }
  /* can go into section above: clip-path: polygon(0 0, 100% 0%, 100% calc(100% - 6vw), 0% 100%);*/
-img{
- width: 10%;
-}
+
 /*Resume Page*/
 .resumedownload {
     padding: 4vh;
@@ -90,7 +88,7 @@ form{
 #resume{
  background-color: #fff;
  color: #05386B;
- padding-top: 6vh;
+ padding-top: 10vh;
  padding-bottom: 6vh;
 }
 #resume-main{
@@ -102,7 +100,7 @@ form{
 }
 /*FAQ page*/
 #faq-page{
-   padding-top: 6vh;
+   padding-top: 10vh;
 }
 ol{
 	display: inline-block;
@@ -111,7 +109,7 @@ ol{
 /*Contact Page*/
 
 #contact-section{
-   padding-top: 6vh;
+   padding-top: 10vh;
 }
 .contactform{
   padding:2vh;
