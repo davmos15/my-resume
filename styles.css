@@ -63,6 +63,11 @@ a {
  text-align: center;
  box-sizing: border-box;
  background-color: #5CDB95;
+ color: #F7F7F7;
+ }
+
+ #welcome-section a {
+   color: #F7F7F7;
  }
  /* can go into section above: clip-path: polygon(0 0, 100% 0%, 100% calc(100% - 6vw), 0% 100%);*/
 
