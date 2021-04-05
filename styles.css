@@ -99,7 +99,7 @@ form{
 }
 /*FAQ page*/
 #faq-page{
-   padding-top: 10vh;
+   padding: 5vh;
 }
 ol{
 	display: inline-block;
