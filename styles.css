@@ -30,7 +30,7 @@ hr{
   float: left;
   color: #05386b;
   text-align: center;
-  padding: 14px 16px;
+  padding: 16px 16px;
   text-decoration: none;
   font-size: 18px;
 }
@@ -73,9 +73,9 @@ a {
 
 /*Resume Page*/
 .resumedownload {
-    padding: 4vh;
+    padding: 8px;
     background: #5cdb95;
-    border-bottom: 2px solid #30C29E;
+    border-bottom-style: none;
     border-top-style: none;
     border-right-style: none;
     border-left-style: none;
