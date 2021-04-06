@@ -71,7 +71,7 @@ a {
  }
  /* can go into section above: clip-path: polygon(0 0, 100% 0%, 100% calc(100% - 6vw), 0% 100%);*/
 
-/*Resume Page*/
+/*Page*/
 .resumedownload {
     padding: 8px;
     background: #5cdb95;
@@ -98,7 +98,7 @@ form{
 #resume-main{
  background-color: #fff;
  color: #05386B;
- width: 60%;
+ max-width: 600px;
  text-align: left;
  margin: auto;
 }
