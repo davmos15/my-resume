@@ -22,13 +22,16 @@ hr{
   color: #05386B;
  }
 
- img{
+#logo {
   width: 46px;
   height: 46px;
   overflow: hidden;
-  margin: -11px;
   float: left;
+  position:absolute;
+  top:10px; 
+  left:10px;
 }
+
 /*Navigation Bar CSS */
 .topnav {
   overflow: hidden;
