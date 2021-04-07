@@ -32,9 +32,9 @@ footer{
   height: 46px;
   overflow: hidden;
   float: left;
-  position:absolute;
-  top:0px; 
-  left:10px;
+  position: absolute;
+  top: 5px; 
+  left: 10px;
 }
 
 #logo-link:hover{
