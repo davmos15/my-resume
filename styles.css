@@ -21,13 +21,10 @@ hr{
   overflow: hidden;
   background-color: #fff;
   position: fixed;
-  top: 0;
   width: 100%;
-  border-bottom: ridge;
-  border-color: #5CDB95;
 }
 .topnav a {
-  float: left;
+  float: right;
   color: #05386b;
   text-align: center;
   padding: 16px 16px;
@@ -44,6 +41,9 @@ hr{
 }
 .topnav ul{
   font-weight:bold;
+  float: right;
+  display: flex;
+  margin: 0;	
 }
 nav ul li {
  display: block;
