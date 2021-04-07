@@ -18,15 +18,6 @@ h4 {
 	text-align: center;
 }
 
-footer{
-  color: #05386B;
-}
-
-#linkedin {
-  width: 18px;
-  height: 18px;
-}
-
 #logo {
   width: 46px;
   height: 46px;
@@ -40,6 +31,19 @@ footer{
 #logo-link:hover{
 	background-color: #fff;
 }
+
+footer{
+  color: #05386B;
+}
+
+#linkedin {
+  width: 18px;
+  height: 18px;
+}
+#linkedin-link {
+  vertical-align: middle;
+}
+
 /*link colour*/
 a {
   color: #05386B;
@@ -128,7 +132,7 @@ form{
 }
 
 
-/*FAQ page*/
+/*FAQ/About me page*/
 #faq-page{
    padding: 5vh;
 }
