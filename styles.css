@@ -10,17 +10,17 @@ hr{
   background-color:#5CDB95;
   border-color: #5CDB95;
  }
- h1{
+h1{
   text-align:center;
  }
 
- h4 {
+h4 {
 	text-align: center;
 }
 
- footer{
+footer{
   color: #05386B;
- }
+}
 
 #logo {
   width: 46px;
@@ -31,6 +31,16 @@ hr{
   top:10px; 
   left:10px;
 }
+
+#logo-link:hover{
+	background-color: #fff;
+}
+/*link colour*/
+a {
+  color: #05386B;
+  font-weight: bold;
+  cursor: pointer;
+ }
 
 /*Navigation Bar CSS */
 .topnav {
@@ -64,12 +74,6 @@ hr{
 nav ul li {
  display: block;
 }
-/*Link colour*/
-a {
-  color: #05386B;
-  font-weight: bold;
-  cursor: pointer;
- }
 
 /*homepage*/
 #welcome-section {
@@ -87,7 +91,7 @@ a {
  }
  /* can go into section above: clip-path: polygon(0 0, 100% 0%, 100% calc(100% - 6vw), 0% 100%);*/
 
-/*Page*/
+/*Resume Page*/
 .resumedownload {
     padding: 8px;
     background: #5cdb95;
@@ -118,6 +122,8 @@ form{
  text-align: justify;
  margin: auto;
 }
+
+
 /*FAQ page*/
 #faq-page{
    padding: 5vh;
@@ -126,6 +132,8 @@ ol{
 	display: inline-block;
     text-align: start;
 }
+
+
 /*Contact Page*/
 
 #contact-section{
