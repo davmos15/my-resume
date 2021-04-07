@@ -13,6 +13,11 @@ hr{
  h1{
   text-align:center;
  }
+
+ h4 {
+	text-align: center;
+}
+
  footer{
   color: #05386B;
  }
@@ -99,7 +104,7 @@ form{
  background-color: #fff;
  color: #05386B;
  max-width: 600px;
- text-align: left;
+ text-align: justify;
  margin: auto;
 }
 /*FAQ page*/
