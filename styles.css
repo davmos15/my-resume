@@ -214,4 +214,11 @@ ol{
   .topnav, #welcome-section, body, ol, #resume, #resume-main {
     font-size: 1.5rem;
   }
+    #logo {
+  	height: 4rem;
+  	width: 4rem;
+  }
+    .topnav a, topnav, .topnav ul, navbar {
+  	font-size: .6rem;
+  	}
 }
