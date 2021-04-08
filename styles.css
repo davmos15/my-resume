@@ -137,8 +137,9 @@ form{
    padding: 5vh;
 }
 ol{
-	display: inline-block;
-    text-align: start;
+  display: inline-block;
+  text-align: start;
+  margin: 0;
 }
 
 
