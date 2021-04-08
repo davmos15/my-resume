@@ -227,7 +227,7 @@ ol{
 
 /*For Mobile devices*/
  @media only screen and (max-width: 600px) {
-  .topnav, #welcome-section, ol, #resume, #resume-main, #contact-section {
+  .topnav, #welcome-section, #resume, #resume-main, #contact-section {
     font-size: 1.5rem;
     padding-left: 10px;
     padding-right: 10px;
