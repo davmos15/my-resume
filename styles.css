@@ -222,5 +222,8 @@ ol{
   }
     .topnav a, topnav, .topnav ul, navbar {
   	font-size: .6rem;
-  	}
+  }
+    ul{
+  	text-align:left;
+  }
 }
