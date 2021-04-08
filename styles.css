@@ -18,6 +18,11 @@ h4 {
 	text-align: center;
 }
 
+h6 {
+	margin-top: -22px;
+    text-align: center;
+}
+
 #logo {
   width: 46px;
   height: 46px;
