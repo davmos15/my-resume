@@ -131,8 +131,8 @@ form{
 #resume{
  background-color: #fff;
  color: #05386B;
- padding-top: 10vh;
- padding-bottom: 6vh;
+ padding-top: 56px;
+ padding-bottom: 56px;
 }
 #resume-main{
  background-color: #fff;
@@ -145,7 +145,8 @@ form{
 
 /*FAQ/About me page*/
 #faq-page{
-   padding: 5vh;
+   padding-top: 56px;
+   padding-bottom: 56px;
    max-width:600px;
    margin:auto;
 }
@@ -159,7 +160,8 @@ ol{
 /*Contact Page*/
 
 #contact-section{
-   padding-top: 10vh;
+   padding-top: 56px;
+   padding-bottom: 56px;
    max-width:600px;
    margin:auto;
 }
@@ -227,6 +229,10 @@ ol{
 
 /*For Mobile devices*/
  @media only screen and (max-width: 600px) {
+  #resume, #faq-page, #contact-section {
+    padding-top: 45px;
+    padding-bottom: 45px;
+    }
   .topnav, #welcome-section, #resume, #resume-main, #contact-section {
     font-size: 1.5rem;
     padding-left: 10px;
