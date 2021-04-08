@@ -211,9 +211,12 @@ ol{
 
 /*For Mobile devices*/
  @media only screen and (max-width: 600px) {
-  .topnav, #welcome-section, body, ol, #resume, #resume-main {
+  .topnav, #welcome-section, ol, #resume, #resume-main {
     font-size: 1.5rem;
+    padding-left: 10px;
+    padding-right: 10px;
   }
+    #logo {
     #logo {
   	height: 2rem;
   	width: 2rem;
