@@ -209,9 +209,9 @@ ol{
 	cursor: pointer;
 }
 
-/*For Mobile devices
- media screen and (max-width: 600px) {
-  body {
-    font-size: 250%;
+/*For Mobile devices*/
+ @media only screen and (max-width: 600px) {
+  .topnav, #welcome-section, body, ol, #resume, #resume-main {
+    font-size: 1.5rem;
   }
-} */
+}
