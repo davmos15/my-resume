@@ -232,4 +232,7 @@ ol{
     ul{
   	text-align:left;
   }
+   #welcome-section {
+  	padding-top: 20vh;
+  }
 }
