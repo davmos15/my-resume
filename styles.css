@@ -150,6 +150,12 @@ form{
    max-width:600px;
    margin:auto;
 }
+
+#picture {
+  width: 60%; max-width: 600px;
+  position: top: 20%;
+}
+
 ol{
   display: inline-block;
   text-align: start;
