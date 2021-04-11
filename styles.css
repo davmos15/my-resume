@@ -69,6 +69,7 @@ a {
   padding: 16px 16px;
   text-decoration: none;
   font-size: 18px;
+  -webkit-appearance: none;
 }
 .topnav a:hover {
   background-color: #5cdb95;
