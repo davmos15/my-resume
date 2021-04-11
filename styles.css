@@ -33,6 +33,11 @@ h6 {
   left: 10px;
 }
 
+#logo-link {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
 #logo-link:hover{
 	background-color: #fff;
 }
@@ -61,7 +66,6 @@ a {
   background-color: #fff;
   position: fixed;
   width: 100%;
-  -webkit-appearance: none;
 }
 .topnav a {
   float: right;
@@ -70,7 +74,6 @@ a {
   padding: 16px 16px;
   text-decoration: none;
   font-size: 18px;
-  -webkit-appearance: none;
 }
 .topnav a:hover {
   background-color: #5cdb95;
@@ -85,11 +88,9 @@ a {
   float: right;
   display: flex;
   margin: 0;
-  -webkit-appearance: none;
 }
 nav ul li {
  display: block;
- -webkit-appearance: none;
 }
 
 /*homepage*/
