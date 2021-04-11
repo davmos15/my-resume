@@ -120,6 +120,7 @@ nav ul li {
     border-left-style: none;
     color: #fff;
     font-size: 18px;
+    -webkit-appearance: none;
 }
 .resumedownload:hover {
 	background: #2EBC99;
