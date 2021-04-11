@@ -160,7 +160,6 @@ form {
  margin: auto;
 }
 
-
 /*FAQ/About me page*/
 #faq-page {
    padding-top: 56px;
@@ -275,7 +274,7 @@ ol {
     .topnav a, topnav, .topnav ul, navbar {
   	font-size: .6rem;
   }
-    ul{
+    ul {
   	text-align:left;
   }
    #welcome-section {
