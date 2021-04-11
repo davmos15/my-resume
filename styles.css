@@ -6,13 +6,16 @@ body{
  font-family: 'Open Sans', sans-serif;
  font-size:18px;
 }
+
 hr{
  background-color:#5CDB95;
- border-color: #5CDB95;
- }
-h1{
+ height: 1px;
+ border: 0px;
+}
+
+ h1{
   text-align:center;
- }
+}
 
 h4 {
 	text-align: center;
@@ -50,6 +53,7 @@ footer{
   width: 18px;
   height: 18px;
 }
+
 #linkedin-link {
   vertical-align: middle;
 }
