@@ -7,8 +7,8 @@ body{
  font-size:18px;
 }
 hr{
-  background-color:#5CDB95;
-  border-color: #5CDB95;
+ background-color:#5CDB95;
+ border-color: #5CDB95;
  }
 h1{
   text-align:center;
@@ -20,7 +20,7 @@ h4 {
 
 h6 {
 	margin-top: -22px;
-    text-align: center;
+   text-align: center;
 }
 
 #logo {
