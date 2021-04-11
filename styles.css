@@ -100,36 +100,36 @@ nav ul li {
  }
 
  #welcome-section a {
-   color: #F7F7F7;
+  color: #F7F7F7;
  }
 
 #homepage-text {
-   max-width:600px;
-   margin:auto;
+  max-width:600px;
+  margin:auto;
 }
 
  /* can go into section above: clip-path: polygon(0 0, 100% 0%, 100% calc(100% - 6vw), 0% 100%);*/
 
 /*Resume Page*/
 .resumedownload {
-    padding: .5rem;
-    background: #5cdb95;
-    border-bottom-style: none;
-    border-top-style: none;
-    border-right-style: none;
-    border-left-style: none;
-    color: #fff;
-    font-size: 18px;
-    -webkit-appearance: none;
+  padding: .5rem;
+  background: #5cdb95;
+  border-bottom-style: none;
+  border-top-style: none;
+  border-right-style: none;
+  border-left-style: none;
+  color: #fff;
+  font-size: 18px;
+  -webkit-appearance: none;
 }
 .resumedownload:hover {
 	background: #2EBC99;
 	cursor: pointer;
 }
-form{
+form {
 	text-align: center;
 }
-#resume{
+#resume {
  background-color: #fff;
  color: #05386B;
  padding-top: 56px;
@@ -199,6 +199,7 @@ ol{
 	box-sizing: border-box;
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
+  -webkit-appearance: none;
 	width: 100%;
 	background: #fff;
 	margin-bottom: 4%;
@@ -217,6 +218,7 @@ ol{
 .form-style input[type="button"]{
 	box-sizing: border-box;
 	-webkit-box-sizing: border-box;
+  -webkit-appearance: none;
 	-moz-box-sizing: border-box;
 	width: 100%;
 	padding: 2vh;
