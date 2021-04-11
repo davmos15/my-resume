@@ -61,6 +61,7 @@ a {
   background-color: #fff;
   position: fixed;
   width: 100%;
+  -webkit-appearance: none;
 }
 .topnav a {
   float: right;
@@ -83,10 +84,12 @@ a {
   font-weight:bold;
   float: right;
   display: flex;
-  margin: 0;	
+  margin: 0;
+  -webkit-appearance: none;
 }
 nav ul li {
  display: block;
+ -webkit-appearance: none;
 }
 
 /*homepage*/
