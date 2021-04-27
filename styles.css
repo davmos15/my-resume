@@ -286,4 +286,9 @@ body {
     #welcome-section {
      padding-top: 20vh;
    }
+   #split-column {
+    columns: 1;
+    -webkit-columns: 1;
+    -moz-columns: 1;
+  }
  }
