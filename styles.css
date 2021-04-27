@@ -1,283 +1,289 @@
 /* CSS for all pages*/
 body {
- text-align:center;
- color: #05386B;
- margin: 0;
- font-family: 'Open Sans', sans-serif;
- font-size:18px;
-}
-
-hr {
- background-color:#5CDB95;
- height: 1px;
- border: 0px;
-}
-
-h1 {
   text-align:center;
-}
-
-h4 {
-	text-align: center;
-}
-
-h6 {
-	margin-top: -22px;
-   text-align: center;
-}
-
-#logo {
-  width: 46px;
-  height: 46px;
-  overflow: hidden;
-  float: left;
-  position: absolute;
-  top: 5px; 
-  left: 10px;
-}
-
-#logo-link {
-  padding-left: 0px;
-  padding-right: 0px;
-}
-
-#logo-link:hover {
-	background-color: #fff;
-}
-
-footer{
   color: #05386B;
-}
-
-#linkedin {
-  width: 18px;
-  height: 18px;
-}
-
-#linkedin-link {
-  vertical-align: middle;
-}
-
-/*link colour*/
-a {
-  color: #05386B;
-  font-weight: bold;
-  cursor: pointer;
- }
-
- /*Navigation Bar CSS */
-.topnav {
-  background-color: #fff;
-  position: fixed;
-  width: 100%;
-}
-
-.topnav a {
-  float: right;
-  color: #05386b;
-  text-align: center;
-  padding: 16px 16px;
-  text-decoration: none;
-  font-size: 18px;
-}
-
-.topnav a:hover {
-  background-color: #5cdb95;
-  color: white;
-}
-
-.topnav a.active {
-  background-color: #5cdb95;
-  color: white;
-}
-
-.topnav ul {
-  font-weight:bold;
-  float: right;
-  display: flex;
   margin: 0;
-}
-
-nav ul li {
- display: block;
-}
-
-/*homepage*/
-#welcome-section {
- height: 100vh;
- min-height: 120vh;
- padding-top: 35vh;
- text-align: center;
- box-sizing: border-box;
- background-color: #5CDB95;
- color: #F7F7F7;
-}
-
- #welcome-section a {
+  font-family: 'Open Sans', sans-serif;
+  font-size:18px;
+ }
+ 
+ hr {
+  background-color:#5CDB95;
+  height: 1px;
+  border: 0px;
+ }
+ 
+ h1 {
+   text-align:center;
+ }
+ 
+ h4 {
+   text-align: center;
+ }
+ 
+ h6 {
+   margin-top: -22px;
+   text-align: center;
+ }
+ 
+ #logo {
+   width: 46px;
+   height: 46px;
+   overflow: hidden;
+   float: left;
+   position: absolute;
+   top: 5px; 
+   left: 10px;
+ }
+ 
+ #logo-link {
+   padding-left: 0px;
+   padding-right: 0px;
+ }
+ 
+ #logo-link:hover {
+   background-color: #fff;
+ }
+ 
+ footer{
+   color: #05386B;
+ }
+ 
+ #linkedin {
+   width: 18px;
+   height: 18px;
+ }
+ 
+ #linkedin-link {
+   vertical-align: middle;
+ }
+ 
+ /*link colour*/
+ a {
+   color: #05386B;
+   font-weight: bold;
+   cursor: pointer;
+  }
+ 
+  /*Navigation Bar CSS */
+ .topnav {
+   background-color: #fff;
+   position: fixed;
+   width: 100%;
+ }
+ 
+ .topnav a {
+   float: right;
+   color: #05386b;
+   text-align: center;
+   padding: 16px 16px;
+   text-decoration: none;
+   font-size: 18px;
+ }
+ 
+ .topnav a:hover {
+   background-color: #5cdb95;
+   color: white;
+ }
+ 
+ .topnav a.active {
+   background-color: #5cdb95;
+   color: white;
+ }
+ 
+ .topnav ul {
+   font-weight:bold;
+   float: right;
+   display: flex;
+   margin: 0;
+ }
+ 
+ nav ul li {
+  display: block;
+ }
+ 
+ /*homepage*/
+ #welcome-section {
+  height: 100vh;
+  min-height: 120vh;
+  padding-top: 35vh;
+  text-align: center;
+  box-sizing: border-box;
+  background-color: #5CDB95;
   color: #F7F7F7;
-}
-
-#homepage-text {
-  max-width:600px;
-  margin:auto;
-}
-
- /* can go into section above: clip-path: polygon(0 0, 100% 0%, 100% calc(100% - 6vw), 0% 100%);*/
-
-/*Resume Page*/
-.resumedownload {
-  padding: .5rem;
-  background: #5cdb95;
-  border-bottom-style: none;
-  border-top-style: none;
-  border-right-style: none;
-  border-left-style: none;
-  color: #fff;
-  font-size: 18px;
-  -webkit-appearance: none;
-}
-.resumedownload:hover {
-	background: #2EBC99;
-	cursor: pointer;
-}
-
-form {
-	text-align: center;
-}
-
-#resume {
- background-color: #fff;
- color: #05386B;
- padding-top: 56px;
- padding-bottom: 56px;
-}
-
-#resume-main {
- background-color: #fff;
- color: #05386B;
- max-width: 600px;
- text-align: justify;
- margin: auto;
-}
-
-/*FAQ/About me page*/
-#faq-page {
-   padding-top: 56px;
-   padding-bottom: 56px;
+ }
+ 
+  #welcome-section a {
+   color: #F7F7F7;
+ }
+ 
+ #homepage-text {
    max-width:600px;
    margin:auto;
-}
-
-#picture {
-  width: 60%; max-width: 600px;
-  position: top: 20%;
-}
-
-ol {
-  display: inline-block;
-  text-align: start;
-  margin: 0;
-}
-
-
-/*Contact Page*/
-
-#contact-section {
-   padding-top: 56px;
-   padding-bottom: 56px;
-   max-width: 600px;
-   margin: auto;
-}
-
-.contactform {
-  padding:2vh;
-}
-
-.form-style {
-	max-width: 50vh;
-	margin: 10px auto;
-	padding: 16px;
-	background: #F7F7F7;
-}
-
-.form-style h1 {
-	background: #5cdb95;
-	padding: 20px 0;
-	font-size: 140%;
-	font-weight: 300;
-	text-align: center;
-	color: #fff;
-	margin: -16px -16px 16px -16px;
-}
-
-.form-style input[type="text"],
-.form-style input[type="email"],
-.form-style textarea,
-.form-style select 
-{
-	outline: none;
-	box-sizing: border-box;
-	-webkit-box-sizing: border-box;
-	-moz-box-sizing: border-box;
-  -webkit-appearance: none;
-	width: 100%;
-	background: #fff;
-	margin-bottom: 4%;
-	border: 1px solid #ccc;
-	padding: 3%;
-	color: #555;
-	font: 95% Arial, Helvetica, sans-serif;
-}
-{
-	box-shadow: 0 0 5px #43D1AF;
-	padding: 3%;
-	border: 1px solid #43D1AF;
-}
-
-.form-style input[type="submit"],
-.form-style input[type="button"]{
-	box-sizing: border-box;
-	-webkit-box-sizing: border-box;
-  -webkit-appearance: none;
-	-moz-box-sizing: border-box;
-	width: 100%;
-	padding: 2vh;
-	background: #5cdb95;
-	border-bottom: 2px solid #30C29E;
-	border-top-style: none;
-	border-right-style: none;
-	border-left-style: none;	
-	color: #fff;
-  font-size: 18px;
-}
-.form-style input[type="submit"]:hover,
-.form-style input[type="button"]:hover{
-	background: #2EBC99;
-	cursor: pointer;
-}
-
-/*For Mobile devices*/
-
- @media only screen and (max-width: 600px) {
-  #resume, #faq-page, #contact-section {
-    padding-top: 45px;
-    padding-bottom: 45px;
-  }
-  .topnav, #welcome-section, #resume, #resume-main, #contact-section, #faq-page {
-    padding-left: 10px;
-    padding-right: 10px;
-  }
-  #logo {
-  	height: 2rem;
-  	width: 2rem;
-  }
-    .topnav a, topnav, .topnav ul, navbar {
-  	font-size: .6rem;
-  }
-    ul {
-  	text-align:left;
-  }
-   #welcome-section {
-  	padding-top: 20vh;
-  }
-}
+ }
+ 
+  /* can go into section above: clip-path: polygon(0 0, 100% 0%, 100% calc(100% - 6vw), 0% 100%);*/
+ 
+ /*Resume Page*/
+ .resumedownload {
+   padding: .5rem;
+   background: #5cdb95;
+   border-bottom-style: none;
+   border-top-style: none;
+   border-right-style: none;
+   border-left-style: none;
+   color: #fff;
+   font-size: 18px;
+   -webkit-appearance: none;
+ }
+ .resumedownload:hover {
+   background: #2EBC99;
+   cursor: pointer;
+ }
+ 
+ form {
+   text-align: center;
+ }
+ 
+ #resume {
+  background-color: #fff;
+  color: #05386B;
+  padding-top: 56px;
+  padding-bottom: 56px;
+ }
+ 
+ #resume-main {
+  background-color: #fff;
+  color: #05386B;
+  max-width: 600px;
+  text-align: justify;
+  margin: auto;
+ }
+ 
+ #split-column {
+   columns: 2;
+   -webkit-columns: 2;
+   -moz-columns: 2;
+ }
+ 
+ /*FAQ/About me page*/
+ #faq-page {
+    padding-top: 56px;
+    padding-bottom: 56px;
+    max-width:600px;
+    margin:auto;
+ }
+ 
+ #picture {
+   width: 60%; max-width: 600px;
+   position: top: 20%;
+ }
+ 
+ ol {
+   display: inline-block;
+   text-align: start;
+   margin: 0;
+ }
+ 
+ 
+ /*Contact Page*/
+ 
+ #contact-section {
+    padding-top: 56px;
+    padding-bottom: 56px;
+    max-width: 600px;
+    margin: auto;
+ }
+ 
+ .contactform {
+   padding:2vh;
+ }
+ 
+ .form-style {
+   max-width: 50vh;
+   margin: 10px auto;
+   padding: 16px;
+   background: #F7F7F7;
+ }
+ 
+ .form-style h1 {
+   background: #5cdb95;
+   padding: 20px 0;
+   font-size: 140%;
+   font-weight: 300;
+   text-align: center;
+   color: #fff;
+   margin: -16px -16px 16px -16px;
+ }
+ 
+ .form-style input[type="text"],
+ .form-style input[type="email"],
+ .form-style textarea,
+ .form-style select 
+ {
+   outline: none;
+   box-sizing: border-box;
+   -webkit-box-sizing: border-box;
+   -moz-box-sizing: border-box;
+   -webkit-appearance: none;
+   width: 100%;
+   background: #fff;
+   margin-bottom: 4%;
+   border: 1px solid #ccc;
+   padding: 3%;
+   color: #555;
+   font: 95% Arial, Helvetica, sans-serif;
+ }
+ {
+   box-shadow: 0 0 5px #43D1AF;
+   padding: 3%;
+   border: 1px solid #43D1AF;
+ }
+ 
+ .form-style input[type="submit"],
+ .form-style input[type="button"]{
+   box-sizing: border-box;
+   -webkit-box-sizing: border-box;
+   -webkit-appearance: none;
+   -moz-box-sizing: border-box;
+   width: 100%;
+   padding: 2vh;
+   background: #5cdb95;
+   border-bottom: 2px solid #30C29E;
+   border-top-style: none;
+   border-right-style: none;
+   border-left-style: none;	
+   color: #fff;
+   font-size: 18px;
+ }
+ .form-style input[type="submit"]:hover,
+ .form-style input[type="button"]:hover{
+   background: #2EBC99;
+   cursor: pointer;
+ }
+ 
+ /*For Mobile devices*/
+ 
+  @media only screen and (max-width: 600px) {
+   #resume, #faq-page, #contact-section {
+     padding-top: 45px;
+     padding-bottom: 45px;
+   }
+   .topnav, #welcome-section, #resume, #resume-main, #contact-section, #faq-page {
+     padding-left: 10px;
+     padding-right: 10px;
+   }
+   #logo {
+     height: 2rem;
+     width: 2rem;
+   }
+     .topnav a, topnav, .topnav ul, navbar {
+     font-size: .6rem;
+   }
+     ul {
+     text-align:left;
+   }
+    #welcome-section {
+     padding-top: 20vh;
+   }
+ }
