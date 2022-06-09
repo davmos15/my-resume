@@ -1,4 +1,5 @@
 /* CSS for all pages*/
+/* the old background colour was #5CDB95 */
 body {
   text-align:center;
   color: #05386B;
@@ -8,7 +9,7 @@ body {
  }
  
  hr {
-  background-color:#5CDB95;
+  background-color:#05386b;
   height: 1px;
   border: 0px;
  }
@@ -82,12 +83,12 @@ body {
  }
  
  .topnav a:hover {
-   background-color: #5cdb95;
+   background-color: #05386b;
    color: white;
  }
  
  .topnav a.active {
-   background-color: #5cdb95;
+   background-color: #05386b;
    color: white;
  }
  
@@ -109,7 +110,7 @@ body {
   padding-top: 35vh;
   text-align: center;
   box-sizing: border-box;
-  background-color: #5CDB95;
+  background-color: #05386b;
   color: #F7F7F7;
  }
  
@@ -127,7 +128,7 @@ body {
  /*Resume Page*/
  .resumedownload {
    padding: .5rem;
-   background: #5cdb95;
+   background: #05386b;
    border-bottom-style: none;
    border-top-style: none;
    border-right-style: none;
@@ -248,7 +249,7 @@ body {
    -moz-box-sizing: border-box;
    width: 100%;
    padding: 2vh;
-   background: #5cdb95;
+   background: #05386b;
    border-bottom: 2px solid #30C29E;
    border-top-style: none;
    border-right-style: none;
