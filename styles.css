@@ -219,6 +219,7 @@ body {
  
  .form-style input[type="text"],
  .form-style input[type="email"],
+ .form-style input[type="tel"],
  .form-style textarea,
  .form-style select 
  {
