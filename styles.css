@@ -161,11 +161,12 @@ body {
   margin: auto;
  }
  
+ /*To split the skills section
  #split-column {
    columns: 2;
    -webkit-columns: 2;
    -moz-columns: 2;
- }
+ }*/
  
  /*About me page*/
  #about-page {
