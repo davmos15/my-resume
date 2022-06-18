@@ -167,8 +167,8 @@ body {
    -moz-columns: 2;
  }
  
- /*FAQ/About me page*/
- #faq-page {
+ /*About me page*/
+ #about-page {
     padding-top: 56px;
     padding-bottom: 56px;
     max-width:600px;
@@ -268,11 +268,11 @@ body {
  /*For Mobile devices*/
  
   @media only screen and (max-width: 600px) {
-   #resume, #faq-page, #contact-section {
+   #resume, #about-page, #contact-section {
      padding-top: 45px;
      padding-bottom: 45px;
    }
-   .topnav, #welcome-section, #resume, #resume-main, #contact-section, #faq-page {
+   .topnav, #welcome-section, #resume, #resume-main, #contact-section, #about-page {
      padding-left: 10px;
      padding-right: 10px;
    }
