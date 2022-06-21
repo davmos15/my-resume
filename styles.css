@@ -175,15 +175,15 @@ body {
 }
 
 .collapsible:after {
-  content: '\002B';
+  content: "+";
   color: white;
   font-weight: bold;
   float: right;
   margin-left: 5px;
 }
 
-.active:after {
-  content: "\2212";
+.collapsible.active:after {
+  content: "-";
 }
 
 .content {
@@ -270,7 +270,7 @@ body {
    color: #555;
    font: 95% Arial, Helvetica, sans-serif;
  }
- 
+
  {
    box-shadow: 0 0 5px #43D1AF;
    padding: 3%;
