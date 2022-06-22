@@ -21,7 +21,12 @@ body {
  h4 {
    text-align: center;
  }
- 
+
+  h5 {
+   font-weight: bold;
+   text-align: center;
+ }
+
  h6 {
    margin-top: -22px;
    text-align: center;
@@ -160,6 +165,10 @@ body {
   text-align: justify;
   margin: auto;
  }
+
+button {
+  font-weight: bold;
+}
  /* To make the resume expandable & collapsable */
  .collapsible {
   background-color: #05386b;
