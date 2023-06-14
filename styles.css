@@ -178,7 +178,6 @@ button {
   cursor: pointer;
   padding: 10px;
   width: 100%;
-  border: none;
   border-width: thin;
   border-color: #1c538d;
 }
@@ -200,7 +199,7 @@ button {
 }
 
 .content {
-  padding: 0 18px;
+  padding: 0 10vw;
   max-height: 0;
   overflow: hidden;
   transition: max-height 0.2s ease-out;
