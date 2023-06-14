@@ -164,7 +164,6 @@ body {
  #resume-main {
   background-color: #fff;
   color: #05386B;
-  max-width: 600px;
   text-align: justify;
   margin: auto;
  }
@@ -180,6 +179,8 @@ button {
   padding: 10px;
   width: 100%;
   border: none;
+  border-width: thin;
+  border-color: #1c538d;
 }
 
 .active, .collapsible:hover {
