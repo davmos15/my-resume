@@ -136,6 +136,11 @@ body {
  #PDF-img {
   width: 10vw;
  }
+
+ #logo {
+  width: 4vw;
+  float: left;
+ }
  
  form {
    text-align: center;
