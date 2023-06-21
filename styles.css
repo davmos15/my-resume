@@ -112,9 +112,10 @@ body {
 
  /*Menu Dropdown*/
  .dropbtn {
-  background-color: #05386B;
+  background-color: white;
   color: white;
   border: none;
+  padding: 0%;
 }
 
 .dropdown {
