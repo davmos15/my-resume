@@ -193,9 +193,7 @@ cursor: pointer;
   margin: auto;
  }
 
-button {
-  font-weight: bold;
-}
+
  /* To make the resume expandable & collapsable */
  .collapsible {
   background-color: #05386b;
