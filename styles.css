@@ -119,6 +119,7 @@ body {
   background-color: white;
   color: white;
   border: none;
+  padding: unset;
 }
 
 .dropdown {
