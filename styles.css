@@ -131,6 +131,7 @@ body {
   display: none;
   position: absolute;
   top: 56.5px;
+  width: -webkit-fill-available;
   background-color: #f1f1f1;
   box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
   z-index: 1;
@@ -151,6 +152,14 @@ display: block;
 .dropdown:hover .dropbtn {
 background-color: #05386b;
 cursor: pointer;
+}
+
+#dropitem {
+    width: inherit;
+    text-align: center;
+    padding: 0;
+    padding-top: 0.6rem;
+    padding-bottom: 0.6rem;
 }
  
  /*homepage*/
