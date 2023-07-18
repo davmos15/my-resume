@@ -144,6 +144,10 @@ background-color: #ddd;
 display: block;
 }
 
+.dropdown:hover #resumebutton, .dropdown-content:hover #resumebutton {
+    color: white;
+}
+
 .dropdown:hover .dropbtn {
 background-color: #05386b;
 cursor: pointer;
