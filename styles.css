@@ -356,7 +356,7 @@ cursor: pointer;
      height: 2rem;
      width: 2rem;
    }
-     .topnav a, topnav, .topnav ul, navbar {
+     .topnav a, topnav, .topnav ul, navbar, #resumebutton {
      font-size: .6rem;
    }
      ul {
