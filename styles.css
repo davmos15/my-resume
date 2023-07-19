@@ -381,4 +381,7 @@ cursor: pointer;
     .dropdown-content {
       height: 0px;
     }
- }
+    #dropitem {
+      color: white;
+    }
+  }
