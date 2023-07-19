@@ -116,15 +116,13 @@ body {
  }
 
  .dropbtn {
-  background-color: white;
-  color: white;
   border: none;
   padding: unset;
 }
 
 .dropdown {
   position: relative;
-  height: 56.5px;
+  height: 2.7rem;
 }
 
 .dropdown-content {
