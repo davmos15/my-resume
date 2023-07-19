@@ -378,10 +378,7 @@ cursor: pointer;
     -moz-columns: 1;
   }
     /* This is a workaround to make the dropdown menu not show on mobile */
-    .dropdown-content {
-      height: 0px;
-    }
     #dropitem {
-      color: white;
+      display: none;
     }
   }
