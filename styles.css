@@ -377,4 +377,7 @@ cursor: pointer;
     -webkit-columns: 1;
     -moz-columns: 1;
   }
+    .dropdown-content {
+      display: none;
+    }
  }
