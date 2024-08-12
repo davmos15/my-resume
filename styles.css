@@ -323,7 +323,6 @@ cursor: pointer;
    box-sizing: border-box;
    -webkit-box-sizing: border-box;
    -moz-box-sizing: border-box;
-   -webkit-appearance: none;
    width: 100%;
    background: #fff;
    margin-bottom: 4%;
@@ -338,7 +337,6 @@ cursor: pointer;
  .form-style input[type="button"]{
    box-sizing: border-box;
    -webkit-box-sizing: border-box;
-   -webkit-appearance: none;
    -moz-box-sizing: border-box;
    width: 100%;
    padding: 2vh;
