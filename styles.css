@@ -252,7 +252,16 @@ cursor: pointer;
    -webkit-columns: 2;
    -moz-columns: 2;
  }*/
+
+  /*Projects page*/
+  #projects-page {
+    padding-top: 56px;
+    padding-bottom: 56px;
+    max-width:600px;
+    margin:auto;
+ }
  
+
  /*About me page*/
  #about-page {
     padding-top: 56px;
