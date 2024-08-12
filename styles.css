@@ -356,11 +356,11 @@ cursor: pointer;
  /*For Mobile devices*/
  
   @media only screen and (max-width: 600px) {
-   #resume, #about-page, #contact-section {
+   #resume, #projects-page, #about-page, #contact-section {
      padding-top: 45px;
      padding-bottom: 45px;
    }
-   .topnav, #welcome-section, #resume, #resume-main, #contact-section, #about-page {
+   .topnav, #welcome-section, #resume, #resume-main, #projects-page, #contact-section, #about-page {
      padding-left: 10px;
      padding-right: 10px;
    }
