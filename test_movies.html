@@ -1,37 +1,68 @@
-<!-- 1. HTML container for the dynamic content -->
-<div id="movies-widget">
-  <h3>Recently Watched Movies</h3>
-  <ul id="moviesList">Loading...</ul>  <!-- this will be populated by JS -->
-</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Movie Watchlist</title>
+  <style>
+    /* Styling for the movie widget */
+    #movies-widget { 
+      max-width: 600px; 
+      margin: 1em auto; 
+      padding: 1em; 
+      background: #f9f9f9; 
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    #movies-widget h3 {
+      margin-top: 0;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
 
-<!-- 2. JavaScript to fetch and display Google Sheet data -->
-<script>
-  // Replace with your actual Google Sheet CSV export URL
-  const sheetURL = 'https://docs.google.com/spreadsheets/d/1ZkLKODghND7aI2v5qy6xXUmK_FgJk_rntaGXc9X0uVg/edit?usp=sharing';
-  
-  fetch(sheetURL)
-    .then(response => response.text())
-    .then(csvText => {
-      const lines = csvText.split('\n').filter(line => line.trim()); 
-      const headers = lines[0].split(',');  // e.g., ["Title","Year"]
-      const movies = lines.slice(1).map(line => {
-        // Simple CSV row parse (split by comma). 
-        // Note: If movie titles contain commas, consider using a CSV parsing library or an alternate delimiter.
-        const cols = line.split(',');
-        return { title: cols[0], year: cols[1] };
+  <!-- HTML container for the dynamic movie list -->
+  <div id="movies-widget">
+    <h3>Recently Watched Movies 🎥</h3>
+    <ul id="moviesList">Loading...</ul>
+  </div>
+
+  <!-- JavaScript to fetch and display data from your Google Sheet -->
+  <script>
+    // Replace <YOUR_SHEET_ID> and <SHEET_NAME> with your details.
+    // In your case, the sheet ID is "1ZkLKODghND7aI2v5qy6xXUmK_FgJk_rntaGXc9X0uVg" and we're using "Sheet1" as the sheet name.
+    const sheetURL = 'https://docs.google.com/spreadsheets/d/1ZkLKODghND7aI2v5qy6xXUmK_FgJk_rntaGXc9X0uVg/gviz/tq?tqx=out:csv&sheet=Sheet1';
+    
+    fetch(sheetURL)
+      .then(response => response.text())
+      .then(csvText => {
+        // Split CSV text into lines and remove any empty lines
+        const lines = csvText.split('\n').filter(line => line.trim());
+        // Assuming the first line contains headers (e.g., Title, Year)
+        const headers = lines[0].split(',');
+        // Parse remaining lines into movie objects
+        const movies = lines.slice(1).map(line => {
+          // Simple CSV parsing (if your titles include commas, consider a CSV parsing library)
+          const cols = line.split(',');
+          return { title: cols[0], year: cols[1] };
+        });
+        
+        const listEl = document.getElementById('moviesList');
+        listEl.innerHTML = ""; // Clear the "Loading..." text
+        
+        // Create list items for each movie
+        movies.forEach(movie => {
+          const li = document.createElement('li');
+          li.textContent = `${movie.title} (${movie.year})`;
+          listEl.appendChild(li);
+        });
+      })
+      .catch(err => {
+        console.error('Error fetching movie data:', err);
+        document.getElementById('moviesList').textContent = "Unable to load data.";
       });
-      
-      const listEl = document.getElementById('moviesList');
-      listEl.innerHTML = ""; // clear "Loading..." text
-      
-      movies.forEach(movie => {
-        const li = document.createElement('li');
-        li.textContent = `${movie.title} (${movie.year})`;
-        listEl.appendChild(li);
-      });
-    })
-    .catch(err => {
-      console.error('Error fetching movie data:', err);
-      document.getElementById('moviesList').textContent = "Unable to load data.";
-    });
-</script>
+  </script>
+</body>
+</html>
