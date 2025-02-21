@@ -20,21 +20,46 @@
       gap: 1rem;
       margin-bottom: 1rem;
       justify-content: center;
+      align-items: flex-end; /* so everything lines up nicely */
     }
     #filter-section > div {
       display: flex;
       flex-direction: column;
+      min-width: 150px;
     }
-    /* Styling for the year slider container */
+    /* Subtler slider container */
     #yearSliderContainer {
-      width: 300px;
-      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      width: 300px; /* You can tweak this width */
+      max-width: 100%;
     }
     #yearRangeDisplay {
       text-align: center;
-      margin-bottom: 10px;
-      font-weight: bold;
+      margin-bottom: 5px;
+      font-size: 0.9em;
+      font-weight: normal;
+      color: #555;
     }
+    /* Subtle styling overrides for noUiSlider */
+    .noUi-target {
+      background: none;
+    }
+    .noUi-base {
+      background: #eee;
+    }
+    .noUi-connect {
+      background: #ccc; /* Lighter gray */
+    }
+    .noUi-handle {
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 50%;
+      box-shadow: none;
+      width: 18px;
+      height: 18px;
+    }
+
     #movies-table {
       border-collapse: collapse;
       width: 100%;
@@ -85,8 +110,8 @@
     <!-- Year Filter with a dual-handle slider using noUiSlider -->
     <div>
       <label>Filter by Year:</label>
-      <div id="yearRangeDisplay"></div>
       <div id="yearSliderContainer">
+        <div id="yearRangeDisplay"></div>
         <div id="yearSlider"></div>
       </div>
     </div>
@@ -139,51 +164,23 @@
     const moviesBodyEl = document.getElementById('moviesBody');
     const noResultsEl = document.getElementById('noResults');
     const tableHeaders = document.querySelectorAll('#movies-table th');
-    const yearRangeDisplayEl = document.getElementById('yearRangeDisplay');
 
-    // Initialize noUiSlider for a dual-handle year filter
+    // noUiSlider elements
     const yearSlider = document.getElementById('yearSlider');
-    noUiSlider.create(yearSlider, {
-      start: [2000, 2010],
-      connect: true,
-      range: {
-        'min': 2000,
-        'max': 2010
-      },
-      step: 1
-    });
-
-    // Update displayed range and apply filter on slider update
-    yearSlider.noUiSlider.on('update', function(values) {
-      const minYear = Math.round(values[0]);
-      const maxYear = Math.round(values[1]);
-      yearRangeDisplayEl.textContent = minYear + " - " + maxYear;
-      applyFilters();
-    });
-
-    // Event listeners for other filters
-    titleSearchEl.addEventListener('input', applyFilters);
-    genreFilterEl.addEventListener('change', applyFilters);
-    directorSearchEl.addEventListener('input', applyFilters);
-
-    // Event listeners for sorting (click on table headers)
-    tableHeaders.forEach(th => {
-      th.addEventListener('click', () => {
-        const columnKey = th.getAttribute('data-key');
-        setSort(columnKey);
-      });
-    });
+    const yearRangeDisplayEl = document.getElementById('yearRangeDisplay');
 
     // Fetch CSV and initialize
     fetch(sheetURL)
       .then(response => response.text())
       .then(csvText => {
         const rows = parseCSV(csvText);
+        // Possibly skip the header row
         const possibleHeaders = rows[0].map(stripQuotes).map(h => h.toLowerCase());
         let dataRows = rows;
         if (possibleHeaders.join(',').includes('title') || possibleHeaders.join(',').includes('genre')) {
           dataRows = rows.slice(1);
         }
+        // Build movie objects
         allMovies = dataRows.map(row => {
           const cells = row.map(stripQuotes);
           return {
@@ -193,7 +190,37 @@
             year: cells[4] || ''
           };
         });
+        
+        // Populate Genre dropdown
         populateGenreDropdown(allMovies);
+
+        // Determine min and max year from data
+        const allYears = allMovies
+          .map(m => parseInt(m.year))
+          .filter(y => !isNaN(y));
+        const minYear = Math.min(...allYears);
+        const maxYear = Math.max(...allYears);
+
+        // Initialize the dual-handle slider with dynamic min/max
+        noUiSlider.create(yearSlider, {
+          start: [minYear, maxYear],
+          connect: true,
+          range: {
+            'min': minYear,
+            'max': maxYear
+          },
+          step: 1
+        });
+
+        // Update display & filter on slider update
+        yearSlider.noUiSlider.on('update', function(values) {
+          const minVal = Math.round(values[0]);
+          const maxVal = Math.round(values[1]);
+          yearRangeDisplayEl.textContent = minVal + " - " + maxVal;
+          applyFilters();
+        });
+
+        // Initial render
         renderTable(allMovies);
       })
       .catch(err => {
@@ -201,7 +228,7 @@
         moviesBodyEl.innerHTML = `<tr><td colspan="4">Unable to load data.</td></tr>`;
       });
 
-    // Minimal CSV parser that respects quoted fields
+    // Minimal CSV parser
     function parseCSV(csvText) {
       const lines = csvText.split('\n').filter(line => line.trim());
       return lines.map(line => parseCSVLine(line));
@@ -224,11 +251,11 @@
       tokens.push(token);
       return tokens.map(t => t.trim());
     }
-    // Remove surrounding quotes from a string
     function stripQuotes(str) {
       return str.replace(/^"(.*)"$/, '$1');
     }
-    // Populate Genre dropdown (Year filter is now via slider)
+
+    // Populate Genre dropdown
     function populateGenreDropdown(movies) {
       const genres = new Set();
       movies.forEach(m => {
@@ -242,30 +269,30 @@
         genreFilterEl.appendChild(opt);
       });
     }
-    // Apply filters based on search inputs and slider range
+
+    // Apply filters
     function applyFilters() {
       const titleQuery = titleSearchEl.value.trim().toLowerCase();
       const genreSelected = genreFilterEl.value;
       const directorQuery = directorSearchEl.value.trim().toLowerCase();
-      const sliderValues = yearSlider.noUiSlider.get();
-      const minYear = parseInt(sliderValues[0]);
-      const maxYear = parseInt(sliderValues[1]);
+      const [sliderMin, sliderMax] = yearSlider.noUiSlider.get().map(Number);
 
       let filtered = [...allMovies];
-      // Filter by year range
+
+      // Year range filter
       filtered = filtered.filter(m => {
-        const year = parseInt(m.year);
-        return year >= minYear && year <= maxYear;
+        const y = parseInt(m.year);
+        return y >= sliderMin && y <= sliderMax;
       });
-      // Filter by genre
+      // Genre filter
       if (genreSelected) {
         filtered = filtered.filter(m => m.genre === genreSelected);
       }
-      // Filter by director
+      // Director filter
       if (directorQuery) {
         filtered = filtered.filter(m => m.director.toLowerCase().includes(directorQuery));
       }
-      // Filter by title
+      // Title filter
       if (titleQuery) {
         filtered = filtered.filter(m => m.title.toLowerCase().includes(titleQuery));
       }
@@ -275,7 +302,8 @@
       }
       renderTable(filtered);
     }
-    // Set or toggle the sort configuration
+
+    // Sort config
     function setSort(columnKey) {
       if (sortConfig.column === columnKey) {
         sortConfig.direction = (sortConfig.direction === 'asc') ? 'desc' : 'asc';
@@ -286,7 +314,8 @@
       updateSortIcons();
       applyFilters();
     }
-    // Update table header icons based on sort configuration
+
+    // Update sort icons
     function updateSortIcons() {
       tableHeaders.forEach(th => {
         th.classList.remove('sort-asc', 'sort-desc');
@@ -296,22 +325,26 @@
         }
       });
     }
-    // Compare movies for sorting
+
+    // Compare for sorting
     function compareMovies(a, b, columnKey) {
       let valA = a[columnKey];
       let valB = b[columnKey];
+      // Sort by year numerically
       if (columnKey === 'year') {
         const numA = parseInt(valA) || 0;
         const numB = parseInt(valB) || 0;
         return sortConfig.direction === 'asc' ? (numA - numB) : (numB - numA);
       }
+      // Otherwise, sort alphabetically
       valA = valA.toLowerCase();
       valB = valB.toLowerCase();
       if (valA < valB) return sortConfig.direction === 'asc' ? -1 : 1;
       if (valA > valB) return sortConfig.direction === 'asc' ? 1 : -1;
       return 0;
     }
-    // Render the movies table
+
+    // Render the table
     function renderTable(movies) {
       if (!movies.length) {
         moviesBodyEl.innerHTML = '';
