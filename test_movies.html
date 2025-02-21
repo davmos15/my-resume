@@ -1,9 +1,11 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Enhanced Movie List</title>
+  <!-- noUiSlider CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.6.1/nouislider.min.css">
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -23,6 +25,16 @@
       display: flex;
       flex-direction: column;
     }
+    /* Styling for the year slider container */
+    #yearSliderContainer {
+      width: 300px;
+      margin: 0 auto;
+    }
+    #yearRangeDisplay {
+      text-align: center;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
     #movies-table {
       border-collapse: collapse;
       width: 100%;
@@ -36,7 +48,7 @@
     }
     #movies-table th {
       background-color: #f2f2f2;
-      cursor: pointer; /* indicates clickable for sorting */
+      cursor: pointer;
       user-select: none;
     }
     #movies-table th:hover {
@@ -70,12 +82,13 @@
       <input type="text" id="titleSearch" placeholder="e.g. Godfather">
     </div>
     
-    <!-- Year Filter -->
+    <!-- Year Filter with a dual-handle slider using noUiSlider -->
     <div>
-      <label for="yearFilter">Filter by Year:</label>
-      <select id="yearFilter">
-        <option value="">All</option>
-      </select>
+      <label>Filter by Year:</label>
+      <div id="yearRangeDisplay"></div>
+      <div id="yearSliderContainer">
+        <div id="yearSlider"></div>
+      </div>
     </div>
 
     <!-- Genre Filter -->
@@ -96,7 +109,6 @@
   <!-- Table to display movies -->
   <table id="movies-table">
     <thead>
-      <!-- data-key attributes let us know which field to sort by -->
       <tr>
         <th data-key="title">Title</th>
         <th data-key="year">Year</th>
@@ -111,97 +123,97 @@
 
   <div id="noResults" class="no-results" style="display:none;">No movies found.</div>
 
-  <!-- Script to fetch and display data -->
+  <!-- noUiSlider JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.6.1/nouislider.min.js"></script>
   <script>
     // Replace with your actual CSV export URL
-    // The CSV columns in your sheet are: 
-    // A=Title, B=Genre, C=Director, D=???(ignored), E=Year
     const sheetURL = 'https://docs.google.com/spreadsheets/d/1ZkLKODghND7aI2v5qy6xXUmK_FgJk_rntaGXc9X0uVg/gviz/tq?tqx=out:csv&sheet=Sheet1';
 
-    // We'll store all movies here and also track sort configuration
     let allMovies = [];
-    let sortConfig = { column: null, direction: 'asc' }; // or 'desc'
+    let sortConfig = { column: null, direction: 'asc' };
 
     // DOM elements
     const titleSearchEl = document.getElementById('titleSearch');
-    const yearFilterEl = document.getElementById('yearFilter');
     const genreFilterEl = document.getElementById('genreFilter');
     const directorSearchEl = document.getElementById('directorSearch');
     const moviesBodyEl = document.getElementById('moviesBody');
     const noResultsEl = document.getElementById('noResults');
     const tableHeaders = document.querySelectorAll('#movies-table th');
+    const yearRangeDisplayEl = document.getElementById('yearRangeDisplay');
+
+    // Initialize noUiSlider for a dual-handle year filter
+    const yearSlider = document.getElementById('yearSlider');
+    noUiSlider.create(yearSlider, {
+      start: [2000, 2010],
+      connect: true,
+      range: {
+        'min': 2000,
+        'max': 2010
+      },
+      step: 1
+    });
+
+    // Update displayed range and apply filter on slider update
+    yearSlider.noUiSlider.on('update', function(values) {
+      const minYear = Math.round(values[0]);
+      const maxYear = Math.round(values[1]);
+      yearRangeDisplayEl.textContent = minYear + " - " + maxYear;
+      applyFilters();
+    });
+
+    // Event listeners for other filters
+    titleSearchEl.addEventListener('input', applyFilters);
+    genreFilterEl.addEventListener('change', applyFilters);
+    directorSearchEl.addEventListener('input', applyFilters);
+
+    // Event listeners for sorting (click on table headers)
+    tableHeaders.forEach(th => {
+      th.addEventListener('click', () => {
+        const columnKey = th.getAttribute('data-key');
+        setSort(columnKey);
+      });
+    });
 
     // Fetch CSV and initialize
     fetch(sheetURL)
       .then(response => response.text())
       .then(csvText => {
-        // Parse the CSV (with quoted fields) into an array of arrays
         const rows = parseCSV(csvText);
-        // First row is typically headers; we won't rely on them for field order
-        // We'll just skip them if they're truly headers
-        // Let's detect if row[0] includes "Title" or something
         const possibleHeaders = rows[0].map(stripQuotes).map(h => h.toLowerCase());
         let dataRows = rows;
-        
-        // If the first row likely has "title" or "genre", treat it as headers
         if (possibleHeaders.join(',').includes('title') || possibleHeaders.join(',').includes('genre')) {
           dataRows = rows.slice(1);
         }
-
-        // For each row, map to an object based on your known column order
-        // A=Title, B=Genre, C=Director, D=ignored, E=Year
         allMovies = dataRows.map(row => {
-          // stripQuotes each cell
           const cells = row.map(stripQuotes);
           return {
-            title: cells[0] || '',      // Column A
-            genre: cells[1] || '',      // Column B
-            director: cells[2] || '',   // Column C
-            // cells[3] is ignored
-            year: cells[4] || ''        // Column E
+            title: cells[0] || '',
+            genre: cells[1] || '',
+            director: cells[2] || '',
+            year: cells[4] || ''
           };
         });
-
-        // Populate the filter dropdowns (Year, Genre)
-        populateDropdowns(allMovies);
-
-        // Initial render of the table
+        populateGenreDropdown(allMovies);
         renderTable(allMovies);
-
-        // Event listeners for filters
-        titleSearchEl.addEventListener('input', applyFilters);
-        yearFilterEl.addEventListener('change', applyFilters);
-        genreFilterEl.addEventListener('change', applyFilters);
-        directorSearchEl.addEventListener('input', applyFilters);
-
-        // Event listeners for sorting (click on table headers)
-        tableHeaders.forEach(th => {
-          th.addEventListener('click', () => {
-            const columnKey = th.getAttribute('data-key');
-            setSort(columnKey);
-          });
-        });
       })
       .catch(err => {
         console.error('Error fetching movie data:', err);
         moviesBodyEl.innerHTML = `<tr><td colspan="4">Unable to load data.</td></tr>`;
       });
 
-    // Minimal CSV parser that respects quoted fields containing commas
+    // Minimal CSV parser that respects quoted fields
     function parseCSV(csvText) {
       const lines = csvText.split('\n').filter(line => line.trim());
       return lines.map(line => parseCSVLine(line));
     }
-
     function parseCSVLine(line) {
       let inQuotes = false;
       let token = '';
       const tokens = [];
-
       for (let i = 0; i < line.length; i++) {
         const char = line[i];
         if (char === '"') {
-          inQuotes = !inQuotes; // toggle
+          inQuotes = !inQuotes;
         } else if (char === ',' && !inQuotes) {
           tokens.push(token);
           token = '';
@@ -209,39 +221,20 @@
           token += char;
         }
       }
-      // push the last token
       tokens.push(token);
       return tokens.map(t => t.trim());
     }
-
-    // Strip surrounding quotes from a string
+    // Remove surrounding quotes from a string
     function stripQuotes(str) {
       return str.replace(/^"(.*)"$/, '$1');
     }
-
-    // Populate Year & Genre dropdowns
-    function populateDropdowns(movies) {
-      const years = new Set();
+    // Populate Genre dropdown (Year filter is now via slider)
+    function populateGenreDropdown(movies) {
       const genres = new Set();
-
       movies.forEach(m => {
-        if (m.year) years.add(m.year);
         if (m.genre) genres.add(m.genre);
       });
-
-      // Sort the years numerically (if all are numbers)
-      const sortedYears = Array.from(years).sort((a, b) => parseInt(a) - parseInt(b));
       const sortedGenres = Array.from(genres).sort();
-
-      // Populate the year dropdown
-      sortedYears.forEach(y => {
-        const opt = document.createElement('option');
-        opt.value = y;
-        opt.textContent = y;
-        yearFilterEl.appendChild(opt);
-      });
-
-      // Populate the genre dropdown
       sortedGenres.forEach(g => {
         const opt = document.createElement('option');
         opt.value = g;
@@ -249,63 +242,51 @@
         genreFilterEl.appendChild(opt);
       });
     }
-
-    // Apply filters and then sort
+    // Apply filters based on search inputs and slider range
     function applyFilters() {
-      const titleQuery = titleSearchEl.value.trim();
-      const yearSelected = yearFilterEl.value;
+      const titleQuery = titleSearchEl.value.trim().toLowerCase();
       const genreSelected = genreFilterEl.value;
       const directorQuery = directorSearchEl.value.trim().toLowerCase();
+      const sliderValues = yearSlider.noUiSlider.get();
+      const minYear = parseInt(sliderValues[0]);
+      const maxYear = parseInt(sliderValues[1]);
 
-      // Start with all movies
       let filtered = [...allMovies];
-
-      // Filter by Year
-      if (yearSelected) {
-        filtered = filtered.filter(m => m.year === yearSelected);
-      }
-
-      // Filter by Genre
+      // Filter by year range
+      filtered = filtered.filter(m => {
+        const year = parseInt(m.year);
+        return year >= minYear && year <= maxYear;
+      });
+      // Filter by genre
       if (genreSelected) {
         filtered = filtered.filter(m => m.genre === genreSelected);
       }
-
-      // Search by Director (case-insensitive substring match)
+      // Filter by director
       if (directorQuery) {
         filtered = filtered.filter(m => m.director.toLowerCase().includes(directorQuery));
       }
-
-      // Title search (case-insensitive substring)
+      // Filter by title
       if (titleQuery) {
-        const queryLower = titleQuery.toLowerCase();
-        filtered = filtered.filter(m => m.title.toLowerCase().includes(queryLower));
+        filtered = filtered.filter(m => m.title.toLowerCase().includes(titleQuery));
       }
-
-      // Sort the filtered results if a sort column is set
+      // Sort if needed
       if (sortConfig.column) {
         filtered.sort((a, b) => compareMovies(a, b, sortConfig.column));
       }
-
       renderTable(filtered);
     }
-
-    // Set or toggle the sort column/direction
+    // Set or toggle the sort configuration
     function setSort(columnKey) {
-      // If clicking the same column, toggle direction
       if (sortConfig.column === columnKey) {
         sortConfig.direction = (sortConfig.direction === 'asc') ? 'desc' : 'asc';
       } else {
         sortConfig.column = columnKey;
         sortConfig.direction = 'asc';
       }
-      // Update header classes
       updateSortIcons();
-
-      // Re-apply filters to get the current filtered list, then sort & render
       applyFilters();
     }
-
-    // Update the table header classes to show asc/desc arrow
+    // Update table header icons based on sort configuration
     function updateSortIcons() {
       tableHeaders.forEach(th => {
         th.classList.remove('sort-asc', 'sort-desc');
@@ -315,28 +296,22 @@
         }
       });
     }
-
-    // Compare function for sorting
+    // Compare movies for sorting
     function compareMovies(a, b, columnKey) {
       let valA = a[columnKey];
       let valB = b[columnKey];
-
-      // If sorting by year and they're numeric, parse them as numbers
       if (columnKey === 'year') {
         const numA = parseInt(valA) || 0;
         const numB = parseInt(valB) || 0;
         return sortConfig.direction === 'asc' ? (numA - numB) : (numB - numA);
       }
-
-      // Otherwise sort alphabetically
       valA = valA.toLowerCase();
       valB = valB.toLowerCase();
       if (valA < valB) return sortConfig.direction === 'asc' ? -1 : 1;
       if (valA > valB) return sortConfig.direction === 'asc' ? 1 : -1;
       return 0;
     }
-
-    // Render table rows
+    // Render the movies table
     function renderTable(movies) {
       if (!movies.length) {
         moviesBodyEl.innerHTML = '';
@@ -345,7 +320,6 @@
       } else {
         noResultsEl.style.display = 'none';
       }
-
       const rowsHTML = movies.map(movie => {
         return `
           <tr>
