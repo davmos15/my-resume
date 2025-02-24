@@ -113,7 +113,17 @@
 </head>
 <body>
 
-  <?php include 'nav.php'; ?>
+  <div id="nav-placeholder"></div>
+
+<script>
+  fetch('nav.html')
+    .then(response => response.text())
+    .then(data => {
+      document.getElementById('nav-placeholder').innerHTML = data;
+    })
+    .catch(console.error);
+</script>
+
 
   <h1>My Movie Watchlist 🎥</h1>
 
