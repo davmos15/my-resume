@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Movie List | Nadav's Resume</title>
+  <title>Enhanced Movie List</title>
   <!-- noUiSlider CSS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.6.1/nouislider.min.css">
   <style>
@@ -14,24 +14,25 @@
     h1 {
       text-align: center;
     }
+    /* Responsive filter section */
     #filter-section {
       display: flex;
       flex-wrap: wrap;
       gap: 1rem;
       margin-bottom: 1rem;
       justify-content: center;
-      align-items: flex-end; /* so everything lines up nicely */
+      align-items: flex-end;
     }
     #filter-section > div {
       display: flex;
       flex-direction: column;
       min-width: 150px;
     }
-    /* Subtler slider container */
+    /* Year slider container */
     #yearSliderContainer {
       display: flex;
       flex-direction: column;
-      width: 300px; /* You can tweak this width */
+      width: 300px; 
       max-width: 100%;
     }
     #yearRangeDisplay {
@@ -41,7 +42,7 @@
       font-weight: normal;
       color: #555;
     }
-    /* Subtle styling overrides for noUiSlider */
+    /* Subtle noUiSlider styling */
     .noUi-target {
       background: none;
     }
@@ -49,7 +50,7 @@
       background: #eee;
     }
     .noUi-connect {
-      background: #ccc; /* Lighter gray */
+      background: #ccc;
     }
     .noUi-handle {
       background: #fff;
@@ -59,7 +60,7 @@
       width: 18px;
       height: 18px;
     }
-
+    /* Table styling */
     #movies-table {
       border-collapse: collapse;
       width: 100%;
@@ -73,7 +74,7 @@
     }
     #movies-table th {
       background-color: #f2f2f2;
-      cursor: pointer;
+      cursor: pointer; 
       user-select: none;
     }
     #movies-table th:hover {
@@ -93,11 +94,26 @@
       font-style: italic;
       color: #888;
     }
+    /* Mobile-friendly adjustments */
+    @media (max-width: 600px) {
+      #filter-section {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      #yearSliderContainer {
+        width: 100%;
+        margin-bottom: 1rem;
+      }
+      #movies-table {
+        overflow-x: auto; /* allows horizontal scroll on narrow screens */
+        display: block;
+      }
+    }
   </style>
 </head>
 <body>
 
-  <h1>Nadav's Movie List 🎥</h1>
+  <h1>Recently Watched Movies 🎥</h1>
 
   <!-- Filter Section -->
   <div id="filter-section">
@@ -107,7 +123,7 @@
       <input type="text" id="titleSearch" placeholder="e.g. Godfather">
     </div>
     
-    <!-- Year Filter with a dual-handle slider using noUiSlider -->
+    <!-- Year Filter (dual-handle slider) -->
     <div>
       <label>Filter by Year:</label>
       <div id="yearSliderContainer">
@@ -218,6 +234,19 @@
           const maxVal = Math.round(values[1]);
           yearRangeDisplayEl.textContent = minVal + " - " + maxVal;
           applyFilters();
+        });
+
+        // Attach event listeners for other filters
+        titleSearchEl.addEventListener('input', applyFilters);
+        genreFilterEl.addEventListener('change', applyFilters);
+        directorSearchEl.addEventListener('input', applyFilters);
+
+        // Attach event listeners for sorting
+        tableHeaders.forEach(th => {
+          th.addEventListener('click', () => {
+            const columnKey = th.getAttribute('data-key');
+            setSort(columnKey);
+          });
         });
 
         // Initial render
