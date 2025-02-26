@@ -366,7 +366,103 @@ cursor: pointer;
    border-bottom: 2px solid #2b71b9;
    cursor: pointer;
  }
- 
+
+/*Movies Page*/
+    /* Responsive filter section */
+    #filter-section {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      justify-content: center;
+      align-items: flex-end;
+    }
+    #filter-section > div {
+      display: flex;
+      flex-direction: column;
+      min-width: 150px;
+    }
+    /* Year slider container */
+    #yearSliderContainer {
+      display: flex;
+      flex-direction: column;
+      width: 300px; 
+      max-width: 100%;
+    }
+    #yearRangeDisplay {
+      text-align: center;
+      margin-bottom: 5px;
+      font-size: 0.9em;
+      font-weight: normal;
+      color: #555;
+    }
+    /* Subtle noUiSlider styling */
+    .noUi-target {
+      background: none;
+    }
+    .noUi-base {
+      background: #eee;
+    }
+    .noUi-connect {
+      background: #ccc;
+    }
+    .noUi-handle {
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 50%;
+      box-shadow: none;
+      width: 18px;
+      height: 18px;
+    }
+    /* Table styling */
+    #movies-table {
+      border-collapse: collapse;
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    #movies-table th, #movies-table td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    #movies-table th {
+      background-color: #f2f2f2;
+      cursor: pointer; 
+      user-select: none;
+    }
+    #movies-table th:hover {
+      background-color: #e2e2e2;
+    }
+    .sort-asc::after {
+      content: " ▲";
+      font-size: 0.75em;
+    }
+    .sort-desc::after {
+      content: " ▼";
+      font-size: 0.75em;
+    }
+    .no-results {
+      text-align: center;
+      margin-top: 1rem;
+      font-style: italic;
+      color: #888;
+    }
+    /* Mobile-friendly adjustments */
+    @media (max-width: 600px) {
+      #filter-section {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      #yearSliderContainer {
+        width: 100%;
+        margin-bottom: 1rem;
+      }
+      #movies-table {
+        overflow-x: auto; /* allows horizontal scroll on narrow screens */
+        display: block;
+      }
+    }
  /*For Mobile devices*/
  
   @media only screen and (max-width: 600px) {
