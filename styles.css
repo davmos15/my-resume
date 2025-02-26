@@ -368,6 +368,14 @@ cursor: pointer;
  }
 
 /*Movies Page*/
+ #movies {
+  background-color: #fff;
+  color: #05386B;
+  padding-top: 56px;
+  padding-bottom: 56px;
+  margin:auto;
+  max-width: 600px;
+ }
     /* Responsive filter section */
     #filter-section {
       display: flex;
