@@ -25,7 +25,7 @@
                             <td><%= project.title %></td>
                             <td><%= project.technologies || 'N/A' %></td>
                             <td>
-                                <span style="color: <%= project.is_active ? '#27ae60' : '#e74c3c' %>">
+                                <span class="<%= project.is_active ? 'status-active' : 'status-inactive' %>">
                                     <%= project.is_active ? 'Active' : 'Inactive' %>
                                 </span>
                             </td>
@@ -68,6 +68,14 @@
 
 .sortable-chosen {
     background-color: #e3f2fd !important;
+}
+
+.status-active {
+    color: #27ae60;
+}
+
+.status-inactive {
+    color: #e74c3c;
 }
 </style>
 

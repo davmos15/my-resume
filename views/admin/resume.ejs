@@ -45,7 +45,7 @@
                                     <td><%= section.subtitle || '-' %></td>
                                     <td><%= section.date_range || '-' %></td>
                                     <td>
-                                        <span style="color: <%= section.is_active ? '#27ae60' : '#e74c3c' %>">
+                                        <span class="<%= section.is_active ? 'status-active' : 'status-inactive' %>">
                                             <%= section.is_active ? 'Active' : 'Inactive' %>
                                         </span>
                                     </td>
@@ -128,6 +128,14 @@
 
 .sortable-chosen {
     background-color: #e3f2fd !important;
+}
+
+.status-active {
+    color: #27ae60;
+}
+
+.status-inactive {
+    color: #e74c3c;
 }
 </style>
 
