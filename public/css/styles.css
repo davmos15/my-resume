@@ -2,10 +2,12 @@
 /* the old background colour was #5CDB95 */
 body {
   text-align:center;
-  color: #05386B;
+  color: var(--text-primary, #05386B);
   margin: 0;
   font-family: 'Open Sans', sans-serif;
   font-size:18px;
+  background-color: var(--bg-primary, #ffffff);
+  transition: var(--theme-transition, all 0.3s ease);
  }
  
  hr {
@@ -66,34 +68,42 @@ body {
  
  /*link colour*/
  a {
-   color: #05386B;
+   color: var(--link-color, #05386B);
    font-weight: bold;
    cursor: pointer;
+   transition: color 0.2s ease;
   }
+ 
+ a:hover {
+   color: var(--link-hover, #05386B);
+ }
  
   /*Navigation Bar CSS */
  .topnav {
-   background-color: #fff;
+   background-color: var(--nav-bg, #fff);
    position: fixed;
    width: 100%;
+   transition: var(--theme-transition);
+   z-index: 1000;
  }
  
  .topnav a {
    float: right;
-   color: #05386b;
+   color: var(--nav-text, #05386b);
    text-align: center;
    padding: 16px 16px;
    text-decoration: none;
+   transition: all 0.2s ease;
  }
  
  .topnav a:hover {
-   background-color: #05386b;
-   color: white;
+   background-color: var(--bg-accent, #05386b);
+   color: var(--text-primary, white);
  }
  
  .topnav a.active {
-   background-color: #05386b;
-   color: white;
+   background-color: var(--bg-accent, #05386b);
+   color: var(--text-primary, white);
  }
  
  .topnav ul {
@@ -105,6 +115,7 @@ body {
  
  nav ul li {
   display: block;
+  position: relative;
  }
 
  /*Menu Dropdown*/
@@ -165,12 +176,13 @@ cursor: pointer;
   padding-top: 35vh;
   text-align: center;
   box-sizing: border-box;
-  background-color: #05386b;
-  color: #F7F7F7;
+  background-color: var(--bg-secondary, #05386b);
+  color: var(--text-primary, #F7F7F7);
+  transition: var(--theme-transition);
  }
  
   #welcome-section a {
-   color: #F7F7F7;
+   color: var(--link-color, #F7F7F7);
  }
  
  #homepage-text {
