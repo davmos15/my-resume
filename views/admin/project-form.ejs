@@ -1,0 +1,267 @@
+<h1 class="page-title"><%= project ? 'Edit Project' : 'Add New Project' %></h1>
+
+<div class="card">
+    <form method="POST" action="<%= project ? `/admin/projects/edit/${project.id}` : '/admin/projects/new' %>">
+        <div class="form-group">
+            <label for="title">Project Title *</label>
+            <input type="text" class="form-control" id="title" name="title" 
+                   value="<%= project ? project.title : '' %>" required>
+        </div>
+
+        <div class="form-group">
+            <label for="description">Description *</label>
+            <textarea class="form-control editor-textarea" id="description" name="description" 
+                      rows="8" required><%= project ? project.description : '' %></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="technologies">Technologies</label>
+            <input type="text" class="form-control" id="technologies" name="technologies" 
+                   value="<%= project ? project.technologies : '' %>" 
+                   placeholder="e.g. Node.js, React, MongoDB">
+        </div>
+
+        <div class="form-group">
+            <label for="github_link">GitHub Link</label>
+            <input type="url" class="form-control" id="github_link" name="github_link" 
+                   value="<%= project ? project.github_link : '' %>" 
+                   placeholder="https://github.com/username/repo">
+        </div>
+
+        <div class="form-group">
+            <label for="live_link">Live Demo Link</label>
+            <input type="url" class="form-control" id="live_link" name="live_link" 
+                   value="<%= project ? project.live_link : '' %>" 
+                   placeholder="https://example.com">
+        </div>
+
+        <div class="form-group">
+            <label for="image_path">Project File</label>
+            <div style="display: flex; gap: 10px; align-items: end;">
+                <input type="text" class="form-control" id="image_path" name="image_path" 
+                       value="<%= project ? project.image_path : '' %>" 
+                       placeholder="/uploads/file.jpg" readonly>
+                <button type="button" class="btn btn-secondary" onclick="openFileSelector()">
+                    Select File
+                </button>
+                <% if (project && project.image_path) { %>
+                    <button type="button" class="btn btn-danger" onclick="removeFile()">
+                        Remove
+                    </button>
+                <% } %>
+            </div>
+            <small style="color: #666;">Choose any file from your uploaded files</small>
+            <div id="filePreview" style="margin-top: 10px;">
+                <% if (project && project.image_path) { %>
+                    <img src="<%= project.image_path %>" alt="Preview" style="max-width: 200px; max-height: 150px; border-radius: 4px;">
+                <% } %>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="display_order">Display Order</label>
+            <input type="number" class="form-control" id="display_order" name="display_order" 
+                   value="<%= project ? project.display_order : 0 %>" min="0">
+            <small style="color: #666;">Lower numbers appear first</small>
+        </div>
+
+        <% if (project) { %>
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" name="is_active" value="1" 
+                           <%= project.is_active ? 'checked' : '' %>>
+                    Active
+                </label>
+            </div>
+        <% } %>
+
+        <div style="margin-top: 30px;">
+            <button type="submit" class="btn btn-primary">
+                <%= project ? 'Update Project' : 'Create Project' %>
+            </button>
+            <a href="/admin/projects" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<!-- File Selector Modal -->
+<div id="fileModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Select File</h3>
+            <span class="close" onclick="closeFileSelector()">&times;</span>
+        </div>
+        <div class="modal-body">
+            <div id="filesList">Loading files...</div>
+        </div>
+    </div>
+</div>
+
+<style>
+.modal {
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+    background-color: white;
+    margin: 5% auto;
+    padding: 0;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow: hidden;
+}
+
+.modal-header {
+    padding: 20px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-body {
+    padding: 20px;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.close {
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #999;
+}
+
+.close:hover {
+    color: #333;
+}
+
+.file-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    transition: background-color 0.2s;
+}
+
+.file-item:hover {
+    background-color: #f8f9fa;
+}
+
+.file-preview {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 4px;
+    background: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: #666;
+}
+</style>
+
+<link rel="stylesheet" href="/css/rich-editor.css">
+<script src="/js/rich-editor.js"></script>
+
+<script>
+function openFileSelector() {
+    document.getElementById('fileModal').style.display = 'block';
+    loadFiles();
+}
+
+function closeFileSelector() {
+    document.getElementById('fileModal').style.display = 'none';
+}
+
+function selectFile(filePath, fileName, mimeType) {
+    document.getElementById('image_path').value = filePath;
+    
+    // Update preview
+    const preview = document.getElementById('filePreview');
+    if (mimeType && mimeType.startsWith('image/')) {
+        preview.innerHTML = `<img src="${filePath}" alt="Preview" style="max-width: 200px; max-height: 150px; border-radius: 4px;">`;
+    } else {
+        preview.innerHTML = `<div style="padding: 10px; background: #f0f0f0; border-radius: 4px; color: #666;">${fileName}</div>`;
+    }
+    
+    closeFileSelector();
+}
+
+function removeFile() {
+    document.getElementById('image_path').value = '';
+    document.getElementById('filePreview').innerHTML = '';
+}
+
+async function loadFiles() {
+    try {
+        const response = await fetch('/admin/files/list');
+        const files = await response.json();
+        
+        const filesList = document.getElementById('filesList');
+        filesList.innerHTML = '';
+        
+        if (files.length === 0) {
+            filesList.innerHTML = '<p>No files uploaded yet. <a href="/admin/files">Upload files here</a></p>';
+            return;
+        }
+
+        files.forEach(file => {
+            const fileItem = document.createElement('div');
+            fileItem.className = 'file-item';
+            
+            const isImage = file.mime_type && file.mime_type.startsWith('image/');
+            let fileIcon = '';
+            
+            if (isImage) {
+                fileIcon = `<img src="${file.path}" alt="${file.original_name}" class="file-preview">`;
+            } else if (file.mime_type && file.mime_type.includes('pdf')) {
+                fileIcon = '<div class="file-preview">📄</div>';
+            } else if (file.mime_type && (file.mime_type.includes('doc') || file.mime_type.includes('word'))) {
+                fileIcon = '<div class="file-preview">📝</div>';
+            } else {
+                fileIcon = '<div class="file-preview">📎</div>';
+            }
+            
+            fileItem.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    ${fileIcon}
+                    <div>
+                        <div style="font-weight: 500; margin-bottom: 4px;">${file.original_name}</div>
+                        <div style="font-size: 12px; color: #666; font-family: monospace;">${file.path}</div>
+                        <div style="font-size: 11px; color: #999;">${Math.round(file.size / 1024)} KB</div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-primary btn-sm" onclick="selectFile('${file.path}', '${file.original_name}', '${file.mime_type || ''}')">
+                    Select
+                </button>
+            `;
+            
+            filesList.appendChild(fileItem);
+        });
+    } catch (error) {
+        console.error('Error loading files:', error);
+        document.getElementById('filesList').innerHTML = '<p>Error loading files.</p>';
+    }
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+    const modal = document.getElementById('fileModal');
+    if (event.target === modal) {
+        closeFileSelector();
+    }
+}
+</script>

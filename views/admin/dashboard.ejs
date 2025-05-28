@@ -1,0 +1,26 @@
+<h1 class="page-title">Dashboard</h1>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <h3>Active Projects</h3>
+        <div class="number"><%= stats.projects.count %></div>
+    </div>
+    <div class="stat-card">
+        <h3>Pages</h3>
+        <div class="number"><%= stats.pages.count %></div>
+    </div>
+    <div class="stat-card">
+        <h3>Uploaded Files</h3>
+        <div class="number"><%= stats.files.count %></div>
+    </div>
+</div>
+
+<div class="card">
+    <h3>Quick Actions</h3>
+    <ul class="quick-actions">
+        <li><a href="/admin/pages/home">Edit Homepage Content</a></li>
+        <li><a href="/admin/projects/new">Add New Project</a></li>
+        <li><a href="/admin/resume/new">Add Resume Entry</a></li>
+        <li><a href="/admin/files">Upload Files</a></li>
+    </ul>
+</div>

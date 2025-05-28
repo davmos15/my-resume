@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - Admin Panel</title>
+    <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+    <div class="admin-wrapper">
+        <!-- Admin Header -->
+        <header class="admin-header">
+            <div class="admin-logo">
+                <h2>Admin Panel</h2>
+            </div>
+            <div class="admin-user-menu">
+                <button class="user-menu-toggle" onclick="toggleUserMenu()">
+                    <%= user.username %> ▼
+                </button>
+                <div class="user-dropdown" id="userDropdown">
+                    <a href="/" target="_blank">View Site</a>
+                    <a href="/admin/change-password">Change Password</a>
+                    <hr>
+                    <a href="/admin/logout">Logout</a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Admin Navigation -->
+        <nav class="admin-sidebar">
+            <ul>
+                <li><a href="/admin/dashboard" class="<%= typeof activePage !== 'undefined' && activePage === 'dashboard' ? 'active' : '' %>">Dashboard</a></li>
+                <li><a href="/admin/pages" class="<%= typeof activePage !== 'undefined' && activePage === 'pages' ? 'active' : '' %>">Page Content</a></li>
+                <li><a href="/admin/projects" class="<%= typeof activePage !== 'undefined' && activePage === 'projects' ? 'active' : '' %>">Projects</a></li>
+                <li><a href="/admin/resume" class="<%= typeof activePage !== 'undefined' && activePage === 'resume' ? 'active' : '' %>">Resume</a></li>
+                <li><a href="/admin/files" class="<%= typeof activePage !== 'undefined' && activePage === 'files' ? 'active' : '' %>">Files</a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="admin-content">
+            <% if (success_msg && success_msg.length > 0) { %>
+                <div class="alert alert-success"><%= success_msg %></div>
+            <% } %>
+            <% if (error_msg && error_msg.length > 0) { %>
+                <div class="alert alert-error"><%= error_msg %></div>
+            <% } %>
+            
+            <%- body %>
+        </main>
+    </div>
+
+    <script>
+        function toggleUserMenu() {
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        // Close dropdown when clicking outside
+        window.onclick = function(event) {
+            if (!event.target.matches('.user-menu-toggle')) {
+                const dropdown = document.getElementById('userDropdown');
+                if (dropdown.classList.contains('show')) {
+                    dropdown.classList.remove('show');
+                }
+            }
+        }
+    </script>
+</body>
+</html>

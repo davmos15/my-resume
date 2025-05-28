@@ -1,0 +1,57 @@
+<div id="resume" class="work">
+    <h1>My Resume</h1>
+
+    <a href="/images/Nadav Moskow - Resume.pdf" target="_blank" download>
+        <button class="download-btn">
+            <i class="res.dload-btn"></i>
+            Download
+        </button>
+    </a>
+
+    <div id="resume-main">
+        <% if (sections.experience && sections.experience.length > 0) { %>
+            <h1 id="Experience">Experience</h1>
+            <% sections.experience.forEach(job => { %>
+                <button class="collapsible"><%= job.title %></button>
+                <div class="content">
+                    <h5><%= job.subtitle %><br><%= job.date_range %></h5>
+                    <%- job.description %>
+                </div>
+            <% }); %>
+        <% } %>
+
+        <% if (sections.skills && sections.skills.length > 0) { %>
+            <h1 id="Skills">Skills & Tools</h1>
+            <% sections.skills.forEach(skill => { %>
+                <button class="collapsible"><%= skill.title %></button>
+                <div class="content">
+                    <%- skill.description %>
+                </div>
+            <% }); %>
+        <% } %>
+
+        <% if (sections.courses && sections.courses.length > 0) { %>
+            <h1 id="Courses">Courses & Achievements</h1>
+            <% sections.courses.forEach(course => { %>
+                <button class="collapsible"><%= course.title %></button>
+                <div class="content">
+                    <% if (course.subtitle) { %>
+                        <h5><%= course.subtitle %></h5>
+                    <% } %>
+                    <%- course.description %>
+                </div>
+            <% }); %>
+        <% } %>
+
+        <% if (sections.education && sections.education.length > 0) { %>
+            <h1 id="Education">Education</h1>
+            <% sections.education.forEach(edu => { %>
+                <button class="collapsible"><%= edu.title %></button>
+                <div class="content">
+                    <h5><%= edu.subtitle %><br><%= edu.date_range %></h5>
+                    <%- edu.description %>
+                </div>
+            <% }); %>
+        <% } %>
+    </div>
+</div>
