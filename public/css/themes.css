@@ -465,3 +465,231 @@ a:hover {
 .theme-preview.split {
     background: linear-gradient(135deg, var(--preview-primary) 50%, var(--preview-secondary) 50%);
 }
+
+/* WOW Factor Themes */
+
+/* Gradient Wave Theme */
+[data-theme="gradient"] {
+    --bg-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --bg-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    --bg-accent: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    --text-primary: #ffffff;
+    --text-secondary: #f0f0f0;
+    --text-accent: #e0e0e0;
+    --link-color: #ffd700;
+    --link-hover: #ffed4e;
+    --border-color: rgba(255, 255, 255, 0.3);
+    --shadow-color: rgba(0, 0, 0, 0.3);
+    --nav-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --nav-text: #ffffff;
+    --nav-shadow: rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="gradient"] body {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background-attachment: fixed;
+}
+
+[data-theme="gradient"] .topnav {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+[data-theme="gradient"] main {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 10px;
+    margin: 20px;
+    padding: 20px;
+}
+
+/* Neon Glow Theme */
+[data-theme="neon"] {
+    --bg-primary: #0a0a0a;
+    --bg-secondary: #1a1a1a;
+    --bg-accent: #2a2a2a;
+    --text-primary: #00ffff;
+    --text-secondary: #ff00ff;
+    --text-accent: #ffff00;
+    --link-color: #00ff00;
+    --link-hover: #00ffaa;
+    --border-color: #00ffff;
+    --shadow-color: rgba(0, 255, 255, 0.5);
+    --nav-bg: #0a0a0a;
+    --nav-text: #00ffff;
+    --nav-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+}
+
+[data-theme="neon"] * {
+    text-shadow: 0 0 5px currentColor;
+}
+
+[data-theme="neon"] a {
+    text-shadow: 0 0 10px currentColor;
+    transition: all 0.3s ease;
+}
+
+[data-theme="neon"] a:hover {
+    text-shadow: 0 0 20px currentColor, 0 0 40px currentColor;
+}
+
+[data-theme="neon"] .topnav {
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.5), inset 0 0 20px rgba(0, 255, 255, 0.2);
+}
+
+[data-theme="neon"] button,
+[data-theme="neon"] input,
+[data-theme="neon"] textarea {
+    border: 1px solid var(--link-color);
+    box-shadow: 0 0 5px var(--link-color), inset 0 0 5px var(--link-color);
+}
+
+/* Glassmorphism Theme */
+[data-theme="glass"] {
+    --bg-primary: #e3f2fd;
+    --bg-secondary: rgba(255, 255, 255, 0.7);
+    --bg-accent: rgba(255, 255, 255, 0.5);
+    --text-primary: #1a237e;
+    --text-secondary: #3949ab;
+    --text-accent: #5c6bc0;
+    --link-color: #1565c0;
+    --link-hover: #0d47a1;
+    --border-color: rgba(255, 255, 255, 0.3);
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --nav-bg: rgba(255, 255, 255, 0.8);
+    --nav-text: #1a237e;
+    --nav-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+}
+
+[data-theme="glass"] body {
+    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 50%, #90caf9 100%);
+    background-attachment: fixed;
+}
+
+[data-theme="glass"] body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800"><circle cx="200" cy="200" r="150" fill="rgba(100,149,237,0.1)"/><circle cx="800" cy="600" r="200" fill="rgba(138,43,226,0.1)"/><circle cx="1000" cy="300" r="100" fill="rgba(30,144,255,0.1)"/></svg>');
+    z-index: -1;
+}
+
+[data-theme="glass"] .topnav,
+[data-theme="glass"] main,
+[data-theme="glass"] .card,
+[data-theme="glass"] .dropdown-content {
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+}
+
+[data-theme="glass"] button,
+[data-theme="glass"] input,
+[data-theme="glass"] textarea {
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Company Themes */
+
+/* Anthropic Theme */
+[data-theme="company-anthropic"] {
+    --bg-primary: #faf9f6;
+    --bg-secondary: #d4915d;
+    --bg-accent: #b8734a;
+    --text-primary: #1a1a1a;
+    --text-secondary: #2d2d2d;
+    --text-accent: #404040;
+    --link-color: #d4915d;
+    --link-hover: #b8734a;
+    --border-color: #d4915d;
+    --nav-bg: #d4915d;
+    --nav-text: #1a1a1a;
+    --nav-shadow: rgba(212, 145, 93, 0.3);
+}
+
+/* Apple Theme */
+[data-theme="company-apple"] {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f5f5f7;
+    --bg-accent: #e8e8ed;
+    --text-primary: #1d1d1f;
+    --text-secondary: #6e6e73;
+    --text-accent: #86868b;
+    --link-color: #007aff;
+    --link-hover: #0051d5;
+    --border-color: #d2d2d7;
+    --nav-bg: #000000;
+    --nav-text: #ffffff;
+    --nav-shadow: rgba(0, 0, 0, 0.3);
+}
+
+/* Facebook Theme */
+[data-theme="company-facebook"] {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f0f2f5;
+    --bg-accent: #e4e6ea;
+    --text-primary: #1c1e21;
+    --text-secondary: #65676b;
+    --text-accent: #8a8d91;
+    --link-color: #1877f2;
+    --link-hover: #166fe5;
+    --border-color: #dadde1;
+    --nav-bg: #1877f2;
+    --nav-text: #ffffff;
+    --nav-shadow: rgba(24, 119, 242, 0.3);
+}
+
+/* Google Theme */
+[data-theme="company-google"] {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8f9fa;
+    --bg-accent: #e8eaed;
+    --text-primary: #202124;
+    --text-secondary: #5f6368;
+    --text-accent: #9aa0a6;
+    --link-color: #1a73e8;
+    --link-hover: #1557b0;
+    --border-color: #dadce0;
+    --nav-bg: #4285f4;
+    --nav-text: #ffffff;
+    --nav-shadow: rgba(66, 133, 244, 0.3);
+}
+
+/* Microsoft Theme */
+[data-theme="company-microsoft"] {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f3f2f1;
+    --bg-accent: #edebe9;
+    --text-primary: #323130;
+    --text-secondary: #605e5c;
+    --text-accent: #8a8886;
+    --link-color: #0078d4;
+    --link-hover: #106ebe;
+    --border-color: #edebe9;
+    --nav-bg: #00bcf2;
+    --nav-text: #ffffff;
+    --nav-shadow: rgba(0, 188, 242, 0.3);
+}
+
+/* OpenAI Theme */
+[data-theme="company-openai"] {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f7f7f8;
+    --bg-accent: #ececf1;
+    --text-primary: #2d333a;
+    --text-secondary: #6e7781;
+    --text-accent: #8b949e;
+    --link-color: #74aa9c;
+    --link-hover: #5d8a7a;
+    --border-color: #d1d9e0;
+    --nav-bg: #74aa9c;
+    --nav-text: #ffffff;
+    --nav-shadow: rgba(116, 170, 156, 0.3);
+}

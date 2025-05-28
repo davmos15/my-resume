@@ -15,201 +15,192 @@ class ThemeSwitcher {
         // Initialize page transitions
         this.initPageTransitions();
         
+        // Set up theme menu event listeners
+        this.setupThemeMenu();
+    }
+
+    setupThemeMenu() {
         // Wait for DOM to be ready
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => this.initThemeMenu());
+            document.addEventListener('DOMContentLoaded', () => this.initThemeListeners());
         } else {
-            this.initThemeMenu();
+            this.initThemeListeners();
         }
     }
 
-    initThemeMenu() {
-        // Create theme menu if it doesn't exist
-        const nav = document.querySelector('#navbar');
-        if (nav && !document.querySelector('.theme-menu')) {
-            const themeMenu = this.createThemeMenu();
-            // Insert before the last nav item
-            const lastItem = nav.lastElementChild;
-            nav.insertBefore(themeMenu, lastItem);
-        }
-
-        // Set up event listeners
-        this.setupEventListeners();
-    }
-
-    createThemeMenu() {
-        const li = document.createElement('li');
-        li.className = 'theme-menu';
+    initThemeListeners() {
+        // Add click listeners to all theme options
+        const themeOptions = document.querySelectorAll('.theme-option');
         
-        const themes = {
-            basic: [
-                { id: 'light', name: 'Light', colors: ['#ffffff', '#333333'] },
-                { id: 'dark', name: 'Dark', colors: ['#1a1a1a', '#e0e0e0'] }
-            ],
-            afl: [
-                { id: 'afl-adelaide', name: 'Adelaide Crows', colors: ['#002f5f', '#e21e31'] },
-                { id: 'afl-brisbane', name: 'Brisbane Lions', colors: ['#a30046', '#0033a0'] },
-                { id: 'afl-carlton', name: 'Carlton', colors: ['#002f5f', '#ffffff'] },
-                { id: 'afl-collingwood', name: 'Collingwood', colors: ['#000000', '#ffffff'] },
-                { id: 'afl-essendon', name: 'Essendon', colors: ['#cc0000', '#000000'] },
-                { id: 'afl-fremantle', name: 'Fremantle', colors: ['#2a0e4f', '#ffffff'] },
-                { id: 'afl-geelong', name: 'Geelong', colors: ['#001f3f', '#ffffff'] },
-                { id: 'afl-goldcoast', name: 'Gold Coast', colors: ['#f4002e', '#fed102'] },
-                { id: 'afl-gws', name: 'GWS Giants', colors: ['#f15a22', '#4a4a4a'] },
-                { id: 'afl-hawthorn', name: 'Hawthorn', colors: ['#4d2004', '#fbbf15'] },
-                { id: 'afl-melbourne', name: 'Melbourne', colors: ['#003c71', '#cc0000'] },
-                { id: 'afl-northmelbourne', name: 'North Melbourne', colors: ['#003c71', '#ffffff'] },
-                { id: 'afl-portadelaide', name: 'Port Adelaide', colors: ['#008aab', '#000000'] },
-                { id: 'afl-richmond', name: 'Richmond', colors: ['#000000', '#ffd200'] },
-                { id: 'afl-stkilda', name: 'St Kilda', colors: ['#000000', '#ed0f05'] },
-                { id: 'afl-sydney', name: 'Sydney', colors: ['#ed171f', '#ffffff'] },
-                { id: 'afl-westcoast', name: 'West Coast', colors: ['#002b5c', '#f2a900'] },
-                { id: 'afl-bulldogs', name: 'Western Bulldogs', colors: ['#014896', '#dc2830'] }
-            ]
-        };
-
-        li.innerHTML = `
-            <button class="theme-toggle" aria-label="Change Theme">
-                <span class="theme-icon">🎨</span>
-                <span>Theme</span>
-            </button>
-            <div class="theme-dropdown" id="themeDropdown">
-                <div class="theme-section">
-                    <h4>Basic Themes</h4>
-                    ${themes.basic.map(theme => this.createThemeOption(theme)).join('')}
-                </div>
-                <div class="theme-section">
-                    <h4>AFL Team Themes</h4>
-                    ${themes.afl.map(theme => this.createThemeOption(theme)).join('')}
-                </div>
-            </div>
-        `;
-
-        return li;
-    }
-
-    createThemeOption(theme) {
-        const isActive = this.currentTheme === theme.id ? 'active' : '';
-        return `
-            <div class="theme-option ${isActive}" data-theme="${theme.id}">
-                <div class="theme-preview split" style="--preview-primary: ${theme.colors[0]}; --preview-secondary: ${theme.colors[1]}"></div>
-                <span>${theme.name}</span>
-            </div>
-        `;
-    }
-
-    setupEventListeners() {
-        // Theme toggle button
-        const themeToggle = document.querySelector('.theme-toggle');
-        if (themeToggle) {
-            themeToggle.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const dropdown = document.getElementById('themeDropdown');
-                dropdown.classList.toggle('show');
-            });
-        }
-
-        // Theme options
-        document.querySelectorAll('.theme-option').forEach(option => {
+        console.log('Found theme options:', themeOptions.length); // Debug log
+        
+        themeOptions.forEach(option => {
             option.addEventListener('click', (e) => {
-                const theme = e.currentTarget.dataset.theme;
-                this.switchTheme(theme);
-                document.getElementById('themeDropdown').classList.remove('show');
+                e.preventDefault();
+                const theme = option.getAttribute('data-theme');
+                console.log('Theme selected:', theme); // Debug log
+                this.changeTheme(theme);
+                
+                // Update active state
+                themeOptions.forEach(opt => opt.classList.remove('active'));
+                option.classList.add('active');
             });
         });
 
-        // Close dropdown when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.theme-menu')) {
-                const dropdown = document.getElementById('themeDropdown');
-                if (dropdown) dropdown.classList.remove('show');
-            }
-        });
-    }
+        // Set current theme as active
+        const currentOption = document.querySelector(`.theme-option[data-theme="${this.currentTheme}"]`);
+        if (currentOption) {
+            currentOption.classList.add('active');
+        }
 
-    switchTheme(theme) {
-        // Add transition class
-        document.body.classList.add('theme-transitioning');
-        
-        // Apply new theme
-        this.applyTheme(theme);
-        
-        // Update active state
-        document.querySelectorAll('.theme-option').forEach(option => {
-            option.classList.toggle('active', option.dataset.theme === theme);
+        // Add click listeners to accordion headers
+        const accordionHeaders = document.querySelectorAll('.accordion-header');
+        accordionHeaders.forEach(header => {
+            header.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const accordionItem = header.parentElement;
+                
+                // Check if this item is currently active
+                const isActive = accordionItem.classList.contains('active');
+                
+                // Close all sections first
+                const allItems = document.querySelectorAll('.accordion-item');
+                allItems.forEach(item => {
+                    item.classList.remove('active');
+                });
+                
+                // If the clicked item wasn't active, open it
+                if (!isActive) {
+                    accordionItem.classList.add('active');
+                }
+            });
         });
-
-        // Remove transition class after animation
-        setTimeout(() => {
-            document.body.classList.remove('theme-transitioning');
-        }, 300);
     }
 
     applyTheme(theme) {
         document.documentElement.setAttribute('data-theme', theme);
-        localStorage.setItem('theme', theme);
+        
+        // Apply theme-specific body classes and styles
+        document.body.className = document.body.className.replace(/theme-\S+/g, '');
+        document.body.classList.add(`theme-${theme}`);
+        
+        // Update CSS variables to ensure text is readable
+        this.updateTextColors(theme);
+        
+        // Update logo for AFL themes
+        this.updateLogo(theme);
+    }
+
+    updateTextColors(theme) {
+        // For themes with gradient backgrounds, ensure proper color application
+        if (theme === 'gradient') {
+            document.body.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+            document.body.style.backgroundAttachment = 'fixed';
+        } else if (theme === 'glass') {
+            document.body.style.background = 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 50%, #90caf9 100%)';
+            document.body.style.backgroundAttachment = 'fixed';
+        } else {
+            document.body.style.background = '';
+            document.body.style.backgroundAttachment = '';
+        }
+    }
+
+    updateLogo(theme) {
+        const logo = document.getElementById('logo');
+        if (!logo) {
+            console.error('Logo element not found');
+            return;
+        }
+
+        console.log('Updating logo for theme:', theme);
+
+        // Store original logo path if not already stored
+        if (!this.originalLogoSrc) {
+            this.originalLogoSrc = logo.src;
+        }
+
+        // Check if it's an AFL theme
+        if (theme.startsWith('afl-')) {
+            // Try to initialize AFL Logo System if not already done
+            if (!this.aflLogoSystem && typeof window.AFLLogoSystem !== 'undefined') {
+                this.aflLogoSystem = new window.AFLLogoSystem();
+                console.log('AFL Logo System initialized');
+            }
+
+            if (this.aflLogoSystem) {
+                // Use text-based logo system
+                const success = this.aflLogoSystem.updateLogoElement(logo, theme);
+                console.log('AFL logo update success:', success);
+                if (success) {
+                    logo.style.display = 'none';
+                }
+            } else {
+                console.error('AFL Logo System not available');
+                // Fallback: just hide the logo and show team name
+                logo.style.display = 'none';
+                const teamName = theme.replace('afl-', '').replace(/-/g, ' ').toUpperCase();
+                const textLogo = document.createElement('div');
+                textLogo.className = 'afl-text-logo';
+                textLogo.textContent = teamName.substring(0, 3);
+                textLogo.style.cssText = 'width: 45px; height: 45px; background: white; color: var(--nav-bg); display: flex; align-items: center; justify-content: center; font-weight: bold; border-radius: 8px; font-size: 16px;';
+                logo.parentNode.insertBefore(textLogo, logo.nextSibling);
+            }
+        } else {
+            // Revert to original logo
+            logo.style.display = '';
+            logo.src = this.originalLogoSrc;
+            logo.alt = 'Logo';
+            
+            // Remove any text logos
+            const textLogos = document.querySelectorAll('.afl-text-logo, .afl-logo-container');
+            textLogos.forEach(el => el.remove());
+            
+            if (this.aflLogoSystem) {
+                this.aflLogoSystem.removeTextLogo(logo);
+            }
+        }
+    }
+
+    changeTheme(theme) {
         this.currentTheme = theme;
+        this.applyTheme(theme);
+        localStorage.setItem('theme', theme);
+        
+        // Trigger custom event
+        window.dispatchEvent(new CustomEvent('themechange', { detail: { theme } }));
     }
 
     initFloatingNav() {
         const nav = document.querySelector('.topnav');
         if (!nav) return;
 
-        let lastScroll = 0;
-        const navHeight = nav.offsetHeight;
-
         window.addEventListener('scroll', () => {
             const currentScroll = window.pageYOffset;
 
-            if (currentScroll > navHeight) {
-                nav.classList.add('floating');
-                
-                // Add padding to body to prevent content jump
-                if (!document.body.style.paddingTop) {
-                    document.body.style.paddingTop = navHeight + 'px';
-                }
-                
-                // Hide/show based on scroll direction
-                if (currentScroll > lastScroll && currentScroll > navHeight * 2) {
-                    nav.style.transform = 'translateY(-100%)';
-                } else {
-                    nav.style.transform = 'translateY(0)';
-                }
+            if (currentScroll > 50) {
+                nav.classList.add('nav-scrolled');
             } else {
-                nav.classList.remove('floating');
-                document.body.style.paddingTop = '';
+                nav.classList.remove('nav-scrolled');
             }
-
-            lastScroll = currentScroll;
         });
     }
 
     initPageTransitions() {
-        // Add transition class to main content
-        const mainContent = document.querySelector('main, .intro, .about, .work, .projects, .contact');
-        if (mainContent) {
-            mainContent.classList.add('page-transition-enter');
-        }
+        // Only init if not on admin pages
+        if (window.location.pathname.startsWith('/admin')) return;
 
-        // Intercept navigation clicks for smooth transitions
+        // Handle all navigation links
         document.addEventListener('click', (e) => {
             const link = e.target.closest('a');
-            if (link && link.href && link.href.startsWith(window.location.origin) && !link.target) {
-                const url = new URL(link.href);
-                
-                // Skip if it's an anchor link on the same page
-                if (url.pathname === window.location.pathname && url.hash) {
-                    return;
-                }
-                
-                // Skip admin links
-                if (url.pathname.includes('/admin')) {
-                    return;
-                }
+            if (!link || !link.href || link.href.includes('#') || link.target === '_blank') return;
+            if (link.href.includes('admin') || link.href.includes('logout')) return;
 
-                e.preventDefault();
-                this.navigateWithTransition(link.href);
-            }
+            // Check if it's an internal link
+            const url = new URL(link.href);
+            if (url.origin !== window.location.origin) return;
+
+            e.preventDefault();
+            this.transitionToPage(link.href);
         });
 
         // Handle browser back/forward
@@ -218,75 +209,138 @@ class ThemeSwitcher {
         });
     }
 
-    navigateWithTransition(url) {
-        const content = document.querySelector('main, .intro, .about, .work, .projects, .contact');
-        if (!content) {
-            window.location.href = url;
-            return;
-        }
+    async transitionToPage(url) {
+        const main = document.querySelector('main');
+        if (!main) return;
 
-        // Start exit transition
-        content.classList.add('page-transition-active');
+        // Add fade out class
+        main.classList.add('page-transition-out');
 
-        setTimeout(() => {
-            this.loadPage(url, true);
-        }, 300);
+        // Wait for fade out
+        await new Promise(resolve => setTimeout(resolve, 300));
+
+        // Load new page
+        await this.loadPage(url, true);
     }
 
-    async loadPage(url, updateHistory) {
+    async loadPage(url, pushState = true) {
         try {
             const response = await fetch(url);
             const html = await response.text();
-            
+
             // Parse the HTML
             const parser = new DOMParser();
             const doc = parser.parseFromString(html, 'text/html');
+
+            // Update the main content
+            const newMain = doc.querySelector('main');
+            const currentMain = document.querySelector('main');
             
-            // Update the content
-            const newContent = doc.querySelector('main, .intro, .about, .work, .projects, .contact');
-            const oldContent = document.querySelector('main, .intro, .about, .work, .projects, .contact');
-            
-            if (newContent && oldContent) {
-                oldContent.parentNode.replaceChild(newContent, oldContent);
-                
+            if (newMain && currentMain) {
+                currentMain.innerHTML = newMain.innerHTML;
+                currentMain.classList.remove('page-transition-out');
+                currentMain.classList.add('page-transition-in');
+
                 // Update title
                 document.title = doc.title;
-                
-                // Update nav active state
-                this.updateNavActiveState(url);
-                
-                // Add enter transition
-                newContent.classList.add('page-transition-enter');
-                
-                // Update history
-                if (updateHistory) {
-                    window.history.pushState({}, doc.title, url);
+
+                // Update URL if needed
+                if (pushState) {
+                    window.history.pushState({}, '', url);
                 }
-                
-                // Re-initialize any scripts needed for the new content
+
+                // Re-initialize any scripts that need to run on new content
                 this.reinitializeScripts();
+
+                // Remove transition class after animation
+                setTimeout(() => {
+                    currentMain.classList.remove('page-transition-in');
+                }, 300);
             }
         } catch (error) {
-            console.error('Page transition failed:', error);
+            // Fallback to regular navigation
             window.location.href = url;
         }
     }
 
-    updateNavActiveState(url) {
-        const path = new URL(url).pathname;
-        document.querySelectorAll('#navbar a').forEach(link => {
-            const linkPath = new URL(link.href).pathname;
-            link.classList.toggle('active', linkPath === path);
-        });
-    }
-
     reinitializeScripts() {
-        // Re-run any initialization scripts needed for dynamic content
-        if (typeof initCollapsibles === 'function') {
-            initCollapsibles();
+        // Re-run any initialization that needs to happen on new content
+        if (window.initializeRichEditors) {
+            window.initializeRichEditors();
         }
+        
+        // Initialize resume features (file cabinet or collapsibles)
+        if (window.initializeResumeFeatures) {
+            window.initializeResumeFeatures();
+        }
+        
+        // Handle navigation to sections with hash
+        if (window.location.hash && window.scrollToSection) {
+            const sectionId = window.location.hash.slice(1);
+            setTimeout(() => window.scrollToSection(sectionId), 300);
+        }
+        
+        // Ensure dashboard functionality is properly reinitialized
+        setTimeout(() => {
+            if (window.initDashboard && document.querySelector('#resume-dashboard')) {
+                window.initDashboard();
+            }
+        }, 200);
     }
 }
 
 // Initialize theme switcher
 const themeSwitcher = new ThemeSwitcher();
+
+// Add smooth transitions CSS
+if (!document.querySelector('#theme-transitions')) {
+    const style = document.createElement('style');
+    style.id = 'theme-transitions';
+    style.innerHTML = `
+        /* Smooth theme transitions */
+        * {
+            transition: background-color var(--theme-transition),
+                        color var(--theme-transition),
+                        border-color var(--theme-transition),
+                        box-shadow var(--theme-transition);
+        }
+
+        /* Floating nav styles */
+        .topnav.nav-scrolled {
+            box-shadow: 0 4px 12px var(--nav-shadow);
+        }
+
+        /* Page transitions */
+        .page-transition-out {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+        }
+
+        .page-transition-in {
+            animation: fadeInUp 0.3s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+
+        /* Theme menu hover effects */
+        .theme-option {
+            transition: all 0.2s ease;
+        }
+
+        .theme-option:hover {
+            transform: translateX(5px);
+        }
+    `;
+    document.head.appendChild(style);
+}

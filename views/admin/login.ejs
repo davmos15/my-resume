@@ -4,15 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= title %></title>
-    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/themes.css">
     <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background-color: var(--bg-primary, #ffffff);
+            color: var(--text-primary, #333333);
+            margin: 0;
+            padding: 0;
+        }
         .login-container {
             max-width: 400px;
             margin: 100px auto;
             padding: 40px;
-            background: #f9f9f9;
+            background: var(--bg-secondary, #f9f9f9);
             border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            box-shadow: 0 0 20px var(--shadow-color, rgba(0,0,0,0.1));
         }
         .login-form input {
             width: 100%;

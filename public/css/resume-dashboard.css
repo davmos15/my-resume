@@ -1,0 +1,626 @@
+/* Resume Dashboard Styles - Consistent with Site Design */
+
+#resume-dashboard {
+    padding: 80px 20px 40px;
+    min-height: calc(100vh - 120px);
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+/* Header Section */
+.dashboard-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.dashboard-name {
+    font-size: 3em;
+    margin-bottom: 10px;
+    color: var(--text-primary);
+    font-weight: bold;
+}
+
+.dashboard-subtitle {
+    font-size: 1.3em;
+    color: var(--text-primary);
+    opacity: 0.8;
+    margin-bottom: 25px;
+}
+
+/* Download Button - Matching Site Design */
+.download-btn {
+    background-color: var(--nav-bg, #05386B);
+    color: var(--nav-text, #ffffff);
+    border: none;
+    padding: 12px 24px;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.download-btn:hover {
+    background-color: var(--nav-hover, #052a4e);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.download-btn span {
+    font-size: 1.2em;
+}
+
+/* Summary Stats Section */
+.summary-stats-section {
+    max-width: 1200px;
+    margin: 0 auto 40px;
+    text-align: center;
+}
+
+.stats-title {
+    font-size: 1.8em;
+    color: var(--text-primary);
+    margin-bottom: 20px;
+}
+
+.summary-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.summary-stats .stat-item {
+    background: var(--bg-secondary, #f5f5f5);
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.summary-stats .stat-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.summary-stats .stat-number {
+    font-size: 2.8em;
+    font-weight: bold;
+    background: linear-gradient(135deg, var(--nav-bg) 0%, var(--link-color) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.summary-stats .stat-label {
+    font-size: 0.9em;
+    color: var(--text-primary);
+    opacity: 0.7;
+    margin-top: 8px;
+    font-weight: 500;
+}
+
+/* Dashboard Grid */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 25px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Full width expansion */
+.dashboard-card.full-width {
+    grid-column: 1 / -1;
+    max-width: none;
+}
+
+/* Dashboard Cards - Matching Site Card Design */
+.dashboard-card {
+    background: var(--bg-primary, #ffffff);
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: all 0.3s ease;
+    opacity: 0;
+}
+
+.dashboard-card.fade-in {
+    animation: fadeInUp 0.5s ease forwards;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Card Header */
+.card-header {
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.clickable-header {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.clickable-header:hover {
+    background-color: var(--bg-secondary, #f5f5f5);
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.card-icon {
+    font-size: 2em;
+    background: var(--bg-secondary, #f5f5f5);
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+}
+
+.card-title {
+    font-size: 1.4em;
+    font-weight: bold;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+/* Card Divider */
+.card-divider {
+    height: 1px;
+    background: var(--border-color, #e0e0e0);
+    margin: 0 20px;
+}
+
+/* Collapse Toggle Button */
+.collapse-toggle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--nav-bg, #05386B);
+    color: var(--nav-text, #ffffff);
+    border: none;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.collapse-toggle:hover {
+    background: var(--nav-hover, #052a4e);
+    transform: rotate(180deg);
+}
+
+/* Card Content */
+.card-content {
+    padding: 0 20px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease;
+}
+
+.card-content.expanded {
+    max-height: 2000px;
+    padding: 20px;
+}
+
+/* Job Items - Collapsible */
+.experience-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.job-item {
+    background: var(--bg-secondary, #f5f5f5);
+    border-radius: 8px;
+    border-left: 4px solid var(--nav-bg, #05386B);
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.job-header {
+    padding: 20px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color 0.2s ease;
+}
+
+.job-header:hover {
+    background-color: var(--bg-primary, #ffffff);
+}
+
+.job-header-content {
+    flex: 1;
+}
+
+.job-title {
+    font-size: 1.2em;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.job-meta-centered {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.9em;
+    color: var(--text-primary);
+    opacity: 0.7;
+    text-align: center;
+}
+
+.job-company {
+    font-weight: 600;
+}
+
+.job-dates {
+    font-style: italic;
+}
+
+.job-toggle {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--nav-bg, #05386B);
+    color: var(--nav-text, #ffffff);
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.job-toggle:hover {
+    background: var(--nav-hover, #052a4e);
+    transform: rotate(180deg);
+}
+
+.job-content {
+    padding: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease, padding 0.4s ease;
+}
+
+.job-content.expanded {
+    max-height: 1000px;
+    padding: 0 20px 20px;
+}
+
+.job-description {
+    color: var(--text-primary);
+    line-height: 1.6;
+    text-align: left;
+}
+
+.job-description ul,
+.job-description ol {
+    margin: 10px 0;
+    padding-left: 20px;
+}
+
+/* Skills Section */
+.skills-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.skill-section {
+    background: var(--bg-secondary, #f5f5f5);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.skill-header {
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.clickable-skill-header {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.clickable-skill-header:hover {
+    background-color: var(--bg-primary, #ffffff);
+}
+
+.skill-category {
+    font-size: 1.1em;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.skill-toggle {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--nav-bg, #05386B);
+    color: var(--nav-text, #ffffff);
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.skill-toggle:hover {
+    background: var(--nav-hover, #052a4e);
+    transform: rotate(180deg);
+}
+
+.skill-content {
+    padding: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease, padding 0.4s ease;
+}
+
+.skill-content.expanded {
+    max-height: 800px;
+    padding: 0 20px 20px;
+}
+
+.skill-content {
+    text-align: left;
+}
+
+.skill-content ul,
+.skill-content ol {
+    margin: 10px 0;
+    padding-left: 20px;
+}
+
+.skill-content li {
+    margin-bottom: 5px;
+}
+
+.skill-content p {
+    margin: 10px 0;
+    line-height: 1.6;
+}
+
+/* Achievements */
+.achievements-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.achievement-item {
+    display: flex;
+    gap: 15px;
+    background: var(--bg-secondary, #f5f5f5);
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.achievement-icon {
+    font-size: 1.5em;
+    flex-shrink: 0;
+}
+
+.achievement-content {
+    flex: 1;
+}
+
+.achievement-title {
+    font-size: 1.1em;
+    color: var(--text-primary);
+    margin-bottom: 5px;
+}
+
+.achievement-subtitle {
+    font-size: 0.9em;
+    color: var(--text-primary);
+    opacity: 0.7;
+    margin-bottom: 10px;
+}
+
+.achievement-description {
+    color: var(--text-primary);
+    line-height: 1.6;
+}
+
+/* Education */
+.education-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.education-item {
+    background: var(--bg-secondary, #f5f5f5);
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.education-degree {
+    font-size: 1.2em;
+    color: var(--text-primary);
+    margin-bottom: 5px;
+}
+
+.education-school {
+    font-size: 1em;
+    color: var(--text-primary);
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.education-dates {
+    font-size: 0.9em;
+    color: var(--text-primary);
+    opacity: 0.7;
+    font-style: italic;
+    margin-bottom: 15px;
+}
+
+.education-description {
+    color: var(--text-primary);
+    line-height: 1.6;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    #resume-dashboard {
+        padding: 60px 15px 30px;
+    }
+
+    .dashboard-name {
+        font-size: 2.2em;
+    }
+
+    .dashboard-subtitle {
+        font-size: 1.1em;
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .summary-stats {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+    }
+
+    .summary-stats .stat-number {
+        font-size: 2.2em;
+    }
+
+    .summary-stats .stat-label {
+        font-size: 0.8em;
+    }
+
+    .card-header {
+        padding: 15px;
+    }
+
+    .card-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1.5em;
+    }
+
+    .card-title {
+        font-size: 1.2em;
+    }
+
+    .job-meta-centered {
+        flex-direction: column;
+        gap: 3px;
+    }
+
+    .job-header {
+        padding: 15px;
+    }
+
+    .job-toggle {
+        width: 24px;
+        height: 24px;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .dashboard-name {
+        font-size: 1.8em;
+    }
+
+    .dashboard-subtitle {
+        font-size: 1em;
+    }
+
+    .download-btn {
+        padding: 10px 20px;
+        font-size: 14px;
+    }
+
+    .summary-stats {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        max-width: 300px;
+    }
+
+    .summary-stats .stat-item {
+        padding: 20px;
+    }
+
+    .summary-stats .stat-number {
+        font-size: 2.5em;
+    }
+}
+
+/* Theme Compatibility */
+[data-theme="dark"] .dashboard-card,
+[data-theme="hacker"] .dashboard-card,
+[data-theme="midnight"] .dashboard-card {
+    background: var(--card-bg, var(--bg-primary));
+    border: 1px solid var(--border-color, transparent);
+}
+
+[data-theme="glass"] .dashboard-card {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+}
+
+[data-theme="gradient"] .dashboard-card {
+    background: rgba(255, 255, 255, 0.95);
+}
+
+/* Ensure all text remains visible in all themes */
+[data-theme] .job-description,
+[data-theme] .achievement-description,
+[data-theme] .education-description,
+[data-theme] .skill-content {
+    color: var(--text-primary);
+}
+
+[data-theme] .job-description ul li,
+[data-theme] .job-description ol li,
+[data-theme] .achievement-description ul li,
+[data-theme] .achievement-description ol li,
+[data-theme] .skill-content ul li,
+[data-theme] .skill-content ol li {
+    color: var(--text-primary);
+}

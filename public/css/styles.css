@@ -31,27 +31,7 @@ body {
    margin-top: 15px;
  }
 
- h6 {
- }
  
- #logo {
-   width: 46px;
-   height: 46px;
-   overflow: hidden;
-   float: left;
-   position: absolute;
-   top: 5px; 
-   left: 10px;
- }
- 
- #logo-link {
-   padding-left: 0px;
-   padding-right: 0px;
- }
- 
- #logo-link:hover {
-   background-color: #fff;
- }
  
  footer{
    color: #05386B;
@@ -78,79 +58,25 @@ body {
    color: var(--link-hover, #05386B);
  }
  
-  /*Navigation Bar CSS */
- .topnav {
-   background-color: var(--nav-bg, #fff);
-   position: fixed;
-   width: 100%;
-   transition: var(--theme-transition);
-   z-index: 1000;
- }
  
- .topnav a {
-   float: right;
-   color: var(--nav-text, #05386b);
-   text-align: center;
-   padding: 16px 16px;
-   text-decoration: none;
-   transition: all 0.2s ease;
- }
  
- .topnav a:hover {
-   background-color: var(--bg-accent, #05386b);
-   color: var(--text-primary, white);
- }
  
- .topnav a.active {
-   background-color: var(--bg-accent, #05386b);
-   color: var(--text-primary, white);
- }
  
- .topnav ul {
-   font-weight:bold;
-   float: right;
-   display: flex;
-   margin: 0;
- }
  
- nav ul li {
-  display: block;
-  position: relative;
- }
 
- /*Menu Dropdown*/
- #resumebutton {
-  font-family: 'Open Sans', sans-serif;
-  font-size: 18px;
- }
+ 
 
- .dropbtn {
-  border: none;
-  padding: unset;
-}
 
-.dropdown {
-  position: relative;
-  height: 2.7rem;
-}
 
-.dropdown-content {
-  display: none;
-  position: absolute;
-  top: 56.5px;
-  width: -webkit-fill-available;
-  background-color: #f1f1f1;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-  z-index: 1;
-}
 
-.dropdown-content a:hover {
-background-color: #ddd;
-}
 
-.dropdown:hover .dropdown-content {
-display: block;
-}
+
+
+
+
+
+
+
 
 .dropdown:hover #resumebutton, .dropdown-content:hover #resumebutton {
     color: white;
@@ -171,14 +97,16 @@ cursor: pointer;
  
  /*homepage*/
  #welcome-section {
-  height: 100vh;
-  min-height: 120vh;
-  padding-top: 35vh;
+  height: calc(100vh - 60px);
   text-align: center;
   box-sizing: border-box;
   background-color: var(--bg-secondary, #05386b);
   color: var(--text-primary, #F7F7F7);
   transition: var(--theme-transition);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
  }
  
   #welcome-section a {
@@ -216,21 +144,7 @@ cursor: pointer;
    text-align: center;
  }
  
- #resume {
-  background-color: #fff;
-  color: #05386B;
-  padding-top: 56px;
-  padding-bottom: 56px;
-  margin:auto;
-  max-width: 600px;
- }
- 
- #resume-main {
-  background-color: #fff;
-  color: #05386B;
-  text-align: justify;
-  margin: auto;
- }
+ /* Resume styles moved to file-cabinet.css */
 
 
  /* To make the resume expandable & collapsable */
