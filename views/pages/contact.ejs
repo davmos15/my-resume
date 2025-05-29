@@ -1,10 +1,8 @@
 <div id="contact-section" class="contact">
-    <h1>Contact Me</h1>
     <p>Want to get in touch? You can either send me an email at <a href="mailto:<%= content.email || 'moskownadav@gmail.com' %>"><%= content.email || 'moskownadav@gmail.com' %></a> or fill out the form below</p>
     
     <div id="contact-form" class="contactform">
         <div class="form-style">
-            <h1>Contact Me</h1>
             <form method="post" action="/contact" id="contact-form-element">
                 <input type="text" name="name" placeholder="Your Name" required oninvalid="this.setCustomValidity('Please Enter Your Name')" oninput="setCustomValidity('')"/>
                 <input type="tel" name="phone" placeholder="Your Phone Number" />

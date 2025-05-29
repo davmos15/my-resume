@@ -95,7 +95,6 @@ class AFLLogoSystem {
         // Insert after the logo element
         logoElement.parentNode.insertBefore(logoContainer, logoElement.nextSibling);
         
-        console.log('Created AFL logo for', team.name);
         return true;
     }
 

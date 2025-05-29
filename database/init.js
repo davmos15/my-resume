@@ -171,7 +171,6 @@ db.serialize(() => {
                 [section.section_type, section.title, section.subtitle, section.date_range, section.description, section.display_order]);
     });
 
-    console.log('Database initialized successfully!');
 });
 
 db.close();

@@ -192,13 +192,13 @@ router.get('/projects/new', isAuthenticated, (req, res) => {
 
 // Create new project
 router.post('/projects/new', isAuthenticated, async (req, res) => {
-    const { title, description, technologies, github_link, live_link, display_order, image_path } = req.body;
+    const { title, emoji, subtitle, description, technologies, github_link, live_link, display_order, image_path } = req.body;
     
     try {
         await runAsync(
-            `INSERT INTO projects (title, description, technologies, github_link, live_link, display_order, image_path, is_active) 
-             VALUES (?, ?, ?, ?, ?, ?, ?, 1)`,
-            [title, description, technologies, github_link || null, live_link || null, display_order || 0, image_path || null]
+            `INSERT INTO projects (title, emoji, subtitle, description, technologies, github_link, live_link, display_order, image_path, is_active) 
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1)`,
+            [title, emoji || '🚀', subtitle || null, description, technologies, github_link || null, live_link || null, display_order || 0, image_path || null]
         );
         
         req.flash('success_msg', 'Project added successfully');
@@ -487,14 +487,14 @@ router.get('/change-password', isAuthenticated, (req, res) => {
 
 // Update project image path
 router.post('/projects/edit/:id', isAuthenticated, async (req, res) => {
-    const { title, description, technologies, github_link, live_link, display_order, is_active, image_path } = req.body;
+    const { title, emoji, subtitle, description, technologies, github_link, live_link, display_order, is_active, image_path } = req.body;
     
     try {
         await runAsync(
-            `UPDATE projects SET title = ?, description = ?, technologies = ?, 
+            `UPDATE projects SET title = ?, emoji = ?, subtitle = ?, description = ?, technologies = ?, 
              github_link = ?, live_link = ?, display_order = ?, is_active = ?, image_path = ?
              WHERE id = ?`,
-            [title, description, technologies, github_link || null, live_link || null, 
+            [title, emoji || '🚀', subtitle || null, description, technologies, github_link || null, live_link || null, 
              display_order || 0, is_active ? 1 : 0, image_path || null, req.params.id]
         );
         

@@ -126,7 +126,6 @@ router.post('/contact', async (req, res) => {
     // 3. Send confirmation email to user
     
     // For now, just log and redirect with success message
-    console.log('Contact form submission:', { name, email, phone, message });
     
     req.flash('success_msg', 'Thank you for your message! I will get back to you soon.');
     res.redirect('/contact');

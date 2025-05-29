@@ -315,7 +315,6 @@ body {
 }
 
 .intro, .about, .work, .projects, .contact {
-    background-color: var(--bg-secondary);
     color: var(--text-primary);
 }
 

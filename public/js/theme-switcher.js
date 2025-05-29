@@ -32,13 +32,11 @@ class ThemeSwitcher {
         // Add click listeners to all theme options
         const themeOptions = document.querySelectorAll('.theme-option');
         
-        console.log('Found theme options:', themeOptions.length); // Debug log
         
         themeOptions.forEach(option => {
             option.addEventListener('click', (e) => {
                 e.preventDefault();
                 const theme = option.getAttribute('data-theme');
-                console.log('Theme selected:', theme); // Debug log
                 this.changeTheme(theme);
                 
                 // Update active state
@@ -112,7 +110,6 @@ class ThemeSwitcher {
             return;
         }
 
-        console.log('Updating logo for theme:', theme);
 
         // Store original logo path if not already stored
         if (!this.originalLogoSrc) {
@@ -124,13 +121,11 @@ class ThemeSwitcher {
             // Try to initialize AFL Logo System if not already done
             if (!this.aflLogoSystem && typeof window.AFLLogoSystem !== 'undefined') {
                 this.aflLogoSystem = new window.AFLLogoSystem();
-                console.log('AFL Logo System initialized');
             }
 
             if (this.aflLogoSystem) {
                 // Use text-based logo system
                 const success = this.aflLogoSystem.updateLogoElement(logo, theme);
-                console.log('AFL logo update success:', success);
                 if (success) {
                     logo.style.display = 'none';
                 }

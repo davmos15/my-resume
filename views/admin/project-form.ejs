@@ -9,6 +9,23 @@
         </div>
 
         <div class="form-group">
+            <label for="emoji">Project Emoji</label>
+            <input type="text" class="form-control" id="emoji" name="emoji" 
+                   value="<%= project ? project.emoji : '🚀' %>" 
+                   placeholder="Enter an emoji (e.g. 🚀, 💼, 🖥️)"
+                   style="max-width: 150px;">
+            <small style="color: #666;">This emoji will be displayed on the project card</small>
+        </div>
+
+        <div class="form-group">
+            <label for="subtitle">Subtitle</label>
+            <input type="text" class="form-control" id="subtitle" name="subtitle" 
+                   value="<%= project ? project.subtitle : '' %>" 
+                   placeholder="Brief tagline or role (e.g. Full-Stack Web Application)">
+            <small style="color: #666;">A short subtitle that appears below the project title</small>
+        </div>
+
+        <div class="form-group">
             <label for="description">Description *</label>
             <textarea class="form-control editor-textarea" id="description" name="description" 
                       rows="8" required><%= project ? project.description : '' %></textarea>

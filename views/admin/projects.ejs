@@ -22,7 +22,7 @@
                     <% projects.forEach(project => { %>
                         <tr data-id="<%= project.id %>" class="sortable-row">
                             <td class="drag-handle" style="cursor: move;">⋮⋮</td>
-                            <td><%= project.title %></td>
+                            <td><%= project.emoji || '🚀' %> <%= project.title %></td>
                             <td><%= project.technologies || 'N/A' %></td>
                             <td>
                                 <span class="<%= project.is_active ? 'status-active' : 'status-inactive' %>">

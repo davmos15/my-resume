@@ -1,4 +1,4 @@
-var TxtType = function(el, toRotate, period) {
+const TxtType = function(el, toRotate, period) {
     this.toRotate = toRotate;
     this.el = el;
     this.loopNum = 0;
@@ -9,8 +9,8 @@ var TxtType = function(el, toRotate, period) {
 };
 
 TxtType.prototype.tick = function() {
-    var i = this.loopNum % this.toRotate.length;
-    var fullTxt = this.toRotate[i];
+    const i = this.loopNum % this.toRotate.length;
+    const fullTxt = this.toRotate[i];
 
     if (this.isDeleting) {
     this.txt = fullTxt.substring(0, this.txt.length - 1);
@@ -20,8 +20,8 @@ TxtType.prototype.tick = function() {
 
     this.el.innerHTML = '<span class="wrap">'+this.txt+'</span>';
 
-    var that = this;
-    var delta = 200 - Math.random() * 100;
+    const that = this;
+    let delta = 200 - Math.random() * 100;
 
     if (this.isDeleting) { delta /= 2; }
 
@@ -40,10 +40,10 @@ TxtType.prototype.tick = function() {
 };
 
 window.onload = function() {
-    var elements = document.getElementsByClassName('typewrite');
-    for (var i=0; i<elements.length; i++) {
-        var toRotate = elements[i].getAttribute('data-type');
-        var period = elements[i].getAttribute('data-period');
+    const elements = document.getElementsByClassName('typewrite');
+    for (let i=0; i<elements.length; i++) {
+        const toRotate = elements[i].getAttribute('data-type');
+        const period = elements[i].getAttribute('data-period');
         if (toRotate) {
           new TxtType(elements[i], JSON.parse(toRotate), period);
         }
@@ -52,13 +52,13 @@ window.onload = function() {
 
 /*code to make the resume boxes expand*/
 function initCollapsibles() {
-  var coll = document.getElementsByClassName("collapsible");
-  var i;
+  const coll = document.getElementsByClassName("collapsible");
+  let i;
 
   for (i = 0; i < coll.length; i++) {
     coll[i].addEventListener("click", function() {
       this.classList.toggle("active");
-      var content = this.nextElementSibling;
+      const content = this.nextElementSibling;
       if (content.style.maxHeight){
         content.style.maxHeight = null;
       } else {
@@ -150,22 +150,11 @@ function animateNumber(elementId, target) {
   }, 30);
 }
 
-// Dashboard functionality
+// Dashboard functionality - Updated to open modal
 function toggleCard(card) {
-  const content = card.querySelector('.card-content');
-  const toggle = card.querySelector('.collapse-toggle');
-  const isExpanded = content.classList.contains('expanded');
-  
-  if (isExpanded) {
-    // Collapse
-    content.classList.remove('expanded');
-    card.classList.remove('full-width');
-    toggle.textContent = '+';
-  } else {
-    // Expand and make full width
-    content.classList.add('expanded');
-    card.classList.add('full-width');
-    toggle.textContent = '−';
+  const cardId = card.getAttribute('data-card');
+  if (window.openResumeModal) {
+    window.openResumeModal(cardId);
   }
 }
 
@@ -197,18 +186,10 @@ function toggleJob(jobIndex) {
 
 function scrollToSection(sectionId) {
   const section = document.getElementById(sectionId);
-  if (section) {
-    // Expand the section if it's collapsed
-    const content = section.querySelector('.card-content');
-    const toggle = section.querySelector('.collapse-toggle');
-    if (!content.classList.contains('expanded')) {
-      content.classList.add('expanded');
-      section.classList.add('full-width');
-      toggle.textContent = '−';
-    }
-    
-    // Scroll to the section
-    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  if (section && window.openResumeModal) {
+    // Open the modal for the section
+    const cardId = section.getAttribute('data-card');
+    window.openResumeModal(cardId);
   }
 }
 
@@ -228,27 +209,16 @@ function initDashboard() {
   const existingHandlers = document.querySelectorAll('[data-handler-attached]');
   existingHandlers.forEach(el => el.removeAttribute('data-handler-attached'));
   
-  // Card header clickable (entire header area)
-  const cardHeaders = document.querySelectorAll('.clickable-header:not([data-handler-attached])');
-  cardHeaders.forEach(header => {
-    header.setAttribute('data-handler-attached', 'true');
-    header.addEventListener('click', function(e) {
-      // Don't trigger if clicking on the toggle button itself
-      if (e.target.classList.contains('collapse-toggle')) return;
+  // Make entire card clickable (like project cards)
+  const dashboardCards = document.querySelectorAll('.dashboard-card:not([data-handler-attached])');
+  dashboardCards.forEach(card => {
+    card.setAttribute('data-handler-attached', 'true');
+    card.addEventListener('click', function(e) {
+      // Don't trigger if clicking inside expanded content or on sub-toggles
+      if (e.target.closest('.card-content') && this.classList.contains('full-width')) return;
+      if (e.target.classList.contains('job-toggle') || e.target.classList.contains('skill-toggle')) return;
       
-      const card = this.closest('.dashboard-card');
-      toggleCard(card);
-    });
-  });
-  
-  // Toggle button functionality
-  const toggleButtons = document.querySelectorAll('.collapse-toggle:not([data-handler-attached])');
-  toggleButtons.forEach(btn => {
-    btn.setAttribute('data-handler-attached', 'true');
-    btn.addEventListener('click', function(e) {
-      e.stopPropagation(); // Prevent header click
-      const card = this.closest('.dashboard-card');
-      toggleCard(card);
+      toggleCard(this);
     });
   });
   
@@ -346,7 +316,6 @@ function initializeResumeFeatures() {
   // Add a small delay to ensure DOM is fully loaded
   setTimeout(() => {
     if (document.querySelector('#resume-dashboard')) {
-      console.log('Initializing dashboard features');
       initDashboard();
     } else if (document.querySelector('.file-cabinet')) {
       initFileCabinet();
@@ -358,24 +327,71 @@ function initializeResumeFeatures() {
 
 // Update initialization
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initializeResumeFeatures);
+  document.addEventListener('DOMContentLoaded', () => {
+    initializeResumeFeatures();
+    initializePageFeatures();
+  });
 } else {
   initializeResumeFeatures();
+  initializePageFeatures();
+}
+
+// Projects page initialization
+function initProjectsPage() {
+  const container = document.getElementById('projects-react-root');
+  if (container && window.projectsData && window.React && window.ReactDOM) {
+    // Force re-initialization if container is empty
+    if (container.children.length === 0) {
+      container.removeAttribute('data-react-initialized');
+    }
+    
+    // Check if already initialized
+    if (container.hasAttribute('data-react-initialized')) {
+      return;
+    }
+    
+    container.setAttribute('data-react-initialized', 'true');
+    
+    // Use the global React components
+    if (window.ProjectsApp) {
+      const root = ReactDOM.createRoot(container);
+      root.render(React.createElement(window.ProjectsApp));
+    } else {
+      // If ProjectsApp not available yet, try again
+      setTimeout(initProjectsPage, 100);
+    }
+  }
+}
+
+// Initialize appropriate features based on current page
+function initializePageFeatures() {
+  setTimeout(() => {
+    if (document.querySelector('#resume-dashboard')) {
+      initDashboard();
+    } else if (document.querySelector('.file-cabinet')) {
+      initFileCabinet();
+    } else if (document.querySelector('.collapsible')) {
+      initCollapsibles();
+    } else if (document.querySelector('#projects-react-root')) {
+      initProjectsPage();
+    }
+  }, 50);
 }
 
 // Reinitialize when content changes (for SPA navigation)
 window.addEventListener('themechange', () => {
-  setTimeout(initializeResumeFeatures, 100);
+  setTimeout(initializePageFeatures, 100);
 });
 
-// Watch for resume dashboard being added to DOM
+// Watch for dynamic content being added to DOM
 const observer = new MutationObserver((mutations) => {
   mutations.forEach((mutation) => {
     mutation.addedNodes.forEach((node) => {
       if (node.nodeType === Node.ELEMENT_NODE) {
         if (node.id === 'resume-dashboard' || node.querySelector('#resume-dashboard')) {
-          console.log('Resume dashboard detected in DOM, initializing...');
           setTimeout(() => initDashboard(), 100);
+        } else if (node.id === 'projects-react-root' || node.querySelector('#projects-react-root')) {
+          setTimeout(() => initProjectsPage(), 100);
         }
       }
     });
@@ -387,3 +403,13 @@ observer.observe(document.body, {
   childList: true,
   subtree: true
 });
+
+// Re-initialize on browser navigation
+window.addEventListener('pageshow', function(event) {
+  if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+    initializePageFeatures();
+  }
+});
+
+// Re-initialize on popstate (browser back/forward)
+window.addEventListener('popstate', initializePageFeatures);
