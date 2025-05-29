@@ -465,7 +465,7 @@ cursor: pointer;
      text-align:left;
    }
     #welcome-section {
-     padding-top: 20vh;
+     padding-top: 0;
    }
    #split-column {
     columns: 1;
