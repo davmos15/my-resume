@@ -29,6 +29,35 @@ class ThemeSwitcher {
     }
 
     initThemeListeners() {
+        // Handle mobile theme toggle click
+        const themeToggle = document.querySelector('.theme-toggle');
+        const themeDropdown = document.querySelector('.theme-dropdown-menu');
+        
+        if (themeToggle && themeDropdown) {
+            themeToggle.addEventListener('click', (e) => {
+                e.preventDefault();
+                
+                // Only handle click on mobile
+                if (window.innerWidth <= 768) {
+                    themeDropdown.classList.toggle('show');
+                    
+                    // Close dropdown when clicking outside
+                    const closeDropdown = (event) => {
+                        if (!themeToggle.contains(event.target) && !themeDropdown.contains(event.target)) {
+                            themeDropdown.classList.remove('show');
+                            document.removeEventListener('click', closeDropdown);
+                        }
+                    };
+                    
+                    if (themeDropdown.classList.contains('show')) {
+                        setTimeout(() => {
+                            document.addEventListener('click', closeDropdown);
+                        }, 0);
+                    }
+                }
+            });
+        }
+        
         // Add click listeners to all theme options
         const themeOptions = document.querySelectorAll('.theme-option');
         
@@ -42,6 +71,11 @@ class ThemeSwitcher {
                 // Update active state
                 themeOptions.forEach(opt => opt.classList.remove('active'));
                 option.classList.add('active');
+                
+                // Close mobile dropdown after selection
+                if (window.innerWidth <= 768 && themeDropdown) {
+                    themeDropdown.classList.remove('show');
+                }
             });
         });
 
