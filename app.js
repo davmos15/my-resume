@@ -6,6 +6,9 @@ const methodOverride = require('method-override');
 const expressLayouts = require('express-ejs-layouts');
 require('dotenv').config();
 
+// Ensure database exists before starting
+require('./database/ensure-db');
+
 const app = express();
 const PORT = process.env.PORT || 3005;
 
