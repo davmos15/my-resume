@@ -155,6 +155,17 @@ function toggleCard(card) {
   const cardId = card.getAttribute('data-card');
   if (window.openResumeModal) {
     window.openResumeModal(cardId);
+  } else {
+    console.warn('openResumeModal not available - checking if modal script loaded');
+    // Try to initialize the modal if it hasn't been loaded
+    if (typeof initResumeModal === 'function') {
+      initResumeModal();
+      setTimeout(() => {
+        if (window.openResumeModal) {
+          window.openResumeModal(cardId);
+        }
+      }, 100);
+    }
   }
 }
 
@@ -186,10 +197,22 @@ function toggleJob(jobIndex) {
 
 function scrollToSection(sectionId) {
   const section = document.getElementById(sectionId);
-  if (section && window.openResumeModal) {
-    // Open the modal for the section
+  if (section) {
     const cardId = section.getAttribute('data-card');
-    window.openResumeModal(cardId);
+    if (window.openResumeModal) {
+      window.openResumeModal(cardId);
+    } else {
+      console.warn('openResumeModal not available yet');
+      // Try to initialize and retry
+      if (typeof initResumeModal === 'function') {
+        initResumeModal();
+        setTimeout(() => {
+          if (window.openResumeModal) {
+            window.openResumeModal(cardId);
+          }
+        }, 100);
+      }
+    }
   }
 }
 
@@ -339,27 +362,47 @@ if (document.readyState === 'loading') {
 // Projects page initialization
 function initProjectsPage() {
   const container = document.getElementById('projects-react-root');
-  if (container && window.projectsData && window.React && window.ReactDOM) {
-    // Force re-initialization if container is empty
-    if (container.children.length === 0) {
-      container.removeAttribute('data-react-initialized');
-    }
-    
-    // Check if already initialized
-    if (container.hasAttribute('data-react-initialized')) {
-      return;
-    }
-    
-    container.setAttribute('data-react-initialized', 'true');
-    
-    // Use the global React components
-    if (window.ProjectsApp) {
+  if (!container) return;
+  
+  // Check if React libraries are loaded
+  if (!window.React || !window.ReactDOM) {
+    console.log('React libraries not loaded yet, retrying...');
+    setTimeout(initProjectsPage, 200);
+    return;
+  }
+  
+  // Check if projects data is available
+  if (!window.projectsData) {
+    console.warn('Projects data not available');
+    return;
+  }
+  
+  // Force re-initialization if container is empty
+  if (container.children.length === 0) {
+    container.removeAttribute('data-react-initialized');
+  }
+  
+  // Check if already initialized
+  if (container.hasAttribute('data-react-initialized')) {
+    return;
+  }
+  
+  container.setAttribute('data-react-initialized', 'true');
+  
+  // Use the global React components
+  if (window.ProjectsApp) {
+    try {
       const root = ReactDOM.createRoot(container);
       root.render(React.createElement(window.ProjectsApp));
-    } else {
-      // If ProjectsApp not available yet, try again
-      setTimeout(initProjectsPage, 100);
+      console.log('Projects app initialized successfully');
+    } catch (error) {
+      console.error('Error initializing projects app:', error);
+      container.removeAttribute('data-react-initialized');
     }
+  } else {
+    // If ProjectsApp not available yet, try again
+    console.log('ProjectsApp not available yet, retrying...');
+    setTimeout(initProjectsPage, 200);
   }
 }
 
@@ -413,3 +456,25 @@ window.addEventListener('pageshow', function(event) {
 
 // Re-initialize on popstate (browser back/forward)
 window.addEventListener('popstate', initializePageFeatures);
+
+// Special handler for projects page to ensure React loads
+window.addEventListener('load', function() {
+  // Extra initialization for projects page after full page load
+  if (document.querySelector('#projects-react-root')) {
+    setTimeout(function() {
+      const container = document.getElementById('projects-react-root');
+      if (container && container.children.length === 0) {
+        console.log('Projects container empty after load, attempting initialization...');
+        initProjectsPage();
+      }
+    }, 500);
+  }
+  
+  // Ensure resume modal is available
+  if (document.querySelector('#resume-dashboard') && !window.openResumeModal) {
+    console.log('Resume modal not initialized, attempting initialization...');
+    if (typeof initResumeModal === 'function') {
+      initResumeModal();
+    }
+  }
+});
