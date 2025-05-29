@@ -223,3 +223,23 @@
 </div>
 
 <script src="/js/resume-modal.js?v=1"></script>
+<script>
+// Ensure dashboard is re-initialized after modal loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Small delay to ensure modal script executes
+    setTimeout(function() {
+        if (typeof initDashboard === 'function') {
+            initDashboard();
+        }
+    }, 100);
+});
+
+// Also handle if DOM is already loaded
+if (document.readyState !== 'loading') {
+    setTimeout(function() {
+        if (typeof initDashboard === 'function') {
+            initDashboard();
+        }
+    }, 100);
+}
+</script>
