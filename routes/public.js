@@ -118,17 +118,32 @@ router.get('/contact', async (req, res) => {
 
 // Contact form submission
 router.post('/contact', async (req, res) => {
-    const { name, email, phone, message } = req.body;
+    const { name, email, header, description } = req.body;
+    const { runAsync } = require('../database/db');
     
-    // Here you would typically:
-    // 1. Send an email notification
-    // 2. Store the message in database
-    // 3. Send confirmation email to user
-    
-    // For now, just log and redirect with success message
-    
-    req.flash('success_msg', 'Thank you for your message! I will get back to you soon.');
-    res.redirect('/contact');
+    try {
+        // Store message in database
+        await runAsync(
+            `INSERT INTO contact_messages 
+             (name, email, subject, message, created_at) 
+             VALUES (?, ?, ?, ?, datetime('now'))`,
+            [name, email, header || 'No subject', description]
+        );
+        
+        console.log('New contact form submission:', {
+            from: name,
+            email: email,
+            subject: header || 'No subject',
+            timestamp: new Date().toISOString()
+        });
+        
+        req.flash('success_msg', 'Thank you for submitting a message, Nadav will be in contact soon.');
+        res.redirect('/contact');
+    } catch (error) {
+        console.error('Contact form error:', error);
+        req.flash('error_msg', 'Sorry, there was an error processing your message. Please try again later.');
+        res.redirect('/contact');
+    }
 });
 
 module.exports = router;
