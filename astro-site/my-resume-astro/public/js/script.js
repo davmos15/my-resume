@@ -150,46 +150,8 @@ function animateNumber(elementId, target) {
   }, 30);
 }
 
-// Dashboard functionality - Updated to open modal
-function toggleCard(card) {
-  const cardId = card.getAttribute('data-card');
-  
-  // Function to attempt opening the modal
-  const attemptOpenModal = () => {
-    if (window.openResumeModal) {
-      window.openResumeModal(cardId);
-      return true;
-    }
-    return false;
-  };
-  
-  // Try to open modal immediately
-  if (attemptOpenModal()) return;
-  
-  // If not available, wait for scripts to load
-  console.log('Waiting for resume modal to initialize...');
-  
-  // Check if the modal script is in the DOM but not executed yet
-  const modalScript = document.querySelector('script[src*="resume-modal"]');
-  if (modalScript) {
-    // If script exists, wait a bit for it to execute
-    let attempts = 0;
-    const checkInterval = setInterval(() => {
-      attempts++;
-      if (attemptOpenModal() || attempts > 20) {
-        clearInterval(checkInterval);
-        if (attempts > 20) {
-          console.error('Resume modal failed to initialize');
-        }
-      }
-    }, 50);
-  } else {
-    // If we're on the resume page, the script should be there
-    if (document.querySelector('#resume-dashboard')) {
-      console.error('Resume modal script not found on resume page');
-    }
-  }
-}
+// Dashboard functionality - toggleCard is now handled by page-initializer.js
+// This ensures proper coordination between scripts
 
 function toggleSkill(skillId) {
   const content = document.getElementById(`skill-${skillId}`);
