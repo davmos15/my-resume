@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: portfolio-website
+    env: node
+    buildCommand: npm install && npm run build
+    startCommand: node app.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3005
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: ADMIN_USERNAME
+        sync: false
+      - key: ADMIN_PASSWORD_HASH
+        sync: false
