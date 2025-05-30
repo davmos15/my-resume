@@ -179,4 +179,4 @@ db.serialize(() => {
 
 db.close();
 
-module.exports = db;
+export default db;
