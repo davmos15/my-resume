@@ -6,7 +6,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Create/connect to database
-const db = new sqlite3.verbose().Database(path.join(__dirname, 'portfolio.db'), (err) => {
+const { Database } = sqlite3.verbose();
+const db = new Database(path.join(__dirname, 'portfolio.db'), (err) => {
     if (err) {
         console.error('Error opening database:', err);
     } else {
