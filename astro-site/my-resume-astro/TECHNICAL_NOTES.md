@@ -2,51 +2,45 @@
 
 ## Critical Implementation Details
 
-### 1. Resume Modal Initialization (Script Loading Order)
+### 1. Resume Modal Initialization (Script Loading Order) - CRITICAL
 
-**Problem**: The resume cards on the `/resume` page require a click event that calls `openResumeModal()`, but this function is defined in `resume-modal.js`. Due to script loading timing issues, clicking cards would fail with "Resume modal failed to initialize" until after a page reload.
+**Problem**: The resume cards on the `/resume` page require modal functionality. Due to script loading timing issues with Astro, clicking cards would fail until after a page reload.
 
 **Root Cause**: 
-- Multiple scripts loading with `is:inline` directive execute immediately
-- Race condition between `script.js` (which handles clicks) and `resume-modal.js` (which defines the modal functions)
-- No coordination between script dependencies
+- Astro's script handling can cause timing issues with external scripts
+- Race conditions between different script files
+- DOM elements might not be available when scripts execute
 
-**Solution**: Created a `page-initializer.js` that coordinates script initialization:
+**WORKING SOLUTION**: Put ALL resume page functionality in a single inline script block directly in the resume.astro page:
 
 ```javascript
-// page-initializer.js handles:
-1. Component registration and initialization tracking
-2. Dependency resolution between scripts
-3. Queuing of actions until dependencies are ready
-4. The toggleCard function that properly waits for modal initialization
-```
-
-**Implementation**:
-```html
-<!-- In resume.astro -->
-<!-- Load page initializer first -->
-<script src="/js/page-initializer.js"></script>
-
-<!-- Load resume modal script -->
-<script src="/js/resume-modal.js?v=3"></script>
-
 <script>
-// Initialize when everything is ready
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function() {
-        window.initializeResumePage();
-    });
-} else {
-    window.initializeResumePage();
-}
+// All resume page functionality in one place to avoid timing issues
+(function() {
+    // ALL modal functionality, click handlers, and animations
+    // are defined here in one self-contained block
+    // NO external dependencies, NO timing issues
+})();
 </script>
 ```
 
+**Why this works**:
+1. Everything executes together when the DOM is ready
+2. No race conditions between files
+3. No dependency resolution needed
+4. Direct access to all DOM elements
+
+**DO NOT**:
+- Split this functionality across multiple files
+- Use external script files for page-specific functionality
+- Try to coordinate between scripts with promises/callbacks
+- Use `page-initializer.js` or similar coordination systems (they don't work reliably with Astro)
+
 **Key Points**:
-- DO NOT use `is:inline` for interdependent scripts
-- Load scripts in dependency order
-- Use the PageInitializer pattern for coordinating initialization
-- The `toggleCard` function is now in `page-initializer.js`, not `script.js`
+- Keep ALL resume page functionality in the inline script in resume.astro
+- Do NOT move modal functions to external files
+- Do NOT try to share functions between pages via global scripts
+- This is the ONLY reliable solution that works with Astro's script handling
 
 ### 2. Database Initialization on Vercel
 

@@ -272,22 +272,134 @@ try {
         )}
     </div>
 
-    <!-- Load page initializer first -->
-    <script src="/js/page-initializer.js"></script>
-    
-    <!-- Load resume modal script -->
-    <script src="/js/resume-modal.js?v=3"></script>
-    
     <script>
-    // Initialize when everything is ready
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', function() {
-            window.initializeResumePage();
+    // All resume page functionality in one place to avoid timing issues
+    (function() {
+        // Modal functionality
+        const modal = document.getElementById('resume-modal');
+        const modalClose = document.querySelector('.resume-modal .modal-close');
+        const modalIcon = document.querySelector('.resume-modal .modal-icon');
+        const modalTitle = document.querySelector('.resume-modal .modal-title');
+        const modalBody = document.querySelector('.resume-modal .modal-body');
+        
+        // Store card contents
+        const cardContents = {};
+        document.querySelectorAll('.dashboard-card').forEach(card => {
+            const cardId = card.getAttribute('data-card');
+            const content = card.querySelector('.card-content').innerHTML;
+            const icon = card.querySelector('.card-icon').textContent;
+            const title = card.querySelector('.card-title').textContent;
+            cardContents[cardId] = { content, icon, title };
         });
-    } else {
-        // DOM is already loaded
-        window.initializeResumePage();
-    }
+        
+        // Open modal function
+        function openModal(cardId) {
+            const data = cardContents[cardId];
+            if (!data) return;
+            
+            modalIcon.textContent = data.icon;
+            modalTitle.textContent = data.title;
+            modalBody.innerHTML = data.content;
+            
+            modal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+            
+            // Re-initialize toggles in modal
+            initModalToggles();
+        }
+        
+        // Close modal
+        function closeModal() {
+            modal.classList.remove('show');
+            document.body.style.overflow = '';
+        }
+        
+        // Modal close handlers
+        modalClose.addEventListener('click', closeModal);
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) closeModal();
+        });
+        
+        // Initialize modal toggles
+        function initModalToggles() {
+            modalBody.addEventListener('click', function(e) {
+                // Handle job toggles
+                if (e.target.closest('.job-header')) {
+                    const jobHeader = e.target.closest('.job-header');
+                    const jobIndex = jobHeader.getAttribute('data-job');
+                    const jobContent = modalBody.querySelector(`#job-${jobIndex}`);
+                    const jobToggle = jobHeader.querySelector('.job-toggle');
+                    
+                    if (jobContent && jobToggle) {
+                        if (jobContent.classList.contains('expanded')) {
+                            jobContent.classList.remove('expanded');
+                            jobToggle.textContent = '+';
+                        } else {
+                            jobContent.classList.add('expanded');
+                            jobToggle.textContent = '−';
+                        }
+                    }
+                }
+                
+                // Handle skill toggles
+                if (e.target.classList.contains('skill-toggle')) {
+                    const skillId = e.target.getAttribute('data-skill');
+                    const content = modalBody.querySelector(`#skill-${skillId}`);
+                    
+                    if (content) {
+                        if (content.classList.contains('expanded')) {
+                            content.classList.remove('expanded');
+                            e.target.textContent = '+';
+                        } else {
+                            content.classList.add('expanded');
+                            e.target.textContent = '−';
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Card click handlers
+        document.querySelectorAll('.dashboard-card').forEach(card => {
+            const header = card.querySelector('.clickable-header');
+            if (header) {
+                header.addEventListener('click', function() {
+                    const cardId = card.getAttribute('data-card');
+                    openModal(cardId);
+                });
+            }
+        });
+        
+        // Initialize stats animation
+        function animateValue(element, start, end, duration) {
+            const range = end - start;
+            const increment = range / (duration / 30);
+            let current = start;
+            
+            const timer = setInterval(function() {
+                current += increment;
+                if (current >= end) {
+                    current = end;
+                    clearInterval(timer);
+                }
+                element.textContent = Math.floor(current);
+            }, 30);
+        }
+        
+        // Animate stats on page load
+        const summaryStats = document.querySelector('.summary-stats');
+        if (summaryStats) {
+            const years = parseInt(summaryStats.getAttribute('data-years'));
+            const companies = parseInt(summaryStats.getAttribute('data-companies'));
+            const roles = parseInt(summaryStats.getAttribute('data-roles'));
+            
+            animateValue(document.getElementById('years-exp'), 0, years, 1000);
+            animateValue(document.getElementById('companies-count'), 0, companies, 1000);
+            animateValue(document.getElementById('roles-count'), 0, roles, 1000);
+        }
+        
+        console.log('Resume page initialized successfully');
+    })();
     </script>
     
     <style>
