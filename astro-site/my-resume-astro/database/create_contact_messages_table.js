@@ -1,4 +1,4 @@
-const { db } = require('./db');
+import { db } from './db.js';
 
 // Create contact_messages table
 db.run(`
