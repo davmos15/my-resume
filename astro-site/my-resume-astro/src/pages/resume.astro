@@ -272,26 +272,34 @@ try {
         )}
     </div>
 
-    <script src="/js/resume-modal.js?v=1" is:inline></script>
     <script>
-    // Ensure dashboard is re-initialized after modal loads
-    document.addEventListener('DOMContentLoaded', function() {
-        // Small delay to ensure modal script executes
-        setTimeout(function() {
-            if (typeof initDashboard === 'function') {
-                initDashboard();
-            }
-        }, 100);
-    });
-
-    // Also handle if DOM is already loaded
-    if (document.readyState !== 'loading') {
-        setTimeout(function() {
-            if (typeof initDashboard === 'function') {
-                initDashboard();
-            }
-        }, 100);
+    // Initialize resume modal when page loads
+    function initializeResumePage() {
+        // First initialize the modal
+        if (typeof initResumeModal === 'function') {
+            initResumeModal();
+        } else {
+            console.error('initResumeModal function not found');
+        }
+        
+        // Then initialize the dashboard
+        if (typeof initDashboard === 'function') {
+            initDashboard();
+        }
     }
+    
+    // Load the resume modal script
+    const script = document.createElement('script');
+    script.src = '/js/resume-modal.js?v=2';
+    script.onload = function() {
+        // Initialize after script loads
+        initializeResumePage();
+    };
+    script.onerror = function() {
+        console.error('Failed to load resume-modal.js');
+    };
+    document.head.appendChild(script);
+    
     </script>
     
     <style>
