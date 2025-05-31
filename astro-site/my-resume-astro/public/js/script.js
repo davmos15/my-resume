@@ -150,8 +150,8 @@ function animateNumber(elementId, target) {
   }, 30);
 }
 
-// Dashboard functionality - toggleCard is now handled by page-initializer.js
-// This ensures proper coordination between scripts
+// Dashboard functionality - toggleCard is now handled inline in resume.astro
+// This ensures no timing issues with modal initialization
 
 function toggleSkill(skillId) {
   const content = document.getElementById(`skill-${skillId}`);
@@ -217,17 +217,8 @@ function initDashboard() {
   existingHandlers.forEach(el => el.removeAttribute('data-handler-attached'));
   
   // Make entire card clickable (like project cards)
-  const dashboardCards = document.querySelectorAll('.dashboard-card:not([data-handler-attached])');
-  dashboardCards.forEach(card => {
-    card.setAttribute('data-handler-attached', 'true');
-    card.addEventListener('click', function(e) {
-      // Don't trigger if clicking inside expanded content or on sub-toggles
-      if (e.target.closest('.card-content') && this.classList.contains('full-width')) return;
-      if (e.target.classList.contains('job-toggle') || e.target.classList.contains('skill-toggle')) return;
-      
-      toggleCard(this);
-    });
-  });
+  // Dashboard card click handling is now done in page-specific scripts
+  // to avoid timing issues with modal functionality
   
   // Job item expansion
   const jobHeaders = document.querySelectorAll('.job-header:not([data-handler-attached])');
@@ -313,7 +304,7 @@ function initDashboard() {
 
 // Expose functions globally for navigation
 window.scrollToSection = scrollToSection;
-window.toggleCard = toggleCard;
+// toggleCard is now handled in page-specific scripts
 window.toggleJob = toggleJob;
 window.toggleSkill = toggleSkill;
 window.initDashboard = initDashboard;
