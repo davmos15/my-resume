@@ -273,70 +273,182 @@ try {
     </div>
 
     <script>
-    // All resume page functionality in one place to avoid timing issues
-    (function() {
-        // Modal functionality
-        const modal = document.getElementById('resume-modal');
-        const modalClose = document.querySelector('.resume-modal .modal-close');
-        const modalIcon = document.querySelector('.resume-modal .modal-icon');
-        const modalTitle = document.querySelector('.resume-modal .modal-title');
-        const modalBody = document.querySelector('.resume-modal .modal-body');
-        
-        // Store card contents
-        const cardContents = {};
-        document.querySelectorAll('.dashboard-card').forEach(card => {
-            const cardId = card.getAttribute('data-card');
-            const content = card.querySelector('.card-content').innerHTML;
-            const icon = card.querySelector('.card-icon').textContent;
-            const title = card.querySelector('.card-title').textContent;
-            cardContents[cardId] = { content, icon, title };
-        });
-        
-        // Open modal function
-        function openModal(cardId) {
-            const data = cardContents[cardId];
-            if (!data) return;
+    // Resume Modal Manager - Robust implementation with proper state management
+    class ResumeModalManager {
+        constructor(modalElement) {
+            this.modal = modalElement;
+            this.modalContent = modalElement.querySelector('.resume-modal-content');
+            this.modalClose = modalElement.querySelector('.modal-close');
+            this.modalIcon = modalElement.querySelector('.modal-icon');
+            this.modalTitle = modalElement.querySelector('.modal-title');
+            this.modalBody = modalElement.querySelector('.modal-body');
             
-            modalIcon.textContent = data.icon;
-            modalTitle.textContent = data.title;
-            modalBody.innerHTML = data.content;
+            this.isOpen = false;
+            this.previousFocus = null;
+            this.scrollPosition = 0;
+            this.currentCardId = null;
             
-            modal.classList.add('show');
+            // Store card contents
+            this.cardContents = {};
+            this.cacheCardContents();
+            
+            // Bind methods
+            this.open = this.open.bind(this);
+            this.close = this.close.bind(this);
+            this.handleKeydown = this.handleKeydown.bind(this);
+            this.handleOverlayClick = this.handleOverlayClick.bind(this);
+            
+            // Initialize
+            this.init();
+        }
+        
+        init() {
+            // Close button handler
+            this.modalClose?.addEventListener('click', this.close);
+            
+            // Overlay click handler
+            this.modal.addEventListener('click', this.handleOverlayClick);
+            
+            // Prevent clicks inside modal from closing
+            this.modalContent?.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+            
+            // Set ARIA attributes
+            this.modal.setAttribute('role', 'dialog');
+            this.modal.setAttribute('aria-modal', 'true');
+            this.modalClose?.setAttribute('aria-label', 'Close modal');
+        }
+        
+        cacheCardContents() {
+            document.querySelectorAll('.dashboard-card').forEach(card => {
+                const cardId = card.getAttribute('data-card');
+                const content = card.querySelector('.card-content')?.innerHTML || '';
+                const icon = card.querySelector('.card-icon')?.textContent || '';
+                const title = card.querySelector('.card-title')?.textContent || '';
+                this.cardContents[cardId] = { content, icon, title };
+            });
+        }
+        
+        open(cardId) {
+            if (this.isOpen || !this.cardContents[cardId]) return;
+            
+            // Store current state
+            this.previousFocus = document.activeElement;
+            this.scrollPosition = window.scrollY;
+            this.currentCardId = cardId;
+            
+            // Update modal content
+            const data = this.cardContents[cardId];
+            if (this.modalIcon) this.modalIcon.textContent = data.icon;
+            if (this.modalTitle) this.modalTitle.textContent = data.title;
+            if (this.modalBody) this.modalBody.innerHTML = data.content;
+            
+            // Set title id for accessibility
+            if (this.modalTitle) {
+                this.modalTitle.id = 'modal-title';
+                this.modal.setAttribute('aria-labelledby', 'modal-title');
+            }
+            
+            // Open modal
+            this.isOpen = true;
+            this.modal.classList.add('show');
             document.body.style.overflow = 'hidden';
             
-            // Re-initialize toggles in modal
-            initModalToggles();
+            // Add keyboard listener
+            document.addEventListener('keydown', this.handleKeydown);
+            
+            // Initialize content interactions
+            this.initContentInteractions();
+            
+            // Set focus to first focusable element
+            setTimeout(() => {
+                const firstFocusable = this.modal.querySelector(
+                    'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+                );
+                firstFocusable?.focus();
+            }, 50);
+            
+            // Dispatch event
+            this.modal.dispatchEvent(new CustomEvent('resume-modal-opened', { 
+                detail: { cardId } 
+            }));
         }
         
-        // Close modal
-        function closeModal() {
-            modal.classList.remove('show');
+        close() {
+            if (!this.isOpen) return;
+            
+            // Close modal
+            this.isOpen = false;
+            this.modal.classList.remove('show');
             document.body.style.overflow = '';
+            
+            // Remove keyboard listener
+            document.removeEventListener('keydown', this.handleKeydown);
+            
+            // Restore focus
+            if (this.previousFocus) {
+                this.previousFocus.focus();
+            }
+            
+            // Dispatch event
+            this.modal.dispatchEvent(new CustomEvent('resume-modal-closed', { 
+                detail: { cardId: this.currentCardId } 
+            }));
+            
+            this.currentCardId = null;
         }
         
-        // Modal close handlers
-        modalClose.addEventListener('click', closeModal);
-        modal.addEventListener('click', function(e) {
-            if (e.target === modal) closeModal();
-        });
+        handleKeydown(e) {
+            if (e.key === 'Escape') {
+                this.close();
+            }
+            
+            // Tab trap
+            if (e.key === 'Tab') {
+                const focusableElements = this.modal.querySelectorAll(
+                    'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+                );
+                
+                if (focusableElements.length === 0) return;
+                
+                const firstFocusable = focusableElements[0];
+                const lastFocusable = focusableElements[focusableElements.length - 1];
+                
+                if (e.shiftKey && document.activeElement === firstFocusable) {
+                    e.preventDefault();
+                    lastFocusable.focus();
+                } else if (!e.shiftKey && document.activeElement === lastFocusable) {
+                    e.preventDefault();
+                    firstFocusable.focus();
+                }
+            }
+        }
         
-        // Initialize modal toggles
-        function initModalToggles() {
-            modalBody.addEventListener('click', function(e) {
-                // Handle job toggles
-                if (e.target.closest('.job-header')) {
-                    const jobHeader = e.target.closest('.job-header');
+        handleOverlayClick(e) {
+            if (e.target === this.modal) {
+                this.close();
+            }
+        }
+        
+        initContentInteractions() {
+            // Handle job toggles
+            this.modalBody?.addEventListener('click', (e) => {
+                const jobHeader = e.target.closest('.job-header');
+                if (jobHeader) {
                     const jobIndex = jobHeader.getAttribute('data-job');
-                    const jobContent = modalBody.querySelector(`#job-${jobIndex}`);
+                    const jobContent = this.modalBody.querySelector(`#job-${jobIndex}`);
                     const jobToggle = jobHeader.querySelector('.job-toggle');
                     
                     if (jobContent && jobToggle) {
                         if (jobContent.classList.contains('expanded')) {
                             jobContent.classList.remove('expanded');
                             jobToggle.textContent = '+';
+                            jobToggle.setAttribute('aria-expanded', 'false');
                         } else {
                             jobContent.classList.add('expanded');
                             jobToggle.textContent = '−';
+                            jobToggle.setAttribute('aria-expanded', 'true');
                         }
                     }
                 }
@@ -344,34 +456,63 @@ try {
                 // Handle skill toggles
                 if (e.target.classList.contains('skill-toggle')) {
                     const skillId = e.target.getAttribute('data-skill');
-                    const content = modalBody.querySelector(`#skill-${skillId}`);
+                    const content = this.modalBody.querySelector(`#skill-${skillId}`);
                     
                     if (content) {
                         if (content.classList.contains('expanded')) {
                             content.classList.remove('expanded');
                             e.target.textContent = '+';
+                            e.target.setAttribute('aria-expanded', 'false');
                         } else {
                             content.classList.add('expanded');
                             e.target.textContent = '−';
+                            e.target.setAttribute('aria-expanded', 'true');
                         }
                     }
                 }
             });
         }
+    }
+    
+    // Initialize when DOM is ready
+    function initializeResumePage() {
+        const modal = document.getElementById('resume-modal');
+        if (!modal) {
+            console.error('Resume modal element not found');
+            return;
+        }
         
-        // Card click handlers
+        // Create modal manager
+        const modalManager = new ResumeModalManager(modal);
+        
+        // Attach click handlers to all cards
         document.querySelectorAll('.dashboard-card').forEach(card => {
             const header = card.querySelector('.clickable-header');
             if (header) {
-                header.addEventListener('click', function() {
+                header.addEventListener('click', function(e) {
+                    e.preventDefault();
                     const cardId = card.getAttribute('data-card');
-                    openModal(cardId);
+                    modalManager.open(cardId);
+                });
+                
+                // Add keyboard support
+                header.setAttribute('tabindex', '0');
+                header.setAttribute('role', 'button');
+                header.setAttribute('aria-label', `Open ${card.querySelector('.card-title')?.textContent || 'section'} details`);
+                
+                header.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        const cardId = card.getAttribute('data-card');
+                        modalManager.open(cardId);
+                    }
                 });
             }
         });
         
         // Initialize stats animation
         function animateValue(element, start, end, duration) {
+            if (!element) return;
             const range = end - start;
             const increment = range / (duration / 30);
             let current = start;
@@ -389,17 +530,20 @@ try {
         // Animate stats on page load
         const summaryStats = document.querySelector('.summary-stats');
         if (summaryStats) {
-            const years = parseInt(summaryStats.getAttribute('data-years'));
-            const companies = parseInt(summaryStats.getAttribute('data-companies'));
-            const roles = parseInt(summaryStats.getAttribute('data-roles'));
+            const years = parseInt(summaryStats.getAttribute('data-years')) || 0;
+            const companies = parseInt(summaryStats.getAttribute('data-companies')) || 0;
+            const roles = parseInt(summaryStats.getAttribute('data-roles')) || 0;
             
             animateValue(document.getElementById('years-exp'), 0, years, 1000);
             animateValue(document.getElementById('companies-count'), 0, companies, 1000);
             animateValue(document.getElementById('roles-count'), 0, roles, 1000);
         }
         
-        console.log('Resume page initialized successfully');
-    })();
+        console.log('Resume page initialized with modal manager');
+    }
+    
+    // Initialize immediately since script is at end of body
+    initializeResumePage();
     </script>
     
     <style>

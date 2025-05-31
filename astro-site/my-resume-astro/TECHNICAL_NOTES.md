@@ -2,7 +2,7 @@
 
 ## Critical Implementation Details
 
-### 1. Resume Modal Initialization (Script Loading Order) - CRITICAL
+### 1. Resume Modal Implementation - CRITICAL
 
 **Problem**: The resume cards on the `/resume` page require modal functionality. Due to script loading timing issues with Astro, clicking cards would fail until after a page reload.
 
@@ -10,37 +10,64 @@
 - Astro's script handling can cause timing issues with external scripts
 - Race conditions between different script files
 - DOM elements might not be available when scripts execute
+- Lack of proper state management in previous implementations
 
-**WORKING SOLUTION**: Put ALL resume page functionality in a single inline script block directly in the resume.astro page:
+**WORKING SOLUTION**: Use a proper Modal Manager class with state management, all in a single inline script:
 
 ```javascript
 <script>
-// All resume page functionality in one place to avoid timing issues
-(function() {
-    // ALL modal functionality, click handlers, and animations
-    // are defined here in one self-contained block
-    // NO external dependencies, NO timing issues
-})();
+// Resume Modal Manager - Robust implementation with proper state management
+class ResumeModalManager {
+    constructor(modalElement) {
+        // Proper state tracking
+        this.isOpen = false;
+        this.previousFocus = null;
+        this.scrollPosition = 0;
+        // ... initialization
+    }
+    
+    open(cardId) {
+        // Proper opening sequence with:
+        // - State management
+        // - Focus handling
+        // - Scroll prevention
+        // - Event dispatching
+        // - Accessibility attributes
+    }
+    
+    close() {
+        // Proper closing sequence with:
+        // - State cleanup
+        // - Focus restoration
+        // - Event dispatching
+    }
+}
+
+// Initialize immediately at end of body
+initializeResumePage();
 </script>
 ```
 
-**Why this works**:
-1. Everything executes together when the DOM is ready
-2. No race conditions between files
-3. No dependency resolution needed
-4. Direct access to all DOM elements
+**Key Features of This Implementation**:
+1. **State Management**: Tracks isOpen, previousFocus, scrollPosition
+2. **Accessibility**: ARIA attributes, focus trap, keyboard navigation
+3. **Event Flow**: Proper open/close sequences with custom events
+4. **Keyboard Support**: ESC to close, Tab trap, Enter/Space on cards
+5. **Scroll Prevention**: Saves/restores scroll position and body overflow
+6. **Single Instance**: One modal manager handles all cards
 
 **DO NOT**:
 - Split this functionality across multiple files
 - Use external script files for page-specific functionality
 - Try to coordinate between scripts with promises/callbacks
-- Use `page-initializer.js` or similar coordination systems (they don't work reliably with Astro)
+- Remove the state management or class structure
 
 **Key Points**:
-- Keep ALL resume page functionality in the inline script in resume.astro
-- Do NOT move modal functions to external files
-- Do NOT try to share functions between pages via global scripts
-- This is the ONLY reliable solution that works with Astro's script handling
+- The entire implementation MUST stay in one inline script in resume.astro
+- The class-based approach provides proper encapsulation and state management
+- All event listeners are properly managed (added/removed)
+- Focus management ensures accessibility compliance
+- This solution handles all edge cases mentioned in the requirements
 
 ### 2. Database Initialization on Vercel
 
