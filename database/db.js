@@ -1,8 +1,13 @@
-const sqlite3 = require('sqlite3').verbose();
-const path = require('path');
+import sqlite3 from 'sqlite3';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Create/connect to database
-const db = new sqlite3.Database(path.join(__dirname, 'portfolio.db'), (err) => {
+const { Database } = sqlite3.verbose();
+const db = new Database(path.join(__dirname, 'portfolio.db'), (err) => {
     if (err) {
         console.error('Error opening database:', err);
     } else {
@@ -38,7 +43,7 @@ const allAsync = (sql, params = []) => {
     });
 };
 
-module.exports = {
+export {
     db,
     runAsync,
     getAsync,

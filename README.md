@@ -1,178 +1,135 @@
-# Dynamic Portfolio Website
+# My Resume - Astro Version
 
-A dynamic portfolio website with backend admin panel, converted from static HTML to Node.js/Express with database-driven content management.
+A modern portfolio website built with Astro, featuring a dynamic admin panel and content management system.
 
-## Features
+## 🚀 Features
 
-### Frontend
-- **Responsive Design**: Clean, modern portfolio layout
-- **Dynamic Content**: Database-driven pages and sections
-- **Project Showcase**: Sortable projects with images and links
-- **Resume Sections**: Collapsible experience, skills, education sections
-- **Contact Form**: Functional contact form with validation
+- **Static Site Generation** with dynamic API routes
+- **Admin Panel** for content management
+- **SQLite Database** for content storage
+- **Authentication** system with JWT tokens
+- **Responsive Design** with theme support
+- **Contact Form** with database storage
+- **File Upload** capabilities
+- **SEO Optimized** with fast page loads
 
-### Admin Panel
-- **Secure Authentication**: Login system with session management
-- **Rich Text Editor**: WYSIWYG editor with HTML/Preview modes
-- **Content Management**: Edit all page content through admin interface
-- **Project Management**: Add, edit, delete, and reorder projects
-- **Resume Management**: Manage resume sections by category
-- **File Management**: Upload and organize images, documents, PDFs
-- **Drag & Drop Ordering**: Reorder items with visual feedback
+## 📦 Tech Stack
 
-### Technical Features
-- **Database**: SQLite with easy migration to PostgreSQL/MySQL
-- **File Upload**: Multer-based file handling with previews
-- **Session Management**: Secure sessions with flash messages
-- **Rich Text Editing**: Dual-mode editor with keyboard shortcuts
-- **Responsive Admin**: Mobile-friendly admin interface
+- **Framework**: Astro 5.x
+- **Runtime**: Node.js with @astrojs/node adapter
+- **Database**: SQLite with better-sqlite3
+- **Authentication**: JWT + bcryptjs
+- **Styling**: CSS with theme variables
+- **Deployment**: Optimized for Vercel
 
-## Installation
+## 🛠️ Installation
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd my-resume
-   ```
+1. Clone the repository:
+```bash
+git clone <your-repo-url>
+cd my-resume-astro
+```
 
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
+2. Install dependencies:
+```bash
+npm install
+```
 
-3. **Set up environment**
-   ```bash
-   cp .env.example .env
-   # Edit .env with your settings
-   ```
+3. Copy the example environment file:
+```bash
+cp .env.example .env
+```
 
-4. **Initialize database**
-   ```bash
-   node database/init.js
-   ```
-
-5. **Start the server**
-   ```bash
-   npm run dev  # Development with nodemon
-   # or
-   npm start    # Production
-   ```
-
-## Usage
-
-### Public Site
-- Visit `http://localhost:3005` to view the portfolio
-- Navigate between Home, Resume, Projects, About, and Contact pages
-
-### Admin Panel
-- Visit `http://localhost:3005/admin/login`
-- Default credentials: `admin` / `admin123` (change immediately!)
-- Manage content through the dashboard
-
-### Admin Features
-- **Dashboard**: Overview with quick actions
-- **Page Content**: Edit homepage, about, and contact content
-- **Projects**: Add/edit projects with rich descriptions and file attachments
-- **Resume**: Manage experience, skills, courses, and education sections
-- **Files**: Upload and manage images, PDFs, and documents
-
-## Environment Variables
-
+4. Update the `.env` file with your settings:
 ```env
-NODE_ENV=development          # Environment mode
-PORT=3005                    # Server port
-SESSION_SECRET=<secret>      # Session encryption key
-ADMIN_USERNAME=admin         # Admin username
-ADMIN_PASSWORD_HASH=<hash>   # Bcrypt hash of admin password
+JWT_SECRET=your-secret-key-here
+SESSION_SECRET=your-session-secret-here
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD_HASH=your-bcrypt-hash-here
 ```
 
-## Project Structure
-
-```
-├── app.js                   # Main Express application
-├── package.json            # Dependencies and scripts
-├── .env.example            # Environment template
-├── .gitignore              # Git ignore rules
-│
-├── database/               # Database files
-│   ├── init.js            # Database initialization
-│   └── db.js              # Database connection helpers
-│
-├── middleware/             # Custom middleware
-│   └── auth.js            # Authentication middleware
-│
-├── routes/                # Route handlers
-│   ├── public.js          # Public site routes
-│   └── admin.js           # Admin panel routes
-│
-├── views/                 # EJS templates
-│   ├── layouts/           # Layout templates
-│   ├── partials/          # Reusable components
-│   ├── pages/             # Public pages
-│   └── admin/             # Admin interface
-│
-├── public/                # Static assets
-│   ├── css/               # Stylesheets (including rich editor)
-│   ├── js/                # Client-side JavaScript
-│   └── images/            # Static images
-│
-└── uploads/               # User uploaded files (gitignored)
+5. Generate a password hash:
+```bash
+node -e "console.log(require('bcryptjs').hashSync('your-password', 10))"
 ```
 
-## Rich Text Editor
+## 🏃‍♂️ Development
 
-The admin panel includes a custom rich text editor with:
-
-- **Dual Modes**: HTML code view and WYSIWYG preview
-- **Formatting**: Bold, italic, underline, headings, lists, links
-- **Keyboard Shortcuts**: Ctrl+B/I/U for formatting, Ctrl+Z/Y for undo/redo
-- **History**: Full undo/redo functionality
-- **Real-time Preview**: Live preview updates as you type
-
-## Deployment
-
-### Development
+Run the development server:
 ```bash
 npm run dev
 ```
 
-### Production
-1. Set `NODE_ENV=production` in .env
-2. Use a process manager like PM2:
-   ```bash
-   npm install -g pm2
-   pm2 start app.js --name portfolio
-   ```
+The site will be available at `http://localhost:3000`
 
-### Database Migration
-For production, consider migrating from SQLite to PostgreSQL:
-- Update database connection in `database/db.js`
-- Run migration scripts for schema creation
-- Update environment variables
+## 🏗️ Building for Production
 
-## Security
+Build the site:
+```bash
+npm run build
+```
 
-- Change default admin password immediately
-- Use strong SESSION_SECRET in production
-- Enable HTTPS in production
-- Regular database backups
-- File upload validation
+Preview the production build:
+```bash
+npm run preview
+```
 
-## Migration from Static Site
+## 🚀 Deployment
 
-See `MIGRATION_GUIDE.md` for detailed instructions on migrating from the original static HTML site.
+### Vercel (Recommended)
 
-## Technologies Used
+1. Push your code to GitHub
+2. Import the project on Vercel
+3. Add your environment variables
+4. Deploy!
 
-- **Backend**: Node.js, Express.js
-- **Database**: SQLite (easily migrated to PostgreSQL/MySQL)
-- **Templates**: EJS with layouts
-- **Authentication**: bcryptjs, express-session
-- **File Upload**: Multer
-- **Frontend**: Vanilla JavaScript, CSS3
-- **Admin UI**: Custom responsive design
-- **Rich Editor**: Custom implementation with dual modes
+### Other Platforms
 
-## License
+The site can be deployed to any platform that supports Node.js:
+- Netlify (with @astrojs/netlify adapter)
+- Railway
+- Render
+- Fly.io
 
-This project is licensed under the ISC License.
+## 📁 Project Structure
+
+```
+/
+├── public/
+│   ├── css/         # Stylesheets
+│   ├── js/          # Client-side JavaScript
+│   └── images/      # Static images
+├── src/
+│   ├── components/  # Astro components
+│   ├── layouts/     # Page layouts
+│   ├── pages/       # Routes and API endpoints
+│   │   ├── api/     # API routes
+│   │   └── admin/   # Admin pages
+│   ├── lib/         # Utilities
+│   └── middleware/  # Auth middleware
+├── database/        # Database files and migrations
+└── uploads/         # User uploads
+```
+
+## 🔒 Admin Panel
+
+Access the admin panel at `/admin/login`
+
+Features:
+- Manage homepage content
+- Add/edit projects
+- Update resume sections
+- Upload files
+- View contact messages
+
+## 🎨 Theming
+
+The site supports multiple themes including:
+- Basic themes (Blue, Green, Purple, etc.)
+- AFL team themes
+- Company themes (Google, Facebook, etc.)
+- Fun themes (Rainbow, Sunset, etc.)
+
+## 📝 License
+
+ISC License

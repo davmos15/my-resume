@@ -1,8 +1,12 @@
-const sqlite3 = require('sqlite3').verbose();
-const path = require('path');
-const bcrypt = require('bcryptjs');
+import sqlite3 from 'sqlite3';
+import path from 'path';
+import bcrypt from 'bcryptjs';
+import { fileURLToPath } from 'url';
 
-const db = new sqlite3.Database(path.join(__dirname, 'portfolio.db'));
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const { Database } = sqlite3.verbose();
+const db = new Database(path.join(__dirname, 'portfolio.db'));
 
 // Create tables
 db.serialize(() => {
@@ -175,4 +179,4 @@ db.serialize(() => {
 
 db.close();
 
-module.exports = db;
+export default db;

@@ -150,46 +150,8 @@ function animateNumber(elementId, target) {
   }, 30);
 }
 
-// Dashboard functionality - Updated to open modal
-function toggleCard(card) {
-  const cardId = card.getAttribute('data-card');
-  
-  // Function to attempt opening the modal
-  const attemptOpenModal = () => {
-    if (window.openResumeModal) {
-      window.openResumeModal(cardId);
-      return true;
-    }
-    return false;
-  };
-  
-  // Try to open modal immediately
-  if (attemptOpenModal()) return;
-  
-  // If not available, wait for scripts to load
-  console.log('Waiting for resume modal to initialize...');
-  
-  // Check if the modal script is in the DOM but not executed yet
-  const modalScript = document.querySelector('script[src*="resume-modal"]');
-  if (modalScript) {
-    // If script exists, wait a bit for it to execute
-    let attempts = 0;
-    const checkInterval = setInterval(() => {
-      attempts++;
-      if (attemptOpenModal() || attempts > 20) {
-        clearInterval(checkInterval);
-        if (attempts > 20) {
-          console.error('Resume modal failed to initialize');
-        }
-      }
-    }, 50);
-  } else {
-    // If we're on the resume page, the script should be there
-    if (document.querySelector('#resume-dashboard')) {
-      console.error('Resume modal script not found on resume page');
-    }
-  }
-}
+// Dashboard functionality - toggleCard is now handled inline in resume.astro
+// This ensures no timing issues with modal initialization
 
 function toggleSkill(skillId) {
   const content = document.getElementById(`skill-${skillId}`);
@@ -255,17 +217,8 @@ function initDashboard() {
   existingHandlers.forEach(el => el.removeAttribute('data-handler-attached'));
   
   // Make entire card clickable (like project cards)
-  const dashboardCards = document.querySelectorAll('.dashboard-card:not([data-handler-attached])');
-  dashboardCards.forEach(card => {
-    card.setAttribute('data-handler-attached', 'true');
-    card.addEventListener('click', function(e) {
-      // Don't trigger if clicking inside expanded content or on sub-toggles
-      if (e.target.closest('.card-content') && this.classList.contains('full-width')) return;
-      if (e.target.classList.contains('job-toggle') || e.target.classList.contains('skill-toggle')) return;
-      
-      toggleCard(this);
-    });
-  });
+  // Dashboard card click handling is now done in page-specific scripts
+  // to avoid timing issues with modal functionality
   
   // Job item expansion
   const jobHeaders = document.querySelectorAll('.job-header:not([data-handler-attached])');
@@ -351,7 +304,7 @@ function initDashboard() {
 
 // Expose functions globally for navigation
 window.scrollToSection = scrollToSection;
-window.toggleCard = toggleCard;
+// toggleCard is now handled in page-specific scripts
 window.toggleJob = toggleJob;
 window.toggleSkill = toggleSkill;
 window.initDashboard = initDashboard;
