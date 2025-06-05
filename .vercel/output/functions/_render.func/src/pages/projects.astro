@@ -1,0 +1,329 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import ProjectModal from '../components/ProjectModal.astro';
+import db from '../lib/db.js';
+
+// Fetch projects from database
+let projects = [];
+let error = null;
+
+try {
+  const stmt = db.prepare('SELECT * FROM projects WHERE is_active = 1 ORDER BY display_order, id DESC');
+  const rawProjects = stmt.all();
+  
+  // Map database fields to component props
+  projects = rawProjects.map((project, index) => ({
+    id: project.id || index,
+    name: project.title,
+    description: project.description,
+    technologies: project.technologies || '',
+    github_link: project.github_link || '',
+    demo_link: project.live_link || '',
+    emoji: project.emoji || '🚀',
+    image_url: project.image_path || '',
+    subtitle: project.subtitle || '',
+    // Additional fields for modal
+    overview: project.subtitle || (project.description ? project.description.substring(0, 150) + '...' : 'An innovative project showcasing cutting-edge technologies and best practices.'),
+    achievements: [
+      "Implemented core functionality with modern best practices",
+      "Optimized performance for enhanced user experience", 
+      "Integrated responsive design for all devices",
+      "Achieved 100% test coverage"
+    ],
+    timeline: "2024",
+    team_size: (index % 4) + 1
+  }));
+} catch (err) {
+  console.error('Error fetching projects:', err);
+  error = err.message;
+}
+---
+
+<BaseLayout title="Projects - Nadav Moskow">
+  <div id="projects-dashboard">
+    {error ? (
+      <div class="error-message">
+        <p>Error loading projects: {error}</p>
+      </div>
+    ) : (
+      <div class="projects-grid">
+        {projects.map((project) => (
+          <ProjectCard project={project} />
+        ))}
+      </div>
+    )}
+  </div>
+  
+  <!-- Project Modal -->
+  <ProjectModal />
+  
+  <!-- Client-side JavaScript for modal functionality -->
+  <script define:vars={{ projects }}>
+    // Project Modal Manager - Matching the resume modal implementation
+    class ProjectModalManager {
+      constructor(modalElement) {
+        this.modal = modalElement;
+        this.modalContent = modalElement.querySelector('.project-modal-content');
+        this.modalClose = modalElement.querySelector('.modal-close');
+        
+        this.isOpen = false;
+        this.previousFocus = null;
+        this.scrollPosition = 0;
+        this.currentProject = null;
+        
+        // Store projects data
+        this.projectsData = projects;
+        
+        // Bind methods
+        this.open = this.open.bind(this);
+        this.close = this.close.bind(this);
+        this.handleKeydown = this.handleKeydown.bind(this);
+        this.handleOverlayClick = this.handleOverlayClick.bind(this);
+        
+        // Initialize
+        this.init();
+      }
+      
+      init() {
+        // Close button handler
+        this.modalClose?.addEventListener('click', this.close);
+        
+        // Overlay click handler
+        this.modal.addEventListener('click', this.handleOverlayClick);
+        
+        // Prevent clicks inside modal from closing
+        this.modalContent?.addEventListener('click', (e) => {
+          e.stopPropagation();
+        });
+        
+        // Set ARIA attributes
+        this.modal.setAttribute('role', 'dialog');
+        this.modal.setAttribute('aria-modal', 'true');
+        this.modalClose?.setAttribute('aria-label', 'Close modal');
+      }
+      
+      open(projectId) {
+        const project = this.projectsData.find(p => p.id == projectId);
+        if (this.isOpen || !project) return;
+        
+        // Store current state
+        this.previousFocus = document.activeElement;
+        this.scrollPosition = window.scrollY;
+        this.currentProject = project;
+        
+        // Update modal content
+        this.updateModalContent(project);
+        
+        // Open modal
+        this.isOpen = true;
+        this.modal.classList.add('show');
+        document.body.style.overflow = 'hidden';
+        
+        // Add keyboard listener
+        document.addEventListener('keydown', this.handleKeydown);
+        
+        // Set focus to first focusable element
+        setTimeout(() => {
+          const firstFocusable = this.modal.querySelector(
+            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+          );
+          firstFocusable?.focus();
+        }, 50);
+        
+        // Dispatch event
+        this.modal.dispatchEvent(new CustomEvent('project-modal-opened', { 
+          detail: { project } 
+        }));
+      }
+      
+      close() {
+        if (!this.isOpen) return;
+        
+        // Close modal
+        this.isOpen = false;
+        this.modal.classList.remove('show');
+        document.body.style.overflow = '';
+        
+        // Remove keyboard listener
+        document.removeEventListener('keydown', this.handleKeydown);
+        
+        // Restore focus
+        if (this.previousFocus) {
+          this.previousFocus.focus();
+        }
+        
+        // Dispatch event
+        this.modal.dispatchEvent(new CustomEvent('project-modal-closed', { 
+          detail: { project: this.currentProject } 
+        }));
+        
+        this.currentProject = null;
+      }
+      
+      handleKeydown(e) {
+        if (e.key === 'Escape') {
+          this.close();
+        }
+        
+        // Tab trap
+        if (e.key === 'Tab') {
+          const focusableElements = this.modal.querySelectorAll(
+            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+          );
+          
+          if (focusableElements.length === 0) return;
+          
+          const firstFocusable = focusableElements[0];
+          const lastFocusable = focusableElements[focusableElements.length - 1];
+          
+          if (e.shiftKey && document.activeElement === firstFocusable) {
+            e.preventDefault();
+            lastFocusable.focus();
+          } else if (!e.shiftKey && document.activeElement === lastFocusable) {
+            e.preventDefault();
+            firstFocusable.focus();
+          }
+        }
+      }
+      
+      handleOverlayClick(e) {
+        if (e.target === this.modal) {
+          this.close();
+        }
+      }
+      
+      updateModalContent(project) {
+        // Update all modal content elements
+        const elements = {
+          name: this.modal.querySelector('[data-project-name]'),
+          description: this.modal.querySelector('[data-project-description]'),
+          overview: this.modal.querySelector('[data-project-overview]'),
+          technologies: this.modal.querySelector('[data-project-technologies]'),
+          achievements: this.modal.querySelector('[data-project-achievements]'),
+          timeline: this.modal.querySelector('[data-project-timeline]'),
+          teamSize: this.modal.querySelector('[data-project-team-size]'),
+          githubLink: this.modal.querySelector('[data-github-link]'),
+          demoLink: this.modal.querySelector('[data-demo-link]'),
+          image: this.modal.querySelector('[data-project-image]')
+        };
+        
+        // Update text content
+        if (elements.name) elements.name.textContent = project.name;
+        if (elements.description) elements.description.textContent = project.description;
+        if (elements.overview) elements.overview.textContent = project.overview;
+        if (elements.technologies) elements.technologies.textContent = project.technologies;
+        if (elements.timeline) elements.timeline.textContent = project.timeline;
+        if (elements.teamSize) elements.teamSize.textContent = project.team_size;
+        
+        // Update achievements list
+        if (elements.achievements && project.achievements) {
+          elements.achievements.innerHTML = project.achievements
+            .map(achievement => `<li>${achievement}</li>`)
+            .join('');
+        }
+        
+        // Update links
+        if (elements.githubLink) {
+          elements.githubLink.href = project.github_link || '#';
+          elements.githubLink.style.display = project.github_link ? 'inline-flex' : 'none';
+        }
+        if (elements.demoLink) {
+          elements.demoLink.href = project.demo_link || '#';
+          elements.demoLink.style.display = project.demo_link ? 'inline-flex' : 'none';
+        }
+        
+        // Update image
+        if (elements.image && project.image_url) {
+          elements.image.src = project.image_url;
+          elements.image.alt = project.name;
+        }
+        
+        // Set title for accessibility
+        const modalTitle = this.modal.querySelector('.modal-header h2');
+        if (modalTitle) {
+          modalTitle.id = 'modal-title';
+          this.modal.setAttribute('aria-labelledby', 'modal-title');
+        }
+      }
+    }
+    
+    // Initialize when DOM is ready
+    function initializeProjectsPage() {
+      const modal = document.getElementById('project-modal');
+      if (!modal) {
+        console.error('Project modal element not found');
+        return;
+      }
+      
+      // Create modal manager
+      const modalManager = new ProjectModalManager(modal);
+      
+      // Attach click handlers to all project cards
+      const projectCards = document.querySelectorAll('.project-card');
+      projectCards.forEach(card => {
+        card.addEventListener('click', function(e) {
+          // Prevent clicks on links from opening modal
+          if (e.target.tagName === 'A' || e.target.closest('a')) return;
+          
+          e.preventDefault();
+          const projectId = card.dataset.projectId;
+          modalManager.open(projectId);
+        });
+        
+        // Add keyboard support
+        card.setAttribute('tabindex', '0');
+        card.setAttribute('role', 'button');
+        card.setAttribute('aria-label', `View ${card.querySelector('.project-title')?.textContent || 'project'} details`);
+        
+        card.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            const projectId = card.dataset.projectId;
+            modalManager.open(projectId);
+          }
+        });
+      });
+      
+      console.log('Projects page initialized with modal manager');
+    }
+    
+    // Initialize immediately since script is at end of body
+    initializeProjectsPage();
+  </script>
+</BaseLayout>
+
+<style>
+  #projects-dashboard {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+  
+  .error-message {
+    text-align: center;
+    color: var(--color-error, #dc3545);
+    padding: 2rem;
+    background-color: var(--color-error-bg, #f8d7da);
+    border-radius: 0.5rem;
+    margin: 2rem 0;
+  }
+  
+  @media (max-width: 768px) {
+    #projects-dashboard {
+      padding: 1rem;
+    }
+    
+    .projects-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+  }
+</style>

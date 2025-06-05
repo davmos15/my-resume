@@ -159,6 +159,8 @@ try {
   <CardModal />
   
   <script define:vars={{ groupedSections, stats }}>
+    console.log('Resume page script starting...');
+    
     // Animate stats on page load
     function animateValue(element, start, end, duration) {
       if (!element) return;
@@ -229,12 +231,23 @@ try {
       animateValue(document.getElementById('roles-count'), 0, stats.roles, 1000);
     }, 500);
     
-    // Wait for modal manager to be ready before setting up card interactions
+    // Set up event listener immediately
+    console.log('Setting up modalManagerReady event listener');
     document.addEventListener('modalManagerReady', () => {
+      console.log('modalManagerReady event received on resume page!');
+      console.log('window.unifiedModal exists:', !!window.unifiedModal);
+      
+      const cards = document.querySelectorAll('[data-card-type="resume"]');
+      console.log('Found resume cards:', cards.length);
+      
       // Handle card clicks for resume
-      document.querySelectorAll('[data-card-type="resume"]').forEach(card => {
+      cards.forEach(card => {
+        console.log('Setting up click handler for resume card:', card);
         card.addEventListener('click', function() {
+          console.log('Resume card clicked:', this);
           const section = this.getAttribute('data-card-section');
+          console.log('Card section:', section);
+          
           const data = {
             experience: {
               icon: '💼',
@@ -258,12 +271,22 @@ try {
             }
           };
           
+          console.log('Modal data for section:', data[section]);
+          
           if (data[section] && window.unifiedModal) {
+            console.log('Opening modal with data:', data[section]);
             window.unifiedModal.open(data[section]);
+          } else {
+            console.error('Cannot open modal:', {
+              sectionExists: !!data[section],
+              unifiedModalExists: !!window.unifiedModal
+            });
           }
         });
       });
     });
+    
+    console.log('Event listener set up completed for resume page');
   </script>
     
   <style>
