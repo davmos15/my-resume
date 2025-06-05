@@ -1,0 +1,106 @@
+---
+// Unified modal component for both projects and resume
+---
+
+<div id="unified-modal" class="unified-modal">
+    <div class="modal-content">
+        <button class="modal-close" aria-label="Close modal">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+        </button>
+        <div class="modal-header">
+            <span class="modal-icon"></span>
+            <div class="modal-header-text">
+                <h2 class="modal-title"></h2>
+                <p class="modal-subtitle"></p>
+            </div>
+        </div>
+        <div class="modal-body">
+            <!-- Content will be dynamically inserted here -->
+        </div>
+    </div>
+</div>
+
+<script>
+// Unified Modal Manager that works for both projects and resume
+class UnifiedModalManager {
+    constructor() {
+        this.modal = document.getElementById('unified-modal');
+        this.modalContent = this.modal?.querySelector('.modal-content');
+        this.modalClose = this.modal?.querySelector('.modal-close');
+        this.modalIcon = this.modal?.querySelector('.modal-icon');
+        this.modalTitle = this.modal?.querySelector('.modal-title');
+        this.modalSubtitle = this.modal?.querySelector('.modal-subtitle');
+        this.modalBody = this.modal?.querySelector('.modal-body');
+        
+        this.isOpen = false;
+        this.init();
+    }
+    
+    init() {
+        if (!this.modal) return;
+        
+        // Close button
+        this.modalClose?.addEventListener('click', () => this.close());
+        
+        // Click outside to close
+        this.modal.addEventListener('click', (e) => {
+            if (e.target === this.modal) this.close();
+        });
+        
+        // Escape key to close
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && this.isOpen) this.close();
+        });
+    }
+    
+    open(data) {
+        if (!this.modal || this.isOpen) return;
+        
+        // Update modal content
+        if (this.modalIcon) this.modalIcon.textContent = data.icon || '';
+        if (this.modalTitle) this.modalTitle.textContent = data.title || '';
+        if (this.modalSubtitle) {
+            this.modalSubtitle.textContent = data.subtitle || '';
+            this.modalSubtitle.style.display = data.subtitle ? 'block' : 'none';
+        }
+        if (this.modalBody) this.modalBody.innerHTML = data.content || '';
+        
+        // Show modal
+        this.isOpen = true;
+        this.modal.classList.add('show');
+        document.body.style.overflow = 'hidden';
+        
+        // Initialize any interactive content
+        this.initModalInteractions();
+    }
+    
+    close() {
+        if (!this.modal || !this.isOpen) return;
+        
+        this.isOpen = false;
+        this.modal.classList.remove('show');
+        document.body.style.overflow = '';
+    }
+    
+    initModalInteractions() {
+        // Handle collapsible sections in modal
+        const toggles = this.modalBody?.querySelectorAll('[data-toggle]');
+        toggles?.forEach(toggle => {
+            toggle.addEventListener('click', (e) => {
+                const targetId = toggle.getAttribute('data-toggle');
+                const target = this.modalBody?.querySelector(`#${targetId}`);
+                if (target) {
+                    target.classList.toggle('expanded');
+                    toggle.textContent = target.classList.contains('expanded') ? '−' : '+';
+                }
+            });
+        });
+    }
+}
+
+// Initialize modal manager globally
+window.unifiedModal = new UnifiedModalManager();
+</script>
