@@ -41,8 +41,6 @@ try {
   <CardModal />
   
   <script define:vars={{ projects }}>
-    console.log('Projects page script starting...');
-    
     function buildProjectContent(project) {
       // Build the modal content
       let content = `
@@ -79,46 +77,25 @@ try {
       return content;
     }
     
-    // Set up event listener immediately
-    console.log('Setting up modalManagerReady event listener');
+    // Wait for modal manager to be ready before setting up card interactions
     document.addEventListener('modalManagerReady', () => {
-      console.log('modalManagerReady event received on projects page!');
-      console.log('window.unifiedModal exists:', !!window.unifiedModal);
-      
-      const cards = document.querySelectorAll('[data-card-type="project"]');
-      console.log('Found project cards:', cards.length);
-      
       // Handle card clicks for projects
-      cards.forEach(card => {
-        console.log('Setting up click handler for project card:', card);
+      document.querySelectorAll('[data-card-type="project"]').forEach(card => {
         card.addEventListener('click', function() {
-          console.log('Project card clicked:', this);
           const projectId = this.getAttribute('data-card-id');
-          console.log('Project ID:', projectId);
-          
           const project = projects.find(p => p.id == projectId);
-          console.log('Found project:', project);
           
           if (project && window.unifiedModal) {
-            const modalData = {
+            window.unifiedModal.open({
               icon: project.emoji || '🚀',
               title: project.title,
               subtitle: project.subtitle,
               content: buildProjectContent(project)
-            };
-            console.log('Opening modal with data:', modalData);
-            window.unifiedModal.open(modalData);
-          } else {
-            console.error('Cannot open modal:', {
-              projectExists: !!project,
-              unifiedModalExists: !!window.unifiedModal
             });
           }
         });
       });
     });
-    
-    console.log('Event listener set up completed for projects page');
   </script>
   
   <style>
