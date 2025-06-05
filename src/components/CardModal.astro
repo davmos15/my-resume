@@ -34,10 +34,13 @@ window.modalManager = {
     modalSubtitle: null,
     modalBody: null,
     isOpen: false,
+    eventListenersAttached: false,
+    escapeListener: null,
     
     init() {
         console.log('🔧 ModalManager: Starting initialization...');
         
+        // Always get fresh DOM references
         this.modal = document.getElementById('unified-modal');
         console.log('🔧 ModalManager: Modal element found:', !!this.modal);
         
@@ -46,6 +49,11 @@ window.modalManager = {
             return false;
         }
         
+        // Clear any existing state
+        this.isOpen = false;
+        this.removeEventListeners();
+        
+        // Get fresh references to all modal elements
         this.modalContent = this.modal.querySelector('.modal-content');
         this.modalClose = this.modal.querySelector('.modal-close');
         this.modalIcon = this.modal.querySelector('.modal-icon');
@@ -67,8 +75,17 @@ window.modalManager = {
         return true;
     },
     
+    removeEventListeners() {
+        // Remove the old escape key listener if it exists
+        if (this.escapeListener) {
+            document.removeEventListener('keydown', this.escapeListener);
+            this.escapeListener = null;
+        }
+        this.eventListenersAttached = false;
+    },
+    
     setupEventListeners() {
-        if (!this.modal) return;
+        if (!this.modal || this.eventListenersAttached) return;
         
         // Close button
         if (this.modalClose) {
@@ -80,10 +97,15 @@ window.modalManager = {
             if (e.target === this.modal) this.close();
         });
         
-        // Escape key to close
-        document.addEventListener('keydown', (e) => {
+        // Create escape key listener function
+        this.escapeListener = (e) => {
             if (e.key === 'Escape' && this.isOpen) this.close();
-        });
+        };
+        
+        // Add escape key listener
+        document.addEventListener('keydown', this.escapeListener);
+        
+        this.eventListenersAttached = true;
     },
     
     open(data) {
@@ -147,6 +169,56 @@ window.modalManager = {
 
 // Initialize immediately when script loads
 console.log('🚀 ModalManager: Script loaded, starting initialization...');
+
+// Force re-initialization to ensure fresh DOM references
+// This is crucial for Astro's page navigation
+if (window.modalManager) {
+    // Clear any existing state first
+    window.modalManager.isOpen = false;
+    window.modalManager.removeEventListeners();
+}
+
 const initResult = window.modalManager.init();
 console.log('🚀 ModalManager: Init result:', initResult);
+
+// Utility function to ensure modal manager is properly initialized
+window.ensureModalManager = function() {
+    if (!window.modalManager) {
+        console.log('❌ Modal manager object does not exist');
+        return false;
+    }
+    
+    // Check if modal element still exists in DOM
+    const currentModal = document.getElementById('unified-modal');
+    if (!currentModal) {
+        console.log('❌ Modal element not found in DOM');
+        return false;
+    }
+    
+    // If modal manager exists but doesn't have a reference to current modal, re-init
+    if (!window.modalManager.modal || window.modalManager.modal !== currentModal) {
+        console.log('🔄 Modal reference stale, re-initializing...');
+        return window.modalManager.init();
+    }
+    
+    return true;
+};
+
+// Global function for pages to safely open modals
+window.safeOpenModal = function(data) {
+    console.log('🔧 Safe modal open requested:', data);
+    
+    if (!window.ensureModalManager()) {
+        console.error('❌ Failed to ensure modal manager is ready');
+        return false;
+    }
+    
+    if (window.modalManager && window.modalManager.open) {
+        window.modalManager.open(data);
+        return true;
+    }
+    
+    console.error('❌ Modal manager open function not available');
+    return false;
+};
 </script>

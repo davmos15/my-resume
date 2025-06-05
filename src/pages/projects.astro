@@ -80,11 +80,15 @@ try {
     // Simple polling function to set up cards when modal is ready
     function trySetupCards() {
       console.log('🚀 Projects: Attempting to setup cards...');
-      console.log('🚀 Projects: window.modalManager exists:', !!window.modalManager);
-      console.log('🚀 Projects: modalManager.modal exists:', !!(window.modalManager && window.modalManager.modal));
       
-      // Check if modal manager exists and is initialized
-      if (!window.modalManager || !window.modalManager.modal) {
+      // Check if safeOpenModal is available (indicates modal system is ready)
+      if (!window.safeOpenModal) {
+        console.log('⏳ Projects: Safe modal function not ready yet');
+        return false;
+      }
+      
+      // Ensure modal manager is initialized with fresh DOM references
+      if (window.ensureModalManager && !window.ensureModalManager()) {
         console.log('⏳ Projects: Modal manager not ready yet');
         return false;
       }
@@ -102,12 +106,16 @@ try {
           
           if (project) {
             console.log('🔧 Projects: Opening modal for project:', project.title);
-            window.modalManager.open({
-              icon: project.emoji || '🚀',
-              title: project.title,
-              subtitle: project.subtitle,
-              content: buildProjectContent(project)
-            });
+            if (window.safeOpenModal) {
+              window.safeOpenModal({
+                icon: project.emoji || '🚀',
+                title: project.title,
+                subtitle: project.subtitle,
+                content: buildProjectContent(project)
+              });
+            } else {
+              console.error('❌ Projects: safeOpenModal function not available');
+            }
           } else {
             console.error('❌ Projects: No project found for ID:', projectId);
           }
