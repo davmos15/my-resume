@@ -77,73 +77,47 @@ try {
       return content;
     }
     
-    // Function to set up card interactions
-    function setupCardInteractions() {
-      // Check if modal manager is available
-      if (!window.unifiedModal) {
+    // Simple polling function to set up cards when modal is ready
+    function trySetupCards() {
+      // Check if modal manager exists and is initialized
+      if (!window.modalManager || !window.modalManager.modal) {
         return false;
       }
       
-      // Handle card clicks for projects
+      // Set up card click handlers
       document.querySelectorAll('[data-card-type="project"]').forEach(card => {
-        // Remove any existing listeners to avoid duplicates
-        card.removeEventListener('click', handleCardClick);
-        card.addEventListener('click', handleCardClick);
+        card.onclick = function() {
+          const projectId = this.getAttribute('data-card-id');
+          const project = projects.find(p => p.id == projectId);
+          
+          if (project) {
+            window.modalManager.open({
+              icon: project.emoji || '🚀',
+              title: project.title,
+              subtitle: project.subtitle,
+              content: buildProjectContent(project)
+            });
+          }
+        };
       });
       
       return true;
     }
     
-    function handleCardClick() {
-      const projectId = this.getAttribute('data-card-id');
-      const project = projects.find(p => p.id == projectId);
-      
-      if (project && window.unifiedModal) {
-        window.unifiedModal.open({
-          icon: project.emoji || '🚀',
-          title: project.title,
-          subtitle: project.subtitle,
-          content: buildProjectContent(project)
-        });
+    // Simple polling approach - try every 100ms until success
+    let attempts = 0;
+    const maxAttempts = 50; // 5 seconds max
+    
+    function pollForModal() {
+      if (trySetupCards() || attempts >= maxAttempts) {
+        return; // Success or give up
       }
+      attempts++;
+      setTimeout(pollForModal, 100);
     }
     
-    // Multiple approaches to ensure setup happens
-    let setupComplete = false;
-    
-    // Try immediate setup (in case modal is already ready)
-    if (document.readyState === 'complete' || document.readyState === 'interactive') {
-      setTimeout(() => {
-        if (!setupComplete && setupCardInteractions()) {
-          setupComplete = true;
-        }
-      }, 50);
-    }
-    
-    // Listen for modal manager ready event
-    document.addEventListener('modalManagerReady', () => {
-      if (!setupComplete && setupCardInteractions()) {
-        setupComplete = true;
-      }
-    });
-    
-    // Fallback: try setup when DOM is fully loaded
-    document.addEventListener('DOMContentLoaded', () => {
-      setTimeout(() => {
-        if (!setupComplete && setupCardInteractions()) {
-          setupComplete = true;
-        }
-      }, 200);
-    });
-    
-    // Final fallback: try setup after window load
-    window.addEventListener('load', () => {
-      setTimeout(() => {
-        if (!setupComplete && setupCardInteractions()) {
-          setupComplete = true;
-        }
-      }, 300);
-    });
+    // Start polling immediately
+    pollForModal();
   </script>
   
   <style>

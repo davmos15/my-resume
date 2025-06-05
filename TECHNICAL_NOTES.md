@@ -2,64 +2,86 @@
 
 ## Critical Implementation Details
 
-### 1. Unified Card and Modal System - CRITICAL
+### 1. Simplified Card and Modal System - CRITICAL
 
-**Problem**: The cards on both `/resume` and `/projects` pages had timing issues where clicking cards would fail until after a page reload due to race conditions between component initialization and page scripts.
+**Problem**: The cards on both `/resume` and `/projects` pages had timing issues where clicking cards would fail until after a page reload due to complex event systems and race conditions.
 
 **Root Cause**: 
-- Scripts tried to access `window.unifiedModal` before the CardModal component finished initializing
-- No proper dependency chain between modal manager and page scripts
-- Timing issues with Astro's script loading order
+- Over-complicated event-driven architecture caused timing dependencies
+- Scripts tried to access modal manager before initialization
+- Complex event listeners created race conditions
 
-**WORKING SOLUTION**: Event-driven initialization pattern with proper dependency management:
+**WORKING SOLUTION**: Simple polling-based approach with direct DOM access:
 
 ```javascript
-// In CardModal.astro - Modal Manager with Event Dispatch
-class UnifiedModalManager {
-    constructor() {
-        // ... initialization code ...
-        
-        // After all initialization is complete, dispatch ready event
-        document.dispatchEvent(new CustomEvent('modalManagerReady'));
+// In CardModal.astro - Simple Modal Manager Object
+window.modalManager = {
+    modal: null,
+    isOpen: false,
+    
+    init() {
+        this.modal = document.getElementById('unified-modal');
+        if (!this.modal) return false;
+        // ... setup modal elements and event listeners
+        return true;
+    },
+    
+    open(data) {
+        // Direct modal opening logic
     }
+};
+
+// Initialize immediately when script loads
+window.modalManager.init();
+
+// In projects.astro and resume.astro - Simple Polling
+function trySetupCards() {
+    if (!window.modalManager || !window.modalManager.modal) {
+        return false;
+    }
+    
+    // Set up card click handlers using onclick (simple and reliable)
+    document.querySelectorAll('[data-card-type="project"]').forEach(card => {
+        card.onclick = function() {
+            window.modalManager.open(data);
+        };
+    });
+    return true;
 }
 
-// In projects.astro and resume.astro - Event-driven Initialization
-document.addEventListener('modalManagerReady', () => {
-    // Set up card click handlers only after modal manager is ready
-    document.querySelectorAll('[data-card-type="project"]').forEach(card => {
-        card.addEventListener('click', function() {
-            // Safe to use window.unifiedModal here
-            window.unifiedModal.open(data);
-        });
-    });
-});
+// Poll every 100ms until modal is ready (max 5 seconds)
+function pollForModal() {
+    if (trySetupCards() || attempts >= maxAttempts) return;
+    attempts++;
+    setTimeout(pollForModal, 100);
+}
+pollForModal();
 ```
 
 **Key Features of This Implementation**:
-1. **Event-driven Pattern**: `modalManagerReady` event ensures proper initialization order
-2. **Unified System**: Single CardModal component works for both projects and resume
-3. **Accessibility**: ARIA attributes, focus trap, keyboard navigation
-4. **Responsive Design**: Mobile-optimized with smooth animations
-5. **Theme Support**: Theme-specific hover overlays and styling
-6. **Clean Architecture**: Separation of concerns with reusable components
+1. **Simple Polling**: No complex events, just checks every 100ms until ready
+2. **Direct DOM Access**: Uses `onclick` instead of `addEventListener` for reliability
+3. **Object-based Modal**: Simple object with methods instead of class complexity
+4. **Immediate Initialization**: Modal manager starts immediately when script loads
+5. **Fail-safe Timeout**: Stops trying after 5 seconds to prevent infinite loops
+6. **Unified System**: Single modal works for both projects and resume pages
 
 **Architecture Overview**:
-- `src/components/CardModal.astro`: Unified modal component with event dispatch
+- `src/components/CardModal.astro`: Simple modal object with direct initialization
 - `public/css/unified-cards.css`: Complete styling system for cards and modals
-- Page scripts: Event-driven initialization in projects.astro and resume.astro
+- Page scripts: Simple polling-based setup in projects.astro and resume.astro
 
 **DO NOT**:
-- Remove the event-driven pattern - it's critical for timing
-- Split the modal functionality across multiple components
-- Use setTimeout or polling instead of the event system
-- Remove the unified CSS approach
+- Reintroduce complex event systems - they cause timing issues
+- Use addEventListener - onclick is more reliable for this use case
+- Remove the polling mechanism - it ensures cards work on first load
+- Complicate the modal manager with classes or complex state
 
 **Key Points**:
-- The `modalManagerReady` event eliminates all timing issues
-- Both pages use the same CardModal component for consistency
-- The unified CSS provides responsive design and theme support
-- This approach is maintainable and scalable for future enhancements
+- Simple polling eliminates all timing issues
+- Direct DOM access is more reliable than event systems
+- The approach is easy to debug and maintain
+- Cards work consistently on first page load without hard refresh
 
 ### 2. Database Initialization on Vercel
 

@@ -24,46 +24,39 @@
 </div>
 
 <script>
-// Unified Modal Manager that works for both projects and resume
-class UnifiedModalManager {
-    constructor() {
-        this.modal = document.getElementById('unified-modal');
-        
-        if (!this.modal) {
-            return;
-        }
-        
-        this.modalContent = this.modal?.querySelector('.modal-content');
-        this.modalClose = this.modal?.querySelector('.modal-close');
-        this.modalIcon = this.modal?.querySelector('.modal-icon');
-        this.modalTitle = this.modal?.querySelector('.modal-title');
-        this.modalSubtitle = this.modal?.querySelector('.modal-subtitle');
-        this.modalBody = this.modal?.querySelector('.modal-body');
-        
-        this.isOpen = false;
-        this.isReady = false;
-        this.init();
-        
-        // Mark as ready and dispatch event
-        this.isReady = true;
-        this.dispatchReadyEvent();
-    }
-    
-    dispatchReadyEvent() {
-        // Dispatch immediately
-        document.dispatchEvent(new CustomEvent('modalManagerReady'));
-        
-        // Also dispatch after a short delay to catch any missed listeners
-        setTimeout(() => {
-            document.dispatchEvent(new CustomEvent('modalManagerReady'));
-        }, 100);
-    }
+// Simple Modal Manager - no events, just direct access
+window.modalManager = {
+    modal: null,
+    modalContent: null,
+    modalClose: null,
+    modalIcon: null,
+    modalTitle: null,
+    modalSubtitle: null,
+    modalBody: null,
+    isOpen: false,
     
     init() {
+        this.modal = document.getElementById('unified-modal');
+        if (!this.modal) return false;
+        
+        this.modalContent = this.modal.querySelector('.modal-content');
+        this.modalClose = this.modal.querySelector('.modal-close');
+        this.modalIcon = this.modal.querySelector('.modal-icon');
+        this.modalTitle = this.modal.querySelector('.modal-title');
+        this.modalSubtitle = this.modal.querySelector('.modal-subtitle');
+        this.modalBody = this.modal.querySelector('.modal-body');
+        
+        this.setupEventListeners();
+        return true;
+    },
+    
+    setupEventListeners() {
         if (!this.modal) return;
         
         // Close button
-        this.modalClose?.addEventListener('click', () => this.close());
+        if (this.modalClose) {
+            this.modalClose.addEventListener('click', () => this.close());
+        }
         
         // Click outside to close
         this.modal.addEventListener('click', (e) => {
@@ -74,7 +67,7 @@ class UnifiedModalManager {
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && this.isOpen) this.close();
         });
-    }
+    },
     
     open(data) {
         if (!this.modal || this.isOpen) return;
@@ -95,7 +88,7 @@ class UnifiedModalManager {
         
         // Initialize any interactive content
         this.initModalInteractions();
-    }
+    },
     
     close() {
         if (!this.modal || !this.isOpen) return;
@@ -103,7 +96,7 @@ class UnifiedModalManager {
         this.isOpen = false;
         this.modal.classList.remove('show');
         document.body.style.overflow = '';
-    }
+    },
     
     initModalInteractions() {
         // Handle collapsible sections in modal
@@ -119,8 +112,8 @@ class UnifiedModalManager {
             });
         });
     }
-}
+};
 
-// Initialize modal manager globally
-window.unifiedModal = new UnifiedModalManager();
+// Initialize immediately when script loads
+window.modalManager.init();
 </script>

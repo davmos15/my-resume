@@ -8,7 +8,7 @@ A modern portfolio website built with Astro, featuring a dynamic admin panel and
 - **Admin Panel** for content management
 - **SQLite Database** for content storage
 - **Authentication** system with JWT tokens
-- **Unified Card System** with smooth animations and modal interactions
+- **Simplified Card System** with reliable polling-based modal interactions
 - **Responsive Design** with theme support
 - **Contact Form** with database storage
 - **File Upload** capabilities
