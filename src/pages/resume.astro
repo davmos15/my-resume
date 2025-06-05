@@ -229,40 +229,88 @@ try {
       animateValue(document.getElementById('roles-count'), 0, stats.roles, 1000);
     }, 500);
     
-    // Wait for modal manager to be ready before setting up card interactions
-    document.addEventListener('modalManagerReady', () => {
+    // Function to set up card interactions
+    function setupCardInteractions() {
+      // Check if modal manager is available
+      if (!window.unifiedModal) {
+        return false;
+      }
+      
       // Handle card clicks for resume
       document.querySelectorAll('[data-card-type="resume"]').forEach(card => {
-        card.addEventListener('click', function() {
-          const section = this.getAttribute('data-card-section');
-          const data = {
-            experience: {
-              icon: '💼',
-              title: 'Professional Experience',
-              content: buildExperienceContent()
-            },
-            skills: {
-              icon: '🛠️',
-              title: 'Skills & Tools',
-              content: buildSkillsContent()
-            },
-            achievements: {
-              icon: '🏆',
-              title: 'Courses & Achievements',
-              content: buildAchievementsContent()
-            },
-            education: {
-              icon: '🎓',
-              title: 'Education',
-              content: buildEducationContent()
-            }
-          };
-          
-          if (data[section] && window.unifiedModal) {
-            window.unifiedModal.open(data[section]);
-          }
-        });
+        // Remove any existing listeners to avoid duplicates
+        card.removeEventListener('click', handleCardClick);
+        card.addEventListener('click', handleCardClick);
       });
+      
+      return true;
+    }
+    
+    function handleCardClick() {
+      const section = this.getAttribute('data-card-section');
+      const data = {
+        experience: {
+          icon: '💼',
+          title: 'Professional Experience',
+          content: buildExperienceContent()
+        },
+        skills: {
+          icon: '🛠️',
+          title: 'Skills & Tools',
+          content: buildSkillsContent()
+        },
+        achievements: {
+          icon: '🏆',
+          title: 'Courses & Achievements',
+          content: buildAchievementsContent()
+        },
+        education: {
+          icon: '🎓',
+          title: 'Education',
+          content: buildEducationContent()
+        }
+      };
+      
+      if (data[section] && window.unifiedModal) {
+        window.unifiedModal.open(data[section]);
+      }
+    }
+    
+    // Multiple approaches to ensure setup happens
+    let setupComplete = false;
+    
+    // Try immediate setup (in case modal is already ready)
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+      setTimeout(() => {
+        if (!setupComplete && setupCardInteractions()) {
+          setupComplete = true;
+        }
+      }, 50);
+    }
+    
+    // Listen for modal manager ready event
+    document.addEventListener('modalManagerReady', () => {
+      if (!setupComplete && setupCardInteractions()) {
+        setupComplete = true;
+      }
+    });
+    
+    // Fallback: try setup when DOM is fully loaded
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        if (!setupComplete && setupCardInteractions()) {
+          setupComplete = true;
+        }
+      }, 200);
+    });
+    
+    // Final fallback: try setup after window load
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        if (!setupComplete && setupCardInteractions()) {
+          setupComplete = true;
+        }
+      }, 300);
     });
   </script>
     

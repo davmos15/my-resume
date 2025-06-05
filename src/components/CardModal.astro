@@ -41,10 +41,22 @@ class UnifiedModalManager {
         this.modalBody = this.modal?.querySelector('.modal-body');
         
         this.isOpen = false;
+        this.isReady = false;
         this.init();
         
-        // After all initialization is complete, dispatch ready event
+        // Mark as ready and dispatch event
+        this.isReady = true;
+        this.dispatchReadyEvent();
+    }
+    
+    dispatchReadyEvent() {
+        // Dispatch immediately
         document.dispatchEvent(new CustomEvent('modalManagerReady'));
+        
+        // Also dispatch after a short delay to catch any missed listeners
+        setTimeout(() => {
+            document.dispatchEvent(new CustomEvent('modalManagerReady'));
+        }, 100);
     }
     
     init() {
