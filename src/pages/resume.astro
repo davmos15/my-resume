@@ -231,14 +231,24 @@ try {
     
     // Simple polling function to set up cards when modal is ready
     function trySetupCards() {
+      console.log('📄 Resume: Attempting to setup cards...');
+      console.log('📄 Resume: window.modalManager exists:', !!window.modalManager);
+      console.log('📄 Resume: modalManager.modal exists:', !!(window.modalManager && window.modalManager.modal));
+      
       // Check if modal manager exists and is initialized
       if (!window.modalManager || !window.modalManager.modal) {
+        console.log('⏳ Resume: Modal manager not ready yet');
         return false;
       }
       
       // Set up card click handlers
-      document.querySelectorAll('[data-card-type="resume"]').forEach(card => {
+      const cards = document.querySelectorAll('[data-card-type="resume"]');
+      console.log('📄 Resume: Found', cards.length, 'resume cards');
+      
+      cards.forEach((card, index) => {
+        console.log('📄 Resume: Setting up card', index + 1, 'section:', card.getAttribute('data-card-section'));
         card.onclick = function() {
+          console.log('🖱️ Resume: Card clicked!', this.getAttribute('data-card-section'));
           const section = this.getAttribute('data-card-section');
           const data = {
             experience: {
@@ -264,11 +274,15 @@ try {
           };
           
           if (data[section]) {
+            console.log('🔧 Resume: Opening modal for section:', section);
             window.modalManager.open(data[section]);
+          } else {
+            console.error('❌ Resume: No data found for section:', section);
           }
         };
       });
       
+      console.log('✅ Resume: Card setup complete!');
       return true;
     }
     
@@ -277,14 +291,24 @@ try {
     const maxAttempts = 50; // 5 seconds max
     
     function pollForModal() {
-      if (trySetupCards() || attempts >= maxAttempts) {
-        return; // Success or give up
+      console.log('🔄 Resume: Polling attempt', attempts + 1, 'of', maxAttempts);
+      
+      if (trySetupCards()) {
+        console.log('🎉 Resume: Cards setup successful!');
+        return;
       }
+      
+      if (attempts >= maxAttempts) {
+        console.error('❌ Resume: Failed to setup cards after', maxAttempts, 'attempts');
+        return;
+      }
+      
       attempts++;
       setTimeout(pollForModal, 100);
     }
     
     // Start polling immediately
+    console.log('🚀 Resume: Starting card setup polling...');
     pollForModal();
   </script>
     

@@ -79,28 +79,42 @@ try {
     
     // Simple polling function to set up cards when modal is ready
     function trySetupCards() {
+      console.log('🚀 Projects: Attempting to setup cards...');
+      console.log('🚀 Projects: window.modalManager exists:', !!window.modalManager);
+      console.log('🚀 Projects: modalManager.modal exists:', !!(window.modalManager && window.modalManager.modal));
+      
       // Check if modal manager exists and is initialized
       if (!window.modalManager || !window.modalManager.modal) {
+        console.log('⏳ Projects: Modal manager not ready yet');
         return false;
       }
       
       // Set up card click handlers
-      document.querySelectorAll('[data-card-type="project"]').forEach(card => {
+      const cards = document.querySelectorAll('[data-card-type="project"]');
+      console.log('🚀 Projects: Found', cards.length, 'project cards');
+      
+      cards.forEach((card, index) => {
+        console.log('🚀 Projects: Setting up card', index + 1, 'id:', card.getAttribute('data-card-id'));
         card.onclick = function() {
+          console.log('🖱️ Projects: Card clicked!', this.getAttribute('data-card-id'));
           const projectId = this.getAttribute('data-card-id');
           const project = projects.find(p => p.id == projectId);
           
           if (project) {
+            console.log('🔧 Projects: Opening modal for project:', project.title);
             window.modalManager.open({
               icon: project.emoji || '🚀',
               title: project.title,
               subtitle: project.subtitle,
               content: buildProjectContent(project)
             });
+          } else {
+            console.error('❌ Projects: No project found for ID:', projectId);
           }
         };
       });
       
+      console.log('✅ Projects: Card setup complete!');
       return true;
     }
     
@@ -109,14 +123,24 @@ try {
     const maxAttempts = 50; // 5 seconds max
     
     function pollForModal() {
-      if (trySetupCards() || attempts >= maxAttempts) {
-        return; // Success or give up
+      console.log('🔄 Projects: Polling attempt', attempts + 1, 'of', maxAttempts);
+      
+      if (trySetupCards()) {
+        console.log('🎉 Projects: Cards setup successful!');
+        return;
       }
+      
+      if (attempts >= maxAttempts) {
+        console.error('❌ Projects: Failed to setup cards after', maxAttempts, 'attempts');
+        return;
+      }
+      
       attempts++;
       setTimeout(pollForModal, 100);
     }
     
     // Start polling immediately
+    console.log('🚀 Projects: Starting card setup polling...');
     pollForModal();
   </script>
   

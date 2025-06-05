@@ -36,8 +36,15 @@ window.modalManager = {
     isOpen: false,
     
     init() {
+        console.log('🔧 ModalManager: Starting initialization...');
+        
         this.modal = document.getElementById('unified-modal');
-        if (!this.modal) return false;
+        console.log('🔧 ModalManager: Modal element found:', !!this.modal);
+        
+        if (!this.modal) {
+            console.error('❌ ModalManager: unified-modal element not found in DOM');
+            return false;
+        }
         
         this.modalContent = this.modal.querySelector('.modal-content');
         this.modalClose = this.modal.querySelector('.modal-close');
@@ -46,7 +53,17 @@ window.modalManager = {
         this.modalSubtitle = this.modal.querySelector('.modal-subtitle');
         this.modalBody = this.modal.querySelector('.modal-body');
         
+        console.log('🔧 ModalManager: Sub-elements found:', {
+            content: !!this.modalContent,
+            close: !!this.modalClose,
+            icon: !!this.modalIcon,
+            title: !!this.modalTitle,
+            subtitle: !!this.modalSubtitle,
+            body: !!this.modalBody
+        });
+        
         this.setupEventListeners();
+        console.log('✅ ModalManager: Initialization complete');
         return true;
     },
     
@@ -70,7 +87,17 @@ window.modalManager = {
     },
     
     open(data) {
-        if (!this.modal || this.isOpen) return;
+        console.log('🔧 ModalManager: Opening modal with data:', data);
+        
+        if (!this.modal) {
+            console.error('❌ ModalManager: Cannot open - modal element not found');
+            return;
+        }
+        
+        if (this.isOpen) {
+            console.warn('⚠️ ModalManager: Modal already open, ignoring request');
+            return;
+        }
         
         // Update modal content
         if (this.modalIcon) this.modalIcon.textContent = data.icon || '';
@@ -81,10 +108,14 @@ window.modalManager = {
         }
         if (this.modalBody) this.modalBody.innerHTML = data.content || '';
         
+        console.log('🔧 ModalManager: Content updated, showing modal...');
+        
         // Show modal
         this.isOpen = true;
         this.modal.classList.add('show');
         document.body.style.overflow = 'hidden';
+        
+        console.log('✅ ModalManager: Modal opened successfully');
         
         // Initialize any interactive content
         this.initModalInteractions();
@@ -115,5 +146,7 @@ window.modalManager = {
 };
 
 // Initialize immediately when script loads
-window.modalManager.init();
+console.log('🚀 ModalManager: Script loaded, starting initialization...');
+const initResult = window.modalManager.init();
+console.log('🚀 ModalManager: Init result:', initResult);
 </script>
