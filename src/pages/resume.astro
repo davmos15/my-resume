@@ -160,6 +160,34 @@ try {
   <script define:vars={{ groupedSections, stats }}>
     console.log('🚀 Resume: Page script starting...');
     
+    // Make resume data available globally for card handlers
+    window.resumeData = {
+      experience: {
+        icon: '💼',
+        title: 'Professional Experience',
+        subtitle: `${stats.years} years across ${stats.companies} companies`,
+        content: buildResumeContent('experience', groupedSections.experience || [])
+      },
+      skills: {
+        icon: '🛠️',
+        title: 'Technical Skills',
+        subtitle: 'Technologies & Expertise',
+        content: buildResumeContent('skills', groupedSections.skills || [])
+      },
+      achievements: {
+        icon: '🏆',
+        title: 'Achievements',
+        subtitle: 'Notable Accomplishments',
+        content: buildResumeContent('achievements', groupedSections.achievements || [])
+      },
+      education: {
+        icon: '🎓',
+        title: 'Education',
+        subtitle: 'Academic Background',
+        content: buildResumeContent('education', groupedSections.education || [])
+      }
+    };
+    
     // Animate stats on page load
     function animateValue(element, start, end, duration) {
       if (!element) return;

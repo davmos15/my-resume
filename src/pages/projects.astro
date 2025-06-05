@@ -42,6 +42,9 @@ try {
   <script define:vars={{ projects }}>
     console.log('🚀 Projects: Page script starting...');
     
+    // Make projects data available globally for card handlers
+    window.projectsData = projects;
+    
     function buildProjectContent(project) {
       // Build the modal content
       let content = `

@@ -381,11 +381,130 @@ function initProjectsPage() {
   }
 }
 
+// Initialize card handlers for resume and projects pages
+function initCardHandlers() {
+  console.log('🔧 Initializing card handlers...');
+  
+  // Resume page cards
+  const resumeCards = document.querySelectorAll('[data-card-type="resume"]');
+  if (resumeCards.length > 0) {
+    console.log('📄 Resume: Found', resumeCards.length, 'resume cards');
+    
+    // Resume data from page context
+    const resumeData = window.resumeData || {};
+    
+    resumeCards.forEach((card, index) => {
+      const section = card.getAttribute('data-section');
+      console.log('📄 Resume: Setting up card', index + 1, 'section:', section);
+      
+      card.addEventListener('click', () => {
+        console.log('🖱️ Resume: Card clicked!', section);
+        
+        if (resumeData[section] && window.safeOpenModal) {
+          console.log('🔧 Resume: Opening modal for section:', section);
+          window.safeOpenModal(resumeData[section]);
+        } else {
+          console.error('❌ Resume: No data found for section:', section);
+        }
+      });
+    });
+    
+    console.log('✅ Resume: Card setup complete!');
+  }
+  
+  // Projects page cards
+  const projectCards = document.querySelectorAll('[data-card-type="project"]');
+  if (projectCards.length > 0) {
+    console.log('🚀 Projects: Found', projectCards.length, 'project cards');
+    
+    // Projects data from page context
+    const projectsData = window.projectsData || [];
+    
+    projectCards.forEach((card, index) => {
+      const projectId = parseInt(card.getAttribute('data-project-id'));
+      console.log('🚀 Projects: Setting up card', index + 1, 'ID:', projectId);
+      
+      card.addEventListener('click', () => {
+        console.log('🖱️ Projects: Card clicked!', projectId);
+        
+        const project = projectsData.find(p => p.id === projectId);
+        
+        if (project && window.safeOpenModal) {
+          console.log('🔧 Projects: Opening modal for project:', project.title);
+          window.safeOpenModal({
+            icon: project.emoji || '🚀',
+            title: project.title,
+            subtitle: project.subtitle,
+            content: buildProjectContent(project)
+          });
+        } else {
+          console.error('❌ Projects: No project found for ID:', projectId);
+        }
+      });
+    });
+    
+    console.log('✅ Projects: Card setup complete!');
+  }
+}
+
+// Helper function to build project content
+function buildProjectContent(project) {
+  return `
+    <div class="modal-section">
+      <h3>Overview</h3>
+      <p>${project.description}</p>
+    </div>
+    
+    ${project.details ? `
+      <div class="modal-section">
+        <h3>Details</h3>
+        <div class="project-details">
+          ${project.details}
+        </div>
+      </div>
+    ` : ''}
+    
+    ${project.tech_stack ? `
+      <div class="modal-section">
+        <h3>Tech Stack</h3>
+        <div class="tech-stack">
+          ${project.tech_stack.split(',').map(tech => 
+            `<span class="tech-tag">${tech.trim()}</span>`
+          ).join('')}
+        </div>
+      </div>
+    ` : ''}
+    
+    ${project.github_url || project.live_url ? `
+      <div class="modal-section">
+        <h3>Links</h3>
+        <div class="project-links">
+          ${project.github_url ? `
+            <a href="${project.github_url}" target="_blank" rel="noopener noreferrer" class="project-link">
+              <span>📂</span> View Code
+            </a>
+          ` : ''}
+          ${project.live_url ? `
+            <a href="${project.live_url}" target="_blank" rel="noopener noreferrer" class="project-link">
+              <span>🔗</span> Live Demo
+            </a>
+          ` : ''}
+        </div>
+      </div>
+    ` : ''}
+  `;
+}
+
 // Initialize appropriate features based on current page
 function initializePageFeatures() {
   setTimeout(() => {
     // Always initialize modal manager first
     initModalManager();
+    
+    // Wait a bit for modal manager to be ready, then init card handlers
+    setTimeout(() => {
+      initCardHandlers();
+    }, 200);
     
     if (document.querySelector('#resume-dashboard')) {
       initDashboard();
