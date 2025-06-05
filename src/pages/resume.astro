@@ -1,6 +1,5 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import CardModal from '../components/CardModal.astro';
 import db from '../lib/db.js';
 
 // Initialize variables
@@ -156,7 +155,7 @@ try {
         )}
     </div>
   
-  <CardModal />
+  <!-- CardModal is now included in BaseLayout -->
   
   <script define:vars={{ groupedSections, stats }}>
     // Animate stats on page load

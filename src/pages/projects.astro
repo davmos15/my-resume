@@ -1,6 +1,5 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import CardModal from '../components/CardModal.astro';
 import db from '../lib/db.js';
 
 // Fetch projects
@@ -38,7 +37,7 @@ try {
     </div>
   </div>
   
-  <CardModal />
+  <!-- CardModal is now included in BaseLayout -->
   
   <script define:vars={{ projects }}>
     function buildProjectContent(project) {

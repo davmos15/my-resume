@@ -436,8 +436,20 @@ window.addEventListener('pageshow', function(event) {
 window.addEventListener('popstate', initializePageFeatures);
 
 // Modal Manager - Initialize on every page load
-function initModalManager() {
-  console.log('🚀 ModalManager: Starting initialization...');
+function initModalManager(retryCount = 0) {
+  console.log('🚀 ModalManager: Starting initialization...', retryCount > 0 ? `(retry ${retryCount})` : '');
+  
+  // Check if modal element exists, if not, retry with delay
+  if (!document.getElementById('unified-modal')) {
+    if (retryCount < 20) { // Max 2 seconds of retries
+      console.log('⏳ ModalManager: Modal element not ready, retrying in 100ms...');
+      setTimeout(() => initModalManager(retryCount + 1), 100);
+      return;
+    } else {
+      console.warn('⚠️ ModalManager: Modal element not found after retries, skipping initialization');
+      return;
+    }
+  }
   
   // Simple Modal Manager - no events, just direct access
   window.modalManager = {
