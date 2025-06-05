@@ -2,72 +2,64 @@
 
 ## Critical Implementation Details
 
-### 1. Resume Modal Implementation - CRITICAL
+### 1. Unified Card and Modal System - CRITICAL
 
-**Problem**: The resume cards on the `/resume` page require modal functionality. Due to script loading timing issues with Astro, clicking cards would fail until after a page reload.
+**Problem**: The cards on both `/resume` and `/projects` pages had timing issues where clicking cards would fail until after a page reload due to race conditions between component initialization and page scripts.
 
 **Root Cause**: 
-- Astro's script handling can cause timing issues with external scripts
-- Race conditions between different script files
-- DOM elements might not be available when scripts execute
-- Lack of proper state management in previous implementations
+- Scripts tried to access `window.unifiedModal` before the CardModal component finished initializing
+- No proper dependency chain between modal manager and page scripts
+- Timing issues with Astro's script loading order
 
-**WORKING SOLUTION**: Use a proper Modal Manager class with state management, all in a single inline script:
+**WORKING SOLUTION**: Event-driven initialization pattern with proper dependency management:
 
 ```javascript
-<script>
-// Resume Modal Manager - Robust implementation with proper state management
-class ResumeModalManager {
-    constructor(modalElement) {
-        // Proper state tracking
-        this.isOpen = false;
-        this.previousFocus = null;
-        this.scrollPosition = 0;
-        // ... initialization
-    }
-    
-    open(cardId) {
-        // Proper opening sequence with:
-        // - State management
-        // - Focus handling
-        // - Scroll prevention
-        // - Event dispatching
-        // - Accessibility attributes
-    }
-    
-    close() {
-        // Proper closing sequence with:
-        // - State cleanup
-        // - Focus restoration
-        // - Event dispatching
+// In CardModal.astro - Modal Manager with Event Dispatch
+class UnifiedModalManager {
+    constructor() {
+        // ... initialization code ...
+        
+        // After all initialization is complete, dispatch ready event
+        document.dispatchEvent(new CustomEvent('modalManagerReady'));
     }
 }
 
-// Initialize immediately at end of body
-initializeResumePage();
-</script>
+// In projects.astro and resume.astro - Event-driven Initialization
+document.addEventListener('modalManagerReady', () => {
+    // Set up card click handlers only after modal manager is ready
+    document.querySelectorAll('[data-card-type="project"]').forEach(card => {
+        card.addEventListener('click', function() {
+            // Safe to use window.unifiedModal here
+            window.unifiedModal.open(data);
+        });
+    });
+});
 ```
 
 **Key Features of This Implementation**:
-1. **State Management**: Tracks isOpen, previousFocus, scrollPosition
-2. **Accessibility**: ARIA attributes, focus trap, keyboard navigation
-3. **Event Flow**: Proper open/close sequences with custom events
-4. **Keyboard Support**: ESC to close, Tab trap, Enter/Space on cards
-5. **Scroll Prevention**: Saves/restores scroll position and body overflow
-6. **Single Instance**: One modal manager handles all cards
+1. **Event-driven Pattern**: `modalManagerReady` event ensures proper initialization order
+2. **Unified System**: Single CardModal component works for both projects and resume
+3. **Accessibility**: ARIA attributes, focus trap, keyboard navigation
+4. **Responsive Design**: Mobile-optimized with smooth animations
+5. **Theme Support**: Theme-specific hover overlays and styling
+6. **Clean Architecture**: Separation of concerns with reusable components
+
+**Architecture Overview**:
+- `src/components/CardModal.astro`: Unified modal component with event dispatch
+- `public/css/unified-cards.css`: Complete styling system for cards and modals
+- Page scripts: Event-driven initialization in projects.astro and resume.astro
 
 **DO NOT**:
-- Split this functionality across multiple files
-- Use external script files for page-specific functionality
-- Try to coordinate between scripts with promises/callbacks
-- Remove the state management or class structure
+- Remove the event-driven pattern - it's critical for timing
+- Split the modal functionality across multiple components
+- Use setTimeout or polling instead of the event system
+- Remove the unified CSS approach
 
 **Key Points**:
-- The entire implementation MUST stay in one inline script in resume.astro
-- The class-based approach provides proper encapsulation and state management
-- All event listeners are properly managed (added/removed)
-- Focus management ensures accessibility compliance
-- This solution handles all edge cases mentioned in the requirements
+- The `modalManagerReady` event eliminates all timing issues
+- Both pages use the same CardModal component for consistency
+- The unified CSS provides responsive design and theme support
+- This approach is maintainable and scalable for future enhancements
 
 ### 2. Database Initialization on Vercel
 
@@ -123,9 +115,10 @@ export default defineConfig({
 
 - `/src/lib/db.js` - Re-exports from db-init.js
 - `/src/lib/db-init.js` - Actual database initialization logic
-- `/public/js/page-initializer.js` - Script coordination system
-- `/public/js/resume-modal.js` - Resume modal functionality
-- `/public/js/script.js` - General site functionality (NOT toggleCard)
+- `/src/components/CardModal.astro` - Unified modal component with event system
+- `/public/css/unified-cards.css` - Complete card and modal styling system
+- `/public/js/script.js` - General site functionality
+- `/src/pages/projects.astro` and `/src/pages/resume.astro` - Event-driven page scripts
 
 ## Future Considerations
 

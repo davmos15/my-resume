@@ -37,6 +37,9 @@ class UnifiedModalManager {
         
         this.isOpen = false;
         this.init();
+        
+        // After all initialization is complete, dispatch ready event
+        document.dispatchEvent(new CustomEvent('modalManagerReady'));
     }
     
     init() {

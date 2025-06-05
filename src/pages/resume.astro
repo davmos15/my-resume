@@ -176,46 +176,6 @@ try {
       }, 30);
     }
     
-    // Initialize stats animation
-    setTimeout(() => {
-      animateValue(document.getElementById('years-exp'), 0, stats.years, 1000);
-      animateValue(document.getElementById('companies-count'), 0, stats.companies, 1000);
-      animateValue(document.getElementById('roles-count'), 0, stats.roles, 1000);
-    }, 500);
-    
-    // Handle card clicks for resume
-    document.querySelectorAll('[data-card-type="resume"]').forEach(card => {
-      card.addEventListener('click', function() {
-        const section = this.getAttribute('data-card-section');
-        const data = {
-          experience: {
-            icon: '💼',
-            title: 'Professional Experience',
-            content: buildExperienceContent()
-          },
-          skills: {
-            icon: '🛠️',
-            title: 'Skills & Tools',
-            content: buildSkillsContent()
-          },
-          achievements: {
-            icon: '🏆',
-            title: 'Courses & Achievements',
-            content: buildAchievementsContent()
-          },
-          education: {
-            icon: '🎓',
-            title: 'Education',
-            content: buildEducationContent()
-          }
-        };
-        
-        if (data[section] && window.unifiedModal) {
-          window.unifiedModal.open(data[section]);
-        }
-      });
-    });
-    
     function buildExperienceContent() {
       const experiences = groupedSections.experience || [];
       return experiences.map((job, idx) => `
@@ -261,6 +221,49 @@ try {
         </div>
       `).join('');
     }
+    
+    // Initialize stats animation immediately
+    setTimeout(() => {
+      animateValue(document.getElementById('years-exp'), 0, stats.years, 1000);
+      animateValue(document.getElementById('companies-count'), 0, stats.companies, 1000);
+      animateValue(document.getElementById('roles-count'), 0, stats.roles, 1000);
+    }, 500);
+    
+    // Wait for modal manager to be ready before setting up card interactions
+    document.addEventListener('modalManagerReady', () => {
+      // Handle card clicks for resume
+      document.querySelectorAll('[data-card-type="resume"]').forEach(card => {
+        card.addEventListener('click', function() {
+          const section = this.getAttribute('data-card-section');
+          const data = {
+            experience: {
+              icon: '💼',
+              title: 'Professional Experience',
+              content: buildExperienceContent()
+            },
+            skills: {
+              icon: '🛠️',
+              title: 'Skills & Tools',
+              content: buildSkillsContent()
+            },
+            achievements: {
+              icon: '🏆',
+              title: 'Courses & Achievements',
+              content: buildAchievementsContent()
+            },
+            education: {
+              icon: '🎓',
+              title: 'Education',
+              content: buildEducationContent()
+            }
+          };
+          
+          if (data[section] && window.unifiedModal) {
+            window.unifiedModal.open(data[section]);
+          }
+        });
+      });
+    });
   </script>
     
   <style>

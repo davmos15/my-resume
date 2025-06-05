@@ -8,6 +8,7 @@ A modern portfolio website built with Astro, featuring a dynamic admin panel and
 - **Admin Panel** for content management
 - **SQLite Database** for content storage
 - **Authentication** system with JWT tokens
+- **Unified Card System** with smooth animations and modal interactions
 - **Responsive Design** with theme support
 - **Contact Form** with database storage
 - **File Upload** capabilities
@@ -97,10 +98,12 @@ The site can be deployed to any platform that supports Node.js:
 /
 ├── public/
 │   ├── css/         # Stylesheets
+│   │   └── unified-cards.css  # Unified card system styles
 │   ├── js/          # Client-side JavaScript
 │   └── images/      # Static images
 ├── src/
 │   ├── components/  # Astro components
+│   │   └── CardModal.astro  # Unified modal system
 │   ├── layouts/     # Page layouts
 │   ├── pages/       # Routes and API endpoints
 │   │   ├── api/     # API routes
