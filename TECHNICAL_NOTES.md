@@ -1,160 +1,149 @@
 # Technical Notes - My Resume Astro Site
 
-## Critical Implementation Details
+## Current Architecture
 
-### 1. Simplified Card and Modal System - CRITICAL
+### 1. Inline Expansion System - Current Implementation
 
-**Problem**: The cards on both `/resume` and `/projects` pages had timing issues where clicking cards would fail until after a page reload due to complex event systems and race conditions.
+**System**: The site now uses a modern inline expansion system instead of modals, eliminating all timing issues and providing a better user experience.
 
-**Root Cause**: 
-- Over-complicated event-driven architecture caused timing dependencies
-- Scripts tried to access modal manager before initialization
-- Complex event listeners created race conditions
+**Key Components**:
+- `/public/css/inline-expansion.css` - Complete styling system for expandable cards
+- Page-specific JavaScript classes handle expansion logic directly in projects.astro and resume.astro
+- No complex polling or modal managers needed
 
-**WORKING SOLUTION**: Simple polling-based approach with direct DOM access:
-
+**How It Works**:
 ```javascript
-// In CardModal.astro - Simple Modal Manager Object
-window.modalManager = {
-    modal: null,
-    isOpen: false,
-    
-    init() {
-        this.modal = document.getElementById('unified-modal');
-        if (!this.modal) return false;
-        // ... setup modal elements and event listeners
-        return true;
-    },
-    
-    open(data) {
-        // Direct modal opening logic
-    }
-};
-
-// Initialize immediately when script loads
-window.modalManager.init();
-
-// In projects.astro and resume.astro - Simple Polling
-function trySetupCards() {
-    if (!window.modalManager || !window.modalManager.modal) {
-        return false;
+// In projects.astro and resume.astro
+class InlineExpansionManager {
+  constructor() {
+    this.cards = document.querySelectorAll('.expandable-card');
+    this.currentlyExpanded = null;
+    this.init();
+  }
+  
+  expandCard(card) {
+    // Close currently expanded card if any
+    if (this.currentlyExpanded && this.currentlyExpanded !== card) {
+      this.collapseCard(this.currentlyExpanded);
     }
     
-    // Set up card click handlers using onclick (simple and reliable)
-    document.querySelectorAll('[data-card-type="project"]').forEach(card => {
-        card.onclick = function() {
-            window.modalManager.open(data);
-        };
-    });
-    return true;
+    card.classList.add('expanded');
+    this.currentlyExpanded = card;
+    
+    // Auto-scroll to expanded content
+    setTimeout(() => {
+      const rect = card.getBoundingClientRect();
+      window.scrollTo({ top: rect.top + window.pageYOffset - 100, behavior: 'smooth' });
+    }, 100);
+  }
 }
-
-// Poll every 100ms until modal is ready (max 5 seconds)
-function pollForModal() {
-    if (trySetupCards() || attempts >= maxAttempts) return;
-    attempts++;
-    setTimeout(pollForModal, 100);
-}
-pollForModal();
 ```
 
-**Key Features of This Implementation**:
-1. **Simple Polling**: No complex events, just checks every 100ms until ready
-2. **Direct DOM Access**: Uses `onclick` instead of `addEventListener` for reliability
-3. **Object-based Modal**: Simple object with methods instead of class complexity
-4. **Immediate Initialization**: Modal manager starts immediately when script loads
-5. **Fail-safe Timeout**: Stops trying after 5 seconds to prevent infinite loops
-6. **Unified System**: Single modal works for both projects and resume pages
+**Benefits**:
+- **No timing issues** - Works instantly on page load
+- **Better mobile UX** - Cards expand inline without blocking viewport
+- **Smooth animations** - CSS-based transitions at 0.4s ease-in-out
+- **Single expansion** - Only one card open at a time for clean UX
+- **Keyboard accessible** - Escape key closes expanded cards
+- **Theme compatible** - Uses existing CSS variables
 
-**Architecture Overview**:
-- `src/components/CardModal.astro`: Simple modal object with direct initialization
-- `public/css/unified-cards.css`: Complete styling system for cards and modals
-- Page scripts: Simple polling-based setup in projects.astro and resume.astro
+### 2. Database Setup for Vercel
 
-**DO NOT**:
-- Reintroduce complex event systems - they cause timing issues
-- Use addEventListener - onclick is more reliable for this use case
-- Remove the polling mechanism - it ensures cards work on first load
-- Complicate the modal manager with classes or complex state
+**Environment**: Vercel serverless with SQLite database recreation on cold starts
 
-**Key Points**:
-- Simple polling eliminates all timing issues
-- Direct DOM access is more reliable than event systems
-- The approach is easy to debug and maintain
-- Cards work consistently on first page load without hard refresh
-
-### 2. Database Initialization on Vercel
-
-**Problem**: Vercel's serverless environment doesn't persist files between invocations.
-
-**Solution**: Created `src/lib/db-init.js` that:
+**Implementation**: 
+- `/src/lib/db-init.js` handles database initialization
 - Uses `/tmp` directory on Vercel (detected via `process.env.VERCEL`)
-- Initializes database on first request
-- Creates all necessary tables
-- Seeds with default admin user and sample data
+- Database and tables created on first request
+- Seeded with default data each deployment
 
-**Critical**: The database is recreated on each cold start, so any persistent data needs a different storage solution.
+**Important**: Data doesn't persist between deployments - suitable for demo/portfolio use
 
 ### 3. Environment Variables Required
 
-For deployment, these environment variables MUST be set:
-- `JWT_SECRET`: Random string for JWT signing
-- `SESSION_SECRET`: Random string for session encryption  
+For Vercel deployment:
 - `ADMIN_USERNAME`: Admin login username
 - `ADMIN_PASSWORD_HASH`: BCrypt hash of admin password
+- `JWT_SECRET`: Random string for JWT signing (optional, auto-generated if missing)
 
 Generate password hash:
 ```bash
 node -e "const bcrypt = require('bcryptjs'); console.log(bcrypt.hashSync('your-password', 10));"
 ```
 
-### 4. Astro Adapter Configuration
+### 4. Contact Form Implementation
 
-**For Vercel**: Use `@astrojs/vercel/serverless` adapter
+**System**: Stores messages in SQLite database, no email sending
+- Form submissions saved to `contact_messages` table
+- Admin can view messages through admin panel
+- Simple and secure approach without API keys
+
+**API Endpoint**: `/src/pages/api/contact.js`
+- Validates input (name, email, message required)
+- Email format validation
+- Stores in database with timestamp
+
+## File Structure
+
+### Core Files
+- `/src/lib/db.js` - Database exports
+- `/src/lib/db-init.js` - Database initialization logic
+- `/public/css/inline-expansion.css` - Complete expansion system styling
+- `/public/js/script.js` - General site functionality (typewriter, collapsibles, file cabinet)
+
+### Page Files
+- `/src/pages/projects.astro` - Projects with inline expansion
+- `/src/pages/resume.astro` - Resume with nested job expansion
+- `/src/layouts/BaseLayout.astro` - Base layout (no modal imports)
+
+### Admin System
+- `/src/pages/admin/` - Admin dashboard, login, and management pages
+- `/src/middleware/auth.js` - Authentication middleware
+- `/src/pages/api/` - API endpoints for admin functionality
+
+## Deployment Configuration
+
+**Current Setup**: Vercel serverless
 ```javascript
-import vercel from '@astrojs/vercel/serverless';
-
+// astro.config.mjs
 export default defineConfig({
   output: 'server',
-  adapter: vercel(),
+  adapter: vercel()
 });
 ```
 
-**For other platforms**: Switch back to `@astrojs/node` adapter with appropriate mode.
+**Build**: `npm run build` creates optimized production build
+**Dev**: `npm run dev` runs development server on port 4322
 
-## Common Issues and Solutions
+## Security Features
 
-### Issue: Scripts not loading in correct order
-**Solution**: Use the PageInitializer pattern documented above. Never use `is:inline` for interdependent scripts.
+- **Password Hashing**: BCrypt for admin passwords
+- **Session Management**: JWT-based authentication
+- **Input Validation**: Contact form validation and sanitization
+- **Environment Variables**: Sensitive data in environment variables
 
-### Issue: 404 errors on API routes
-**Solution**: Check that all API route files export named functions (GET, POST, PUT, DELETE) and return proper Response objects.
+## Performance Optimizations
 
-### Issue: Database not found errors
-**Solution**: The database is created at runtime. Check that `db-init.js` is being imported and environment is properly detected.
-
-## File Structure Notes
-
-- `/src/lib/db.js` - Re-exports from db-init.js
-- `/src/lib/db-init.js` - Actual database initialization logic
-- `/src/components/CardModal.astro` - Unified modal component with event system
-- `/public/css/unified-cards.css` - Complete card and modal styling system
-- `/public/js/script.js` - General site functionality
-- `/src/pages/projects.astro` and `/src/pages/resume.astro` - Event-driven page scripts
+- **CSS Grid**: Responsive card layouts with intelligent reflow
+- **Smooth Animations**: Hardware-accelerated CSS transitions
+- **Event-Driven**: Clean JavaScript architecture without polling
+- **Progressive Enhancement**: Works without JavaScript for basic functionality
 
 ## Future Considerations
 
-1. For persistent data storage, consider:
-   - External database service (PostgreSQL, MySQL)
-   - Vercel KV or Vercel Postgres
-   - Planetscale, Supabase, or similar
+**For Persistent Data Storage**:
+- Vercel Postgres for production data persistence
+- Supabase or PlanetScale for external database
+- Vercel KV for session storage
 
-2. The current SQLite approach works for:
-   - Demo purposes
-   - Low-traffic sites
-   - Sites where data can be seeded on each deployment
+**Current SQLite Approach Works For**:
+- Portfolio/demo sites
+- Low-traffic applications
+- Sites where data can be seeded on deployment
 
-3. Script loading could be further improved with:
-   - Module bundling
-   - Dynamic imports
-   - Web Components for encapsulation
+## Maintenance Notes
+
+- **Dependencies**: Keep Astro and adapters updated
+- **Database**: Current approach recreates data on deployment (suitable for portfolio)
+- **Monitoring**: Check Vercel function logs for any issues
+- **Performance**: Inline expansion system is highly performant with minimal JavaScript
