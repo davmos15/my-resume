@@ -78,10 +78,7 @@ try {
             <>
         <!-- Professional Summary Section -->
         <div class="summary-stats-section">
-            <div class="summary-stats" 
-                 data-years={stats.years}
-                 data-companies={stats.companies}
-                 data-roles={stats.roles}>
+            <div class="summary-stats">
                 <div class="stat-item">
                     <div class="stat-number" id="years-exp">0</div>
                     <div class="stat-label">Years Experience</div>
@@ -105,131 +102,163 @@ try {
             </a>
         </div>
 
-        <!-- Card Grid -->
-        <div class="card-grid">
-          <!-- Experience Card -->
-          <div class="expandable-card resume-section" data-section="experience">
-            <div class="card-header">
-              <span class="card-icon">💼</span>
-              <h3 class="card-title">Experience</h3>
-              <p class="card-subtitle">{stats.years} years across {stats.companies} companies</p>
-              <div class="hover-overlay"></div>
-            </div>
-            <div class="card-content">
-              <div class="card-content-inner">
-                <button class="close-btn" aria-label="Close">✕</button>
-                <div class="section-content">
-                  {groupedSections.experience && groupedSections.experience.map((job) => (
-                    <div class="job-item" data-job-id={job.id}>
-                      <div class="job-header">
-                        <div class="job-info">
-                          <h4 class="job-title">{job.title}</h4>
-                          <p class="job-company">{job.subtitle || ''}</p>
-                        </div>
-                        <div class="job-meta">
-                          <p class="job-period">{job.date_range || ''}</p>
-                          <span class="expand-icon">▼</span>
-                        </div>
-                      </div>
-                      <div class="job-details">
-                        <div class="job-details-inner">
-                          <p class="job-description">{job.description || ''}</p>
-                          {job.details && (
-                            <ul class="responsibilities">
-                              {job.details.split('\n').filter(detail => detail.trim()).map(detail => (
-                                <li>{detail}</li>
-                              ))}
-                            </ul>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+        <!-- Resume List -->
+        <div class="resume-list">
+          <!-- Experience Item -->
+          <div class="expandable-item" data-card-type="resume" data-section="experience">
+            <div class="item-header">
+              <span class="item-emoji">💼</span>
+              <div class="item-content-header">
+                <h3 class="item-title">Professional Experience</h3>
+                <p class="item-subtitle">{stats.years} years across {stats.companies} companies</p>
               </div>
+              <button class="close-button" aria-label="Close expanded view">✕</button>
             </div>
-          </div>
-          
-          <!-- Skills Card -->
-          <div class="expandable-card resume-section" data-section="skills">
-            <div class="card-header">
-              <span class="card-icon">🛠️</span>
-              <h3 class="card-title">Skills & Tools</h3>
-              <p class="card-subtitle">Technologies & Expertise</p>
-              <div class="hover-overlay"></div>
-            </div>
-            <div class="card-content">
-              <div class="card-content-inner">
-                <button class="close-btn" aria-label="Close">✕</button>
-                <div class="section-content">
-                  <div class="skills-grid">
-                    {groupedSections.skills && groupedSections.skills.map((skill) => (
-                      <div class="skill-category">
-                        <h4>{skill.title}</h4>
-                        <div class="skill-tags">
-                          {skill.description && skill.description.split(',').map(tech => (
-                            <span class="skill-tag">{tech.trim()}</span>
-                          ))}
+            <div class="item-content">
+              <div class="item-content-inner">
+                <div class="content-section">
+                  <h4 class="section-title">Work History</h4>
+                  <div class="section-content">
+                    <div class="job-list">
+                      {(groupedSections.experience || []).map((job, index) => (
+                        <div class="job-item" data-job-id={job.id}>
+                          <div class="job-header" data-job-index={index}>
+                            <div class="job-info">
+                              <h4>{job.title}</h4>
+                              <div class="job-meta">
+                                <span class="job-company">{job.subtitle}</span>
+                                <span class="job-dates">{job.date_range}</span>
+                              </div>
+                            </div>
+                            <button class="job-toggle" data-job-index={index}>+</button>
+                          </div>
+                          <div class="job-details" id={`job-details-${index}`}>
+                            <div class="job-description" set:html={job.description || job.details || 'No description available'} />
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
           
-          <!-- Achievements Card -->
-          <div class="expandable-card resume-section" data-section="achievements">
-            <div class="card-header">
-              <span class="card-icon">🏆</span>
-              <h3 class="card-title">Achievements</h3>
-              <p class="card-subtitle">Notable Accomplishments</p>
-              <div class="hover-overlay"></div>
+          <!-- Skills Item -->
+          <div class="expandable-item" data-card-type="resume" data-section="skills">
+            <div class="item-header">
+              <span class="item-emoji">🛠️</span>
+              <div class="item-content-header">
+                <h3 class="item-title">Skills & Technologies</h3>
+                <p class="item-subtitle">Technical expertise & tools</p>
+              </div>
+              <button class="close-button" aria-label="Close expanded view">✕</button>
             </div>
-            <div class="card-content">
-              <div class="card-content-inner">
-                <button class="close-btn" aria-label="Close">✕</button>
-                <div class="section-content">
-                  {groupedSections.achievements && groupedSections.achievements.map((achievement) => (
-                    <div class="achievement-item">
-                      <h4>{achievement.title}</h4>
-                      {achievement.subtitle && <p class="subtitle">{achievement.subtitle}</p>}
-                      <p>{achievement.description || ''}</p>
+            <div class="item-content">
+              <div class="item-content-inner">
+                <div class="content-section">
+                  <h4 class="section-title">Technical Skills</h4>
+                  <div class="section-content">
+                    <div class="skills-grid">
+                      {(groupedSections.skills || []).map((skill) => (
+                        <div class="skill-category">
+                          <h4>{skill.title}</h4>
+                          <div set:html={skill.description || skill.details || 'No details available'} />
+                        </div>
+                      ))}
+                      {(!groupedSections.skills || groupedSections.skills.length === 0) && (
+                        <div class="skill-category">
+                          <h4>Core Technologies</h4>
+                          <ul class="skill-list">
+                            <li>Business Applications (NetSuite, Salesforce, Freshdesk)</li>
+                            <li>Microsoft 365 (Power Automate, PowerApps, SharePoint)</li>
+                            <li>Data Analysis (Google Data Studio, PowerBI)</li>
+                            <li>Web Technologies (HTML, CSS, JavaScript)</li>
+                          </ul>
+                        </div>
+                      )}
                     </div>
-                  ))}
-                  {groupedSections.courses && groupedSections.courses.map((course) => (
-                    <div class="achievement-item">
-                      <h4>{course.title}</h4>
-                      {course.subtitle && <p class="subtitle">{course.subtitle}</p>}
-                      <p>{course.description || ''}</p>
-                    </div>
-                  ))}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
           
-          <!-- Education Card -->
-          <div class="expandable-card resume-section" data-section="education">
-            <div class="card-header">
-              <span class="card-icon">🎓</span>
-              <h3 class="card-title">Education</h3>
-              <p class="card-subtitle">Academic Background</p>
-              <div class="hover-overlay"></div>
+          <!-- Education Item -->
+          <div class="expandable-item" data-card-type="resume" data-section="education">
+            <div class="item-header">
+              <span class="item-emoji">🎓</span>
+              <div class="item-content-header">
+                <h3 class="item-title">Education</h3>
+                <p class="item-subtitle">Academic background</p>
+              </div>
+              <button class="close-button" aria-label="Close expanded view">✕</button>
             </div>
-            <div class="card-content">
-              <div class="card-content-inner">
-                <button class="close-btn" aria-label="Close">✕</button>
-                <div class="section-content">
-                  {groupedSections.education && groupedSections.education.map((edu) => (
-                    <div class="education-item">
-                      <h4>{edu.title}</h4>
-                      <p class="degree">{edu.subtitle || ''}</p>
-                      <p class="period">{edu.date_range || ''}</p>
-                      {edu.description && <p class="description">{edu.description}</p>}
+            <div class="item-content">
+              <div class="item-content-inner">
+                <div class="content-section">
+                  <h4 class="section-title">Educational Background</h4>
+                  <div class="section-content">
+                    <div class="education-list">
+                      {(groupedSections.education || []).map((edu) => (
+                        <div class="education-item">
+                          <h4>{edu.title}</h4>
+                          {edu.subtitle && <p class="education-school">{edu.subtitle}</p>}
+                          {edu.date_range && <p class="education-dates">{edu.date_range}</p>}
+                          <div set:html={edu.description || edu.details || 'No details available'} />
+                        </div>
+                      ))}
+                      {(!groupedSections.education || groupedSections.education.length === 0) && (
+                        <div class="education-item">
+                          <h4>Bachelor of Commerce</h4>
+                          <p class="education-school">University Studies</p>
+                          <p class="education-dates">Completed</p>
+                          <p>Focus on Information Systems and Business Management</p>
+                        </div>
+                      )}
                     </div>
-                  ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Achievements Item -->
+          <div class="expandable-item" data-card-type="resume" data-section="achievements">
+            <div class="item-header">
+              <span class="item-emoji">🏆</span>
+              <div class="item-content-header">
+                <h3 class="item-title">Key Achievements</h3>
+                <p class="item-subtitle">Professional accomplishments</p>
+              </div>
+              <button class="close-button" aria-label="Close expanded view">✕</button>
+            </div>
+            <div class="item-content">
+              <div class="item-content-inner">
+                <div class="content-section">
+                  <h4 class="section-title">Professional Accomplishments</h4>
+                  <div class="section-content">
+                    <div class="achievements-grid">
+                      {(groupedSections.certifications || []).map((achievement) => (
+                        <div class="achievement-item">
+                          <h4>{achievement.title}</h4>
+                          {achievement.subtitle && <p class="achievement-subtitle">{achievement.subtitle}</p>}
+                          <div set:html={achievement.description || achievement.details || 'No details available'} />
+                        </div>
+                      ))}
+                      {(!groupedSections.certifications || groupedSections.certifications.length === 0) && (
+                        <div class="achievement-item">
+                          <h4>Key Achievements</h4>
+                          <ul>
+                            <li>Led major NetSuite ERP migration project</li>
+                            <li>Automated onboarding/offboarding processes</li>
+                            <li>Implemented security and compliance frameworks</li>
+                            <li>Doubled client leads through strategic marketing</li>
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -239,225 +268,177 @@ try {
         )}
     </div>
   
-  <script>
+  <script define:vars={{ groupedSections, stats }}>
+    console.log('Resume page with inline expansion starting...');
+    
     class ResumeExpansionManager {
       constructor() {
-        this.cards = document.querySelectorAll('.expandable-card');
-        this.jobItems = document.querySelectorAll('.job-item');
         this.currentlyExpanded = null;
         this.init();
         this.animateStats();
       }
       
       init() {
-        // Handle main card expansion
-        this.cards.forEach(card => {
-          const header = card.querySelector('.card-header');
-          const closeBtn = card.querySelector('.close-btn');
-          
-          header.addEventListener('click', () => this.toggleCard(card));
-          
-          if (closeBtn) {
-            closeBtn.addEventListener('click', (e) => {
-              e.stopPropagation();
-              this.collapseCard(card);
-            });
-          }
-        });
-        
-        // Handle nested job expansion
-        this.jobItems.forEach(job => {
-          const header = job.querySelector('.job-header');
-          header.addEventListener('click', (e) => {
+        // Handle card and job clicks
+        document.addEventListener('click', (e) => {
+          // Handle job toggle buttons
+          if (e.target.classList.contains('job-toggle')) {
+            e.preventDefault();
             e.stopPropagation();
-            this.toggleJob(job);
-          });
+            const jobIndex = e.target.getAttribute('data-job-index');
+            this.toggleJob(jobIndex, e.target);
+            return;
+          }
+          
+          // Handle job header clicks (exclude toggle button)
+          if (e.target.closest('.job-header') && !e.target.closest('.job-toggle')) {
+            e.preventDefault();
+            e.stopPropagation();
+            const jobIndex = e.target.closest('.job-header').getAttribute('data-job-index');
+            const toggleBtn = document.querySelector(`[data-job-index="${jobIndex}"].job-toggle`);
+            this.toggleJob(jobIndex, toggleBtn);
+            return;
+          }
+          
+          // Handle main item interactions
+          const item = e.target.closest('.expandable-item');
+          if (!item) return;
+          
+          // Handle close button
+          if (e.target.closest('.close-button')) {
+            e.preventDefault();
+            e.stopPropagation();
+            this.collapseItem(item);
+            return;
+          }
+          
+          // Handle header clicks
+          if (e.target.closest('.item-header') && !e.target.closest('.close-button')) {
+            e.preventDefault();
+            this.toggleItem(item);
+            return;
+          }
+          
+          // Don't interfere with links in expanded content
+          if (e.target.closest('.item-content a')) {
+            return;
+          }
         });
         
         // Handle escape key
         document.addEventListener('keydown', (e) => {
           if (e.key === 'Escape' && this.currentlyExpanded) {
-            this.collapseCard(this.currentlyExpanded);
+            this.collapseItem(this.currentlyExpanded);
           }
         });
-      }
-      
-      toggleCard(card) {
-        if (card.classList.contains('expanded')) {
-          this.collapseCard(card);
-        } else {
-          this.expandCard(card);
-        }
-      }
-      
-      expandCard(card) {
-        // Collapse currently expanded card if any
-        if (this.currentlyExpanded && this.currentlyExpanded !== card) {
-          this.collapseCard(this.currentlyExpanded);
-        }
         
-        // Expand the new card
-        card.classList.add('expanded');
-        this.currentlyExpanded = card;
-        
-        // Scroll to card after a brief delay for animation
-        setTimeout(() => {
-          const rect = card.getBoundingClientRect();
-          const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-          const elementTop = rect.top + scrollTop - 100;
-          
-          window.scrollTo({
-            top: elementTop,
-            behavior: 'smooth'
-          });
-        }, 100);
-      }
-      
-      collapseCard(card) {
-        card.classList.remove('expanded');
-        if (this.currentlyExpanded === card) {
-          this.currentlyExpanded = null;
-        }
-        
-        // Also collapse any expanded jobs within
-        const expandedJobs = card.querySelectorAll('.job-item.expanded');
-        expandedJobs.forEach(job => job.classList.remove('expanded'));
-      }
-      
-      toggleJob(job) {
-        job.classList.toggle('expanded');
+        console.log('Resume expansion manager initialized');
       }
       
       animateStats() {
-        const animateValue = (element, start, end, duration) => {
-          if (!element) return;
-          const range = end - start;
-          const increment = range / (duration / 30);
-          let current = start;
-          
-          const timer = setInterval(function() {
-            current += increment;
-            if (current >= end) {
-              current = end;
-              clearInterval(timer);
-            }
-            element.textContent = Math.floor(current);
-          }, 30);
-        };
+        // Animate stats on page load
+        setTimeout(() => {
+          this.animateValue(document.getElementById('years-exp'), 0, stats.years, 1000);
+          this.animateValue(document.getElementById('companies-count'), 0, stats.companies, 1000);
+          this.animateValue(document.getElementById('roles-count'), 0, stats.roles, 1000);
+        }, 500);
+      }
+      
+      animateValue(element, start, end, duration) {
+        if (!element) return;
+        const range = end - start;
+        const increment = range / (duration / 30);
+        let current = start;
         
-        const summaryStats = document.querySelector('.summary-stats');
-        if (summaryStats) {
-          const years = parseInt(summaryStats.dataset.years) || 0;
-          const companies = parseInt(summaryStats.dataset.companies) || 0;
-          const roles = parseInt(summaryStats.dataset.roles) || 0;
-          
-          setTimeout(() => {
-            animateValue(document.getElementById('years-exp'), 0, years, 1000);
-            animateValue(document.getElementById('companies-count'), 0, companies, 1000);
-            animateValue(document.getElementById('roles-count'), 0, roles, 1000);
-          }, 500);
+        const timer = setInterval(function() {
+          current += increment;
+          if (current >= end) {
+            current = end;
+            clearInterval(timer);
+          }
+          element.textContent = Math.floor(current);
+        }, 30);
+      }
+      
+      toggleItem(item) {
+        if (item.classList.contains('expanded')) {
+          this.collapseItem(item);
+        } else {
+          this.expandItem(item);
+        }
+      }
+      
+      expandItem(item) {
+        // Collapse any currently expanded item
+        if (this.currentlyExpanded && this.currentlyExpanded !== item) {
+          this.collapseItem(this.currentlyExpanded);
+        }
+        
+        // Expand the new item
+        item.classList.add('expanded');
+        this.currentlyExpanded = item;
+        
+        // Scroll to item
+        setTimeout(() => {
+          item.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'start' 
+          });
+        }, 200);
+        
+        console.log('Expanded resume item:', item.getAttribute('data-section'));
+      }
+      
+      collapseItem(item) {
+        item.classList.remove('expanded');
+        if (this.currentlyExpanded === item) {
+          this.currentlyExpanded = null;
+        }
+        
+        // Collapse any expanded jobs in this item
+        const expandedJobs = item.querySelectorAll('.job-item.expanded');
+        expandedJobs.forEach(job => {
+          job.classList.remove('expanded');
+          const toggle = job.querySelector('.job-toggle');
+          if (toggle) toggle.textContent = '+';
+        });
+        
+        console.log('Collapsed resume item:', item.getAttribute('data-section'));
+      }
+      
+      toggleJob(jobIndex, toggleBtn) {
+        const jobDetails = document.getElementById(`job-details-${jobIndex}`);
+        const jobItem = toggleBtn.closest('.job-item');
+        
+        if (!jobDetails || !jobItem) return;
+        
+        if (jobItem.classList.contains('expanded')) {
+          jobItem.classList.remove('expanded');
+          toggleBtn.textContent = '+';
+          console.log('Collapsed job:', jobIndex);
+        } else {
+          jobItem.classList.add('expanded');
+          toggleBtn.textContent = '−';
+          console.log('Expanded job:', jobIndex);
         }
       }
     }
     
-    // Initialize expansion manager when DOM is ready
-    document.addEventListener('DOMContentLoaded', () => {
+    // Initialize when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        new ResumeExpansionManager();
+      });
+    } else {
       new ResumeExpansionManager();
-    });
+    }
   </script>
     
   <style>
     #resume-dashboard {
-      padding: 50px 20px 40px;
-      min-height: calc(100vh - 120px);
-      max-width: 1200px;
+      max-width: 800px;
       margin: 0 auto;
-    }
-    
-    /* Summary Stats Section */
-    .summary-stats-section {
-      text-align: center;
-      margin-bottom: 3rem;
-      padding: 2rem;
-      background: var(--bg-secondary);
-      border-radius: 12px;
-      border: 1px solid var(--border-color);
-    }
-    
-    .summary-stats {
-      display: flex;
-      justify-content: center;
-      gap: 3rem;
-      margin-bottom: 2rem;
-    }
-    
-    .stat-item {
-      text-align: center;
-    }
-    
-    .stat-number {
-      font-size: 3rem;
-      font-weight: 700;
-      color: var(--link-color);
-      line-height: 1;
-    }
-    
-    .stat-label {
-      font-size: 0.9rem;
-      color: var(--text-secondary);
-      margin-top: 0.5rem;
-    }
-    
-    .download-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.75rem;
-      padding: 0.75rem 1.5rem;
-      background: var(--link-color);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      text-decoration: none;
-    }
-    
-    .download-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    }
-    
-    .download-btn span {
-      font-size: 1.2rem;
-    }
-    
-    /* Achievement and Course items styling */
-    .achievement-item {
-      margin-bottom: 1.5rem;
-      padding-bottom: 1.5rem;
-      border-bottom: 1px solid var(--border-color);
-    }
-    
-    .achievement-item:last-child {
-      border-bottom: none;
-      margin-bottom: 0;
-      padding-bottom: 0;
-    }
-    
-    .achievement-item h4 {
-      margin-bottom: 0.5rem;
-      color: var(--text-primary);
-    }
-    
-    .achievement-item .subtitle {
-      color: var(--text-secondary);
-      font-size: 0.95rem;
-      margin-bottom: 0.5rem;
-    }
-    
-    .achievement-item p {
-      line-height: 1.6;
+      padding: 40px 20px;
     }
     
     .error-message {
@@ -469,22 +450,10 @@ try {
       margin: 2rem 0;
     }
     
-    /* Responsive adjustments */
+    /* Mobile adjustments */
     @media (max-width: 768px) {
-      .summary-stats {
-        gap: 1.5rem;
-      }
-      
-      .stat-number {
-        font-size: 2rem;
-      }
-      
-      .stat-label {
-        font-size: 0.8rem;
-      }
-      
       #resume-dashboard {
-        padding: 40px 15px 30px;
+        padding: 20px 10px;
       }
     }
   </style>
