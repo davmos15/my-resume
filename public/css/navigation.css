@@ -110,6 +110,98 @@ body {
     align-items: center;
 }
 
+/* Theme dropdown menu - base styles */
+.theme-dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: var(--bg-secondary, #ffffff);
+    border: 1px solid var(--border-color, #e0e0e0);
+    border-radius: 8px;
+    box-shadow: 0 8px 24px var(--shadow-color, rgba(0,0,0,0.15));
+    min-width: 280px;
+    max-height: 400px;
+    overflow-y: auto;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    z-index: 1002;
+}
+
+/* Theme accordion for desktop */
+.theme-accordion {
+    padding: 8px 0;
+}
+
+.accordion-item {
+    border-bottom: 1px solid var(--border-color, #e0e0e0);
+}
+
+.accordion-item:last-child {
+    border-bottom: none;
+}
+
+.accordion-header {
+    padding: 12px 16px;
+    font-weight: 600;
+    color: var(--text-primary, #333333);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    font-size: 14px;
+}
+
+.accordion-header:hover {
+    background-color: var(--bg-accent, #f5f5f5);
+}
+
+/* Desktop: always show theme options, no accordion */
+@media (min-width: 769px) {
+    .accordion-content {
+        display: block !important;
+        max-height: none !important;
+        padding: 0;
+    }
+    
+    .accordion-header {
+        pointer-events: none;
+        background: var(--bg-accent, #f5f5f5);
+        font-size: 12px;
+        padding: 8px 16px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+}
+
+.theme-option {
+    display: block;
+    padding: 10px 20px;
+    color: var(--text-primary, #333333);
+    text-decoration: none;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.theme-option:hover {
+    background-color: var(--bg-accent, #f5f5f5);
+    color: var(--link-hover, #0066cc);
+    transform: translateX(3px);
+}
+
+.theme-option.active {
+    background-color: var(--link-hover, #0066cc);
+    color: white;
+}
+
+/* Ensure theme dropdown shows on hover for desktop */
+@media (min-width: 769px) {
+    .nav-item:hover .theme-dropdown-menu {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+}
+
 .nav-item {
     position: relative;
     margin: 0 5px;
@@ -155,12 +247,21 @@ body {
     z-index: 1001;
 }
 
-/* Show dropdown on hover */
+/* Show dropdown on hover for desktop */
 .nav-item.dropdown:hover .dropdown-menu,
 .dropdown:hover .dropdown-menu {
     opacity: 1 !important;
     visibility: visible !important;
     transform: translateY(0) !important;
+}
+
+/* Show theme dropdown on hover for desktop */
+@media (min-width: 769px) {
+    .nav-item:hover .theme-dropdown-menu {
+        opacity: 1 !important;
+        visibility: visible !important;
+        transform: translateY(0) !important;
+    }
 }
 
 .dropdown-menu li {
@@ -262,9 +363,9 @@ body {
         border: none;
         border-radius: 0;
         box-shadow: none;
-        opacity: 1;
-        visibility: visible;
-        transform: none;
+        opacity: 1 !important;
+        visibility: visible !important;
+        transform: none !important;
         min-width: auto;
         width: 100%;
         padding: 0;

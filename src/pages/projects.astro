@@ -93,98 +93,90 @@ try {
     )}
   </div>
   
-  <script define:vars={{ projects }}>
-    console.log('Projects page with inline expansion starting...');
-    
-    class ProjectsExpansionManager {
-      constructor() {
-        this.currentlyExpanded = null;
-        this.init();
-      }
+  <script>
+    // Projects expansion functionality
+    function initProjectsExpansion() {
+      let currentlyExpanded = null;
       
-      init() {
-        // Handle card clicks
-        document.addEventListener('click', (e) => {
-          const item = e.target.closest('.expandable-item');
-          if (!item) return;
-          
-          // Handle close button
-          if (e.target.closest('.close-button')) {
-            e.preventDefault();
-            e.stopPropagation();
-            this.collapseItem(item);
-            return;
-          }
-          
-          // Handle header clicks
-          if (e.target.closest('.item-header') && !e.target.closest('.close-button')) {
-            e.preventDefault();
-            this.toggleItem(item);
-            return;
-          }
-          
-          // Don't interfere with links in expanded content
-          if (e.target.closest('.item-content a')) {
-            return;
-          }
-        });
-        
-        // Handle escape key
-        document.addEventListener('keydown', (e) => {
-          if (e.key === 'Escape' && this.currentlyExpanded) {
-            this.collapseItem(this.currentlyExpanded);
-          }
-        });
-        
-        console.log('Projects expansion manager initialized');
-      }
-      
-      toggleItem(item) {
+      function toggleItem(item) {
         if (item.classList.contains('expanded')) {
-          this.collapseItem(item);
+          collapseItem(item);
         } else {
-          this.expandItem(item);
+          expandItem(item);
         }
       }
       
-      expandItem(item) {
+      function expandItem(item) {
         // Collapse any currently expanded item
-        if (this.currentlyExpanded && this.currentlyExpanded !== item) {
-          this.collapseItem(this.currentlyExpanded);
+        if (currentlyExpanded && currentlyExpanded !== item) {
+          collapseItem(currentlyExpanded);
         }
         
         // Expand the new item
         item.classList.add('expanded');
-        this.currentlyExpanded = item;
+        currentlyExpanded = item;
         
-        // Scroll to item
+        // Scroll to item after expansion
         setTimeout(() => {
           item.scrollIntoView({ 
             behavior: 'smooth', 
             block: 'start' 
           });
-        }, 200);
+        }, 300);
         
-        console.log('Expanded project item:', item.getAttribute('data-project-id'));
+        console.log('Expanded project item');
       }
       
-      collapseItem(item) {
+      function collapseItem(item) {
         item.classList.remove('expanded');
-        if (this.currentlyExpanded === item) {
-          this.currentlyExpanded = null;
+        if (currentlyExpanded === item) {
+          currentlyExpanded = null;
+        }
+        console.log('Collapsed project item');
+      }
+      
+      // Event delegation for all project interactions
+      document.addEventListener('click', function(e) {
+        const item = e.target.closest('.expandable-item');
+        if (!item) return;
+        
+        // Handle close button
+        if (e.target.closest('.close-button')) {
+          e.preventDefault();
+          e.stopPropagation();
+          collapseItem(item);
+          return;
         }
         
-        console.log('Collapsed project item:', item.getAttribute('data-project-id'));
-      }
+        // Handle header clicks (but not links within content)
+        if (e.target.closest('.item-header') && !e.target.closest('.close-button')) {
+          e.preventDefault();
+          e.stopPropagation();
+          toggleItem(item);
+          return;
+        }
+        
+        // Allow links in expanded content to work normally
+        if (e.target.closest('.item-content a')) {
+          return; // Let the link work normally
+        }
+      });
+      
+      // Handle escape key
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && currentlyExpanded) {
+          collapseItem(currentlyExpanded);
+        }
+      });
+      
+      console.log('Projects expansion initialized');
     }
     
-    // Initialize when DOM is ready
+    // Initialize immediately or when DOM is ready
     if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', () => {
-        new ProjectsExpansionManager();
-      });
+      document.addEventListener('DOMContentLoaded', initProjectsExpansion);
     } else {
-      new ProjectsExpansionManager();
+      initProjectsExpansion();
     }
   </script>
   

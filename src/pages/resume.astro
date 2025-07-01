@@ -268,83 +268,19 @@ try {
         )}
     </div>
   
-  <script define:vars={{ groupedSections, stats }}>
-    console.log('Resume page with inline expansion starting...');
-    
-    class ResumeExpansionManager {
-      constructor() {
-        this.currentlyExpanded = null;
-        this.init();
-        this.animateStats();
-      }
+  <script>
+    // Resume expansion functionality
+    function initResumeExpansion() {
+      let currentlyExpanded = null;
       
-      init() {
-        // Handle card and job clicks
-        document.addEventListener('click', (e) => {
-          // Handle job toggle buttons
-          if (e.target.classList.contains('job-toggle')) {
-            e.preventDefault();
-            e.stopPropagation();
-            const jobIndex = e.target.getAttribute('data-job-index');
-            this.toggleJob(jobIndex, e.target);
-            return;
-          }
-          
-          // Handle job header clicks (exclude toggle button)
-          if (e.target.closest('.job-header') && !e.target.closest('.job-toggle')) {
-            e.preventDefault();
-            e.stopPropagation();
-            const jobIndex = e.target.closest('.job-header').getAttribute('data-job-index');
-            const toggleBtn = document.querySelector(`[data-job-index="${jobIndex}"].job-toggle`);
-            this.toggleJob(jobIndex, toggleBtn);
-            return;
-          }
-          
-          // Handle main item interactions
-          const item = e.target.closest('.expandable-item');
-          if (!item) return;
-          
-          // Handle close button
-          if (e.target.closest('.close-button')) {
-            e.preventDefault();
-            e.stopPropagation();
-            this.collapseItem(item);
-            return;
-          }
-          
-          // Handle header clicks
-          if (e.target.closest('.item-header') && !e.target.closest('.close-button')) {
-            e.preventDefault();
-            this.toggleItem(item);
-            return;
-          }
-          
-          // Don't interfere with links in expanded content
-          if (e.target.closest('.item-content a')) {
-            return;
-          }
-        });
-        
-        // Handle escape key
-        document.addEventListener('keydown', (e) => {
-          if (e.key === 'Escape' && this.currentlyExpanded) {
-            this.collapseItem(this.currentlyExpanded);
-          }
-        });
-        
-        console.log('Resume expansion manager initialized');
-      }
+      // Get stats from the page data
+      const statsElements = {
+        years: document.getElementById('years-exp'),
+        companies: document.getElementById('companies-count'),
+        roles: document.getElementById('roles-count')
+      };
       
-      animateStats() {
-        // Animate stats on page load
-        setTimeout(() => {
-          this.animateValue(document.getElementById('years-exp'), 0, stats.years, 1000);
-          this.animateValue(document.getElementById('companies-count'), 0, stats.companies, 1000);
-          this.animateValue(document.getElementById('roles-count'), 0, stats.roles, 1000);
-        }, 500);
-      }
-      
-      animateValue(element, start, end, duration) {
+      function animateValue(element, start, end, duration) {
         if (!element) return;
         const range = end - start;
         const increment = range / (duration / 30);
@@ -360,23 +296,36 @@ try {
         }, 30);
       }
       
-      toggleItem(item) {
+      function animateStats() {
+        // Get stats from the visible elements or use defaults
+        const years = parseInt(statsElements.years?.textContent) || 5;
+        const companies = parseInt(statsElements.companies?.textContent) || 3;
+        const roles = parseInt(statsElements.roles?.textContent) || 4;
+        
+        setTimeout(() => {
+          animateValue(statsElements.years, 0, years, 1000);
+          animateValue(statsElements.companies, 0, companies, 1000);
+          animateValue(statsElements.roles, 0, roles, 1000);
+        }, 500);
+      }
+      
+      function toggleItem(item) {
         if (item.classList.contains('expanded')) {
-          this.collapseItem(item);
+          collapseItem(item);
         } else {
-          this.expandItem(item);
+          expandItem(item);
         }
       }
       
-      expandItem(item) {
+      function expandItem(item) {
         // Collapse any currently expanded item
-        if (this.currentlyExpanded && this.currentlyExpanded !== item) {
-          this.collapseItem(this.currentlyExpanded);
+        if (currentlyExpanded && currentlyExpanded !== item) {
+          collapseItem(currentlyExpanded);
         }
         
         // Expand the new item
         item.classList.add('expanded');
-        this.currentlyExpanded = item;
+        currentlyExpanded = item;
         
         // Scroll to item
         setTimeout(() => {
@@ -384,15 +333,15 @@ try {
             behavior: 'smooth', 
             block: 'start' 
           });
-        }, 200);
+        }, 300);
         
-        console.log('Expanded resume item:', item.getAttribute('data-section'));
+        console.log('Expanded resume item');
       }
       
-      collapseItem(item) {
+      function collapseItem(item) {
         item.classList.remove('expanded');
-        if (this.currentlyExpanded === item) {
-          this.currentlyExpanded = null;
+        if (currentlyExpanded === item) {
+          currentlyExpanded = null;
         }
         
         // Collapse any expanded jobs in this item
@@ -403,10 +352,10 @@ try {
           if (toggle) toggle.textContent = '+';
         });
         
-        console.log('Collapsed resume item:', item.getAttribute('data-section'));
+        console.log('Collapsed resume item');
       }
       
-      toggleJob(jobIndex, toggleBtn) {
+      function toggleJob(jobIndex, toggleBtn) {
         const jobDetails = document.getElementById(`job-details-${jobIndex}`);
         const jobItem = toggleBtn.closest('.job-item');
         
@@ -422,15 +371,75 @@ try {
           console.log('Expanded job:', jobIndex);
         }
       }
+      
+      // Event delegation for all resume interactions
+      document.addEventListener('click', function(e) {
+        // Handle job toggle buttons
+        if (e.target && e.target.classList.contains('job-toggle')) {
+          e.preventDefault();
+          e.stopPropagation();
+          const jobIndex = e.target.getAttribute('data-job-index');
+          toggleJob(jobIndex, e.target);
+          return;
+        }
+        
+        // Handle job header clicks (exclude toggle button)
+        if (e.target && e.target.closest && e.target.closest('.job-header') && !e.target.closest('.job-toggle')) {
+          e.preventDefault();
+          e.stopPropagation();
+          const jobHeader = e.target.closest('.job-header');
+          const jobIndex = jobHeader.getAttribute('data-job-index');
+          const toggleBtn = document.querySelector(`[data-job-index="${jobIndex}"].job-toggle`);
+          if (toggleBtn) {
+            toggleJob(jobIndex, toggleBtn);
+          }
+          return;
+        }
+        
+        // Handle main item interactions
+        const item = e.target && e.target.closest ? e.target.closest('.expandable-item') : null;
+        if (!item) return;
+        
+        // Handle close button
+        if (e.target.closest('.close-button')) {
+          e.preventDefault();
+          e.stopPropagation();
+          collapseItem(item);
+          return;
+        }
+        
+        // Handle header clicks
+        if (e.target.closest('.item-header') && !e.target.closest('.close-button')) {
+          e.preventDefault();
+          e.stopPropagation();
+          toggleItem(item);
+          return;
+        }
+        
+        // Allow links in expanded content to work normally
+        if (e.target.closest('.item-content a')) {
+          return;
+        }
+      });
+      
+      // Handle escape key
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && currentlyExpanded) {
+          collapseItem(currentlyExpanded);
+        }
+      });
+      
+      // Animate stats on load
+      animateStats();
+      
+      console.log('Resume expansion initialized');
     }
     
-    // Initialize when DOM is ready
+    // Initialize immediately or when DOM is ready
     if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', () => {
-        new ResumeExpansionManager();
-      });
+      document.addEventListener('DOMContentLoaded', initResumeExpansion);
     } else {
-      new ResumeExpansionManager();
+      initResumeExpansion();
     }
   </script>
     

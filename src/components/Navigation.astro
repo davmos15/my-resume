@@ -127,18 +127,31 @@
             }
         });
         
-        // Handle theme dropdown for mobile
+        // Handle theme dropdown - mobile click, desktop hover preserved
         const themeToggle = document.querySelector('.theme-toggle');
         const themeDropdown = document.querySelector('.theme-dropdown-menu');
         
-        themeToggle.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
+        if (themeToggle && themeDropdown) {
+            // Mobile: click to toggle
+            themeToggle.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                if (window.innerWidth <= 768) {
+                    themeDropdown.classList.toggle('show');
+                }
+            });
             
-            if (window.innerWidth <= 768) {
-                themeDropdown.classList.toggle('show');
+            // Desktop: hover to show (CSS handles this, but we ensure mobile doesn't interfere)
+            const themeNavItem = themeToggle.closest('.nav-item');
+            if (themeNavItem) {
+                themeNavItem.addEventListener('mouseenter', function() {
+                    if (window.innerWidth > 768) {
+                        themeDropdown.classList.remove('show'); // Remove mobile class
+                    }
+                });
             }
-        });
+        }
         
         // Close theme dropdown when clicking theme option
         const themeOptions = themeDropdown.querySelectorAll('.theme-option');
@@ -152,34 +165,39 @@
             });
         });
         
-        // Handle accordion functionality for mobile theme menu
-        const accordionHeaders = themeDropdown.querySelectorAll('.accordion-header');
-        accordionHeaders.forEach(header => {
-            header.addEventListener('click', function() {
-                const accordionItem = this.parentElement;
-                const content = accordionItem.querySelector('.accordion-content');
-                
-                // Close other accordion items
-                accordionHeaders.forEach(otherHeader => {
-                    if (otherHeader !== header) {
-                        const otherItem = otherHeader.parentElement;
-                        const otherContent = otherItem.querySelector('.accordion-content');
-                        otherItem.classList.remove('active');
-                        if (otherContent) {
-                            otherContent.style.maxHeight = null;
+        // Handle accordion functionality for mobile theme menu only
+        if (themeDropdown) {
+            const accordionHeaders = themeDropdown.querySelectorAll('.accordion-header');
+            accordionHeaders.forEach(header => {
+                header.addEventListener('click', function() {
+                    // Only handle accordion on mobile
+                    if (window.innerWidth <= 768) {
+                        const accordionItem = this.parentElement;
+                        const content = accordionItem.querySelector('.accordion-content');
+                        
+                        // Close other accordion items
+                        accordionHeaders.forEach(otherHeader => {
+                            if (otherHeader !== header) {
+                                const otherItem = otherHeader.parentElement;
+                                const otherContent = otherItem.querySelector('.accordion-content');
+                                otherItem.classList.remove('active');
+                                if (otherContent) {
+                                    otherContent.style.maxHeight = null;
+                                }
+                            }
+                        });
+                        
+                        // Toggle current accordion item
+                        accordionItem.classList.toggle('active');
+                        
+                        if (accordionItem.classList.contains('active')) {
+                            content.style.maxHeight = content.scrollHeight + "px";
+                        } else {
+                            content.style.maxHeight = null;
                         }
                     }
                 });
-                
-                // Toggle current accordion item
-                accordionItem.classList.toggle('active');
-                
-                if (accordionItem.classList.contains('active')) {
-                    content.style.maxHeight = content.scrollHeight + "px";
-                } else {
-                    content.style.maxHeight = null;
-                }
             });
-        });
+        }
     });
 </script>
