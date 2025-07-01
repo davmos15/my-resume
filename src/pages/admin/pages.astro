@@ -1,0 +1,227 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+
+// Check authentication
+const session = Astro.cookies.get('session');
+if (!session) {
+  return Astro.redirect('/admin/login');
+}
+
+// Define available pages with their content
+const pages = [
+  {
+    id: 'home',
+    name: 'Homepage',
+    file: 'src/pages/index.astro',
+    description: 'Main landing page with intro and hero section'
+  },
+  {
+    id: 'about',
+    name: 'About Me',
+    file: 'src/pages/about.astro', 
+    description: 'Personal information and background'
+  },
+  {
+    id: 'contact',
+    name: 'Contact',
+    file: 'src/pages/contact.astro',
+    description: 'Contact form and information'
+  },
+  {
+    id: 'projects',
+    name: 'Projects',
+    file: 'src/pages/projects.astro',
+    description: 'Portfolio projects showcase'
+  },
+  {
+    id: 'resume',
+    name: 'Resume',
+    file: 'src/pages/resume.astro',
+    description: 'Professional experience and skills'
+  }
+];
+---
+
+<AdminLayout title="Pages Management - Admin Panel">
+  <div class="admin-content">
+    <div class="page-header">
+      <h1 class="page-title">Pages Management</h1>
+      <p class="page-description">Manage content for all pages on your website</p>
+    </div>
+
+    <!-- Pages Grid -->
+    <div class="pages-grid">
+      {pages.map(page => (
+        <div class="page-card">
+          <div class="page-card-header">
+            <h3>{page.name}</h3>
+            <span class="page-status">Active</span>
+          </div>
+          <p class="page-description">{page.description}</p>
+          <div class="page-file">
+            <small>File: {page.file}</small>
+          </div>
+          <div class="page-actions">
+            <a href={`/admin/pages/${page.id}`} class="btn btn-primary">Edit Content</a>
+            <a href={`/${page.id === 'home' ? '' : page.id}`} class="btn btn-secondary" target="_blank">View Page</a>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <!-- Instructions -->
+    <div class="card info-card">
+      <h3>Page Management Instructions</h3>
+      <ul>
+        <li>Click "Edit Content" to modify text content for any page</li>
+        <li>Click "View Page" to see the live page in a new tab</li>
+        <li>Changes are saved automatically when you update content</li>
+        <li>All pages use your existing themes and styling</li>
+      </ul>
+    </div>
+  </div>
+
+  <style>
+    .page-header {
+      margin-bottom: 30px;
+    }
+
+    .page-description {
+      color: #666;
+      margin-top: 5px;
+      font-size: 16px;
+    }
+
+    .pages-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .page-card {
+      background: white;
+      border: 1px solid #e1e1e1;
+      border-radius: 8px;
+      padding: 20px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .page-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .page-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .page-card h3 {
+      margin: 0;
+      color: #2c3e50;
+      font-size: 18px;
+    }
+
+    .page-status {
+      background: #27ae60;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .page-card .page-description {
+      color: #7f8c8d;
+      margin-bottom: 15px;
+      line-height: 1.4;
+    }
+
+    .page-file {
+      margin-bottom: 15px;
+    }
+
+    .page-file small {
+      color: #95a5a6;
+      font-family: monospace;
+      background: #f8f9fa;
+      padding: 2px 6px;
+      border-radius: 3px;
+    }
+
+    .page-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 8px 16px;
+      border-radius: 4px;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      transition: background-color 0.2s ease;
+    }
+
+    .btn-primary {
+      background: #3498db;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #2980b9;
+    }
+
+    .btn-secondary {
+      background: #95a5a6;
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background: #7f8c8d;
+    }
+
+    .info-card {
+      background: #f8f9fa;
+      border-left: 4px solid #3498db;
+    }
+
+    .info-card h3 {
+      color: #2c3e50;
+      margin-bottom: 15px;
+    }
+
+    .info-card ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .info-card li {
+      margin-bottom: 8px;
+      color: #34495e;
+    }
+
+    @media (max-width: 768px) {
+      .pages-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .page-actions {
+        flex-direction: column;
+      }
+      
+      .btn {
+        text-align: center;
+        justify-content: center;
+      }
+    }
+  </style>
+</AdminLayout>

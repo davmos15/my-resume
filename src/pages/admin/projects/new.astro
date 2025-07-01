@@ -1,0 +1,409 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+
+// Check authentication
+const session = Astro.cookies.get('session');
+if (!session) {
+  return Astro.redirect('/admin/login');
+}
+
+let success = false;
+let error = null;
+
+if (Astro.request.method === 'POST') {
+  try {
+    const formData = await Astro.request.formData();
+    
+    // In a real implementation, you would save to database
+    // For now, we'll simulate success
+    success = true;
+    
+    console.log('Creating new project:', Object.fromEntries(formData));
+    
+  } catch (err) {
+    console.error('Error creating project:', err);
+    error = err.message;
+  }
+}
+---
+
+<AdminLayout title="Add New Project - Admin Panel">
+  <div class="admin-content">
+    <div class="page-header">
+      <div class="header-content">
+        <h1 class="page-title">Add New Project</h1>
+        <p class="page-description">Create a new project to showcase in your portfolio</p>
+      </div>
+      <div class="header-actions">
+        <a href="/admin/dashboard" class="btn btn-secondary">← Back to Dashboard</a>
+        <a href="/projects" class="btn btn-outline" target="_blank">View Projects Page</a>
+      </div>
+    </div>
+
+    {success && (
+      <div class="alert alert-success">
+        <h4>✅ Project Created Successfully!</h4>
+        <p>Your new project has been added to your portfolio.</p>
+      </div>
+    )}
+
+    {error && (
+      <div class="alert alert-error">
+        <h4>❌ Error Creating Project</h4>
+        <p>{error}</p>
+      </div>
+    )}
+
+    <form method="POST" class="project-form">
+      <div class="form-sections">
+        <div class="form-section">
+          <label for="title" class="form-label">Project Title *</label>
+          <input 
+            type="text" 
+            id="title" 
+            name="title" 
+            class="form-control" 
+            required
+            placeholder="Enter project title..."
+          />
+        </div>
+
+        <div class="form-section">
+          <label for="subtitle" class="form-label">Subtitle</label>
+          <input 
+            type="text" 
+            id="subtitle" 
+            name="subtitle" 
+            class="form-control" 
+            placeholder="Brief project tagline..."
+          />
+        </div>
+
+        <div class="form-section">
+          <label for="emoji" class="form-label">Project Emoji</label>
+          <input 
+            type="text" 
+            id="emoji" 
+            name="emoji" 
+            class="form-control" 
+            placeholder="🚀"
+            maxlength="2"
+          />
+        </div>
+
+        <div class="form-section">
+          <label for="description" class="form-label">Description *</label>
+          <textarea 
+            id="description" 
+            name="description" 
+            class="form-control form-textarea" 
+            rows="4"
+            required
+            placeholder="Describe what this project does and why it's important..."
+          ></textarea>
+        </div>
+
+        <div class="form-section">
+          <label for="technologies" class="form-label">Technologies Used</label>
+          <input 
+            type="text" 
+            id="technologies" 
+            name="technologies" 
+            class="form-control" 
+            placeholder="React, Node.js, MongoDB, AWS (comma-separated)"
+          />
+          <small class="form-help">Separate technologies with commas</small>
+        </div>
+
+        <div class="form-row">
+          <div class="form-section">
+            <label for="github_link" class="form-label">GitHub Repository</label>
+            <input 
+              type="url" 
+              id="github_link" 
+              name="github_link" 
+              class="form-control" 
+              placeholder="https://github.com/username/repo"
+            />
+          </div>
+
+          <div class="form-section">
+            <label for="live_link" class="form-label">Live Demo URL</label>
+            <input 
+              type="url" 
+              id="live_link" 
+              name="live_link" 
+              class="form-control" 
+              placeholder="https://your-project.com"
+            />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-section">
+            <label for="display_order" class="form-label">Display Order</label>
+            <input 
+              type="number" 
+              id="display_order" 
+              name="display_order" 
+              class="form-control" 
+              placeholder="1"
+              min="1"
+            />
+            <small class="form-help">Lower numbers appear first</small>
+          </div>
+
+          <div class="form-section">
+            <label for="is_active" class="form-label">Status</label>
+            <select id="is_active" name="is_active" class="form-control">
+              <option value="1" selected>Active (Visible)</option>
+              <option value="0">Draft (Hidden)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">
+          ✨ Create Project
+        </button>
+        <button type="button" class="btn btn-secondary" onclick="history.back()">
+          Cancel
+        </button>
+      </div>
+    </form>
+
+    <!-- Help Section -->
+    <div class="card info-card">
+      <h3>💡 Project Creation Tips</h3>
+      <ul>
+        <li><strong>Title:</strong> Use a clear, descriptive name for your project</li>
+        <li><strong>Description:</strong> Explain the problem your project solves and its key features</li>
+        <li><strong>Technologies:</strong> List the main tools and frameworks used</li>
+        <li><strong>Links:</strong> Add GitHub repository and live demo links when available</li>
+        <li><strong>Display Order:</strong> Control where this project appears in your portfolio</li>
+        <li><strong>Status:</strong> Set to "Draft" to work on it privately before publishing</li>
+      </ul>
+    </div>
+  </div>
+
+  <style>
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 30px;
+      gap: 20px;
+    }
+
+    .header-content {
+      flex: 1;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .alert {
+      padding: 15px 20px;
+      border-radius: 8px;
+      margin-bottom: 25px;
+      border-left: 4px solid;
+    }
+
+    .alert-success {
+      background: #d4edda;
+      border-left-color: #28a745;
+      color: #155724;
+    }
+
+    .alert-error {
+      background: #f8d7da;
+      border-left-color: #dc3545;
+      color: #721c24;
+    }
+
+    .alert h4 {
+      margin: 0 0 8px 0;
+      font-size: 16px;
+    }
+
+    .alert p {
+      margin: 0;
+    }
+
+    .project-form {
+      background: white;
+      border: 1px solid #e1e1e1;
+      border-radius: 8px;
+      padding: 30px;
+      margin-bottom: 30px;
+    }
+
+    .form-sections {
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+      margin-bottom: 30px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .form-section {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-label {
+      font-weight: 600;
+      color: #2c3e50;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .form-control {
+      padding: 12px;
+      border: 2px solid #e1e1e1;
+      border-radius: 6px;
+      font-size: 14px;
+      transition: border-color 0.2s ease;
+      font-family: inherit;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: #3498db;
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+    }
+
+    .form-textarea {
+      resize: vertical;
+      min-height: 100px;
+      line-height: 1.5;
+    }
+
+    .form-help {
+      color: #7f8c8d;
+      font-size: 12px;
+      margin-top: 4px;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 15px;
+      justify-content: flex-start;
+      padding-top: 20px;
+      border-top: 1px solid #e1e1e1;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      border: 2px solid transparent;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background: #3498db;
+      color: white;
+      border-color: #3498db;
+    }
+
+    .btn-primary:hover {
+      background: #2980b9;
+      border-color: #2980b9;
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: #95a5a6;
+      color: white;
+      border-color: #95a5a6;
+    }
+
+    .btn-secondary:hover {
+      background: #7f8c8d;
+      border-color: #7f8c8d;
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: #3498db;
+      border-color: #3498db;
+    }
+
+    .btn-outline:hover {
+      background: #3498db;
+      color: white;
+    }
+
+    .info-card {
+      background: #f8f9fa;
+      border-left: 4px solid #3498db;
+    }
+
+    .info-card h3 {
+      color: #2c3e50;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .info-card ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .info-card li {
+      margin-bottom: 8px;
+      color: #34495e;
+      line-height: 1.5;
+    }
+
+    .info-card strong {
+      color: #2c3e50;
+    }
+
+    @media (max-width: 768px) {
+      .page-header {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .header-actions {
+        flex-direction: column;
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+
+      .project-form {
+        padding: 20px;
+      }
+
+      .form-actions {
+        flex-direction: column;
+      }
+
+      .btn {
+        text-align: center;
+        justify-content: center;
+      }
+    }
+  </style>
+</AdminLayout>

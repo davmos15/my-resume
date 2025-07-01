@@ -1,0 +1,592 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+
+// Check authentication
+const session = Astro.cookies.get('session');
+if (!session) {
+  return Astro.redirect('/admin/login');
+}
+
+let success = false;
+let error = null;
+let uploadedFile = null;
+
+if (Astro.request.method === 'POST') {
+  try {
+    const formData = await Astro.request.formData();
+    const file = formData.get('file') as File;
+    
+    if (file && file.size > 0) {
+      // In a real implementation, you would save the file to storage
+      // For now, we'll simulate success
+      success = true;
+      uploadedFile = {
+        name: file.name,
+        size: file.size,
+        type: file.type
+      };
+      
+      console.log('File uploaded:', uploadedFile);
+    } else {
+      error = 'No file selected or file is empty';
+    }
+    
+  } catch (err) {
+    console.error('Error uploading file:', err);
+    error = err.message;
+  }
+}
+
+// Simulate existing files (in real app, load from file system/database)
+const existingFiles = [
+  {
+    name: 'Nadav Moskow - Resume.pdf',
+    size: 245760,
+    type: 'application/pdf',
+    url: '/images/Nadav Moskow - Resume.pdf',
+    uploadDate: '2024-06-15'
+  },
+  {
+    name: 'NM1.png',
+    size: 15360,
+    type: 'image/png',
+    url: '/images/NM1.png',
+    uploadDate: '2024-06-10'
+  },
+  {
+    name: 'profile-photo.jpg',
+    size: 89120,
+    type: 'image/jpeg',
+    url: '/images/profile-photo.jpg',
+    uploadDate: '2024-06-08'
+  }
+];
+
+function formatFileSize(bytes) {
+  if (bytes === 0) return '0 Bytes';
+  const k = 1024;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+---
+
+<AdminLayout title="File Management - Admin Panel">
+  <div class="admin-content">
+    <div class="page-header">
+      <div class="header-content">
+        <h1 class="page-title">File Management</h1>
+        <p class="page-description">Upload and manage files for your website</p>
+      </div>
+      <div class="header-actions">
+        <a href="/admin/dashboard" class="btn btn-secondary">← Back to Dashboard</a>
+      </div>
+    </div>
+
+    {success && uploadedFile && (
+      <div class="alert alert-success">
+        <h4>✅ File Uploaded Successfully!</h4>
+        <p>"{uploadedFile.name}" ({formatFileSize(uploadedFile.size)}) has been uploaded and is ready to use.</p>
+      </div>
+    )}
+
+    {error && (
+      <div class="alert alert-error">
+        <h4>❌ Upload Error</h4>
+        <p>{error}</p>
+      </div>
+    )}
+
+    <!-- Upload Section -->
+    <div class="card upload-section">
+      <h3>📤 Upload New File</h3>
+      <form method="POST" enctype="multipart/form-data" class="upload-form">
+        <div class="upload-area">
+          <div class="upload-content">
+            <div class="upload-icon">📁</div>
+            <p class="upload-text">
+              <strong>Choose a file to upload</strong><br>
+              or drag and drop it here
+            </p>
+            <input 
+              type="file" 
+              id="file" 
+              name="file" 
+              class="file-input"
+              accept="image/*,.pdf,.doc,.docx,.txt"
+              required
+            />
+            <label for="file" class="file-label">
+              Browse Files
+            </label>
+          </div>
+        </div>
+        
+        <div class="upload-actions">
+          <button type="submit" class="btn btn-primary">
+            ⬆️ Upload File
+          </button>
+        </div>
+        
+        <div class="upload-info">
+          <small>
+            <strong>Supported formats:</strong> Images (JPG, PNG, GIF, WebP), PDFs, Documents (DOC, DOCX), Text files<br>
+            <strong>Maximum size:</strong> 10MB per file
+          </small>
+        </div>
+      </form>
+    </div>
+
+    <!-- Existing Files Section -->
+    <div class="card files-section">
+      <h3>📂 Existing Files</h3>
+      
+      {existingFiles.length > 0 ? (
+        <div class="files-grid">
+          {existingFiles.map((file) => (
+            <div class="file-card">
+              <div class="file-preview">
+                {file.type.startsWith('image/') ? (
+                  <img src={file.url} alt={file.name} class="file-image" />
+                ) : file.type === 'application/pdf' ? (
+                  <div class="file-icon pdf-icon">📄</div>
+                ) : (
+                  <div class="file-icon doc-icon">📄</div>
+                )}
+              </div>
+              
+              <div class="file-info">
+                <h4 class="file-name">{file.name}</h4>
+                <div class="file-meta">
+                  <span class="file-size">{formatFileSize(file.size)}</span>
+                  <span class="file-date">{file.uploadDate}</span>
+                </div>
+              </div>
+              
+              <div class="file-actions">
+                <a href={file.url} target="_blank" class="btn btn-small btn-outline">
+                  👀 View
+                </a>
+                <button class="btn btn-small btn-secondary" onclick={`navigator.clipboard.writeText('${file.url}')`}>
+                  📋 Copy URL
+                </button>
+                <button class="btn btn-small btn-danger">
+                  🗑️ Delete
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div class="no-files">
+          <div class="no-files-icon">📂</div>
+          <p>No files uploaded yet. Upload your first file above!</p>
+        </div>
+      )}
+    </div>
+
+    <!-- Usage Guidelines -->
+    <div class="card info-card">
+      <h3>💡 File Management Guidelines</h3>
+      <div class="guidelines-grid">
+        <div class="guideline-section">
+          <h4>🖼️ Images</h4>
+          <ul>
+            <li>Use JPG for photos, PNG for graphics with transparency</li>
+            <li>Optimize images for web (under 1MB recommended)</li>
+            <li>Consider responsive image sizes</li>
+          </ul>
+        </div>
+        
+        <div class="guideline-section">
+          <h4>📄 Documents</h4>
+          <ul>
+            <li>PDFs are great for resumes and formal documents</li>
+            <li>Keep file sizes reasonable for web download</li>
+            <li>Use descriptive filenames</li>
+          </ul>
+        </div>
+        
+        <div class="guideline-section">
+          <h4>🔗 File URLs</h4>
+          <ul>
+            <li>Uploaded files are accessible at /images/filename</li>
+            <li>Use "Copy URL" to get the full path</li>
+            <li>URLs can be used in content and links</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 30px;
+      gap: 20px;
+    }
+
+    .header-content {
+      flex: 1;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .alert {
+      padding: 15px 20px;
+      border-radius: 8px;
+      margin-bottom: 25px;
+      border-left: 4px solid;
+    }
+
+    .alert-success {
+      background: #d4edda;
+      border-left-color: #28a745;
+      color: #155724;
+    }
+
+    .alert-error {
+      background: #f8d7da;
+      border-left-color: #dc3545;
+      color: #721c24;
+    }
+
+    .alert h4 {
+      margin: 0 0 8px 0;
+      font-size: 16px;
+    }
+
+    .alert p {
+      margin: 0;
+    }
+
+    .upload-section {
+      margin-bottom: 30px;
+    }
+
+    .upload-section h3 {
+      margin-bottom: 20px;
+      color: #2c3e50;
+    }
+
+    .upload-form {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .upload-area {
+      border: 2px dashed #bdc3c7;
+      border-radius: 8px;
+      padding: 40px 20px;
+      text-align: center;
+      transition: border-color 0.3s ease;
+    }
+
+    .upload-area:hover {
+      border-color: #3498db;
+    }
+
+    .upload-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .upload-icon {
+      font-size: 3em;
+      opacity: 0.6;
+    }
+
+    .upload-text {
+      margin: 0;
+      color: #7f8c8d;
+    }
+
+    .file-input {
+      display: none;
+    }
+
+    .file-label {
+      background: #3498db;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .file-label:hover {
+      background: #2980b9;
+    }
+
+    .upload-actions {
+      display: flex;
+      justify-content: center;
+    }
+
+    .upload-info {
+      text-align: center;
+      color: #7f8c8d;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .files-section h3 {
+      margin-bottom: 20px;
+      color: #2c3e50;
+    }
+
+    .files-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .file-card {
+      border: 1px solid #e1e1e1;
+      border-radius: 8px;
+      overflow: hidden;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .file-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .file-preview {
+      height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f8f9fa;
+    }
+
+    .file-image {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: cover;
+    }
+
+    .file-icon {
+      font-size: 3em;
+      opacity: 0.6;
+    }
+
+    .file-info {
+      padding: 15px;
+    }
+
+    .file-name {
+      margin: 0 0 8px 0;
+      font-size: 14px;
+      font-weight: 600;
+      color: #2c3e50;
+      word-break: break-word;
+    }
+
+    .file-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #7f8c8d;
+    }
+
+    .file-actions {
+      padding: 15px;
+      border-top: 1px solid #e1e1e1;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .no-files {
+      text-align: center;
+      padding: 60px 20px;
+      color: #7f8c8d;
+    }
+
+    .no-files-icon {
+      font-size: 4em;
+      margin-bottom: 15px;
+      opacity: 0.5;
+    }
+
+    .btn {
+      padding: 8px 16px;
+      border-radius: 4px;
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 500;
+      border: 1px solid transparent;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-small {
+      padding: 6px 12px;
+      font-size: 11px;
+    }
+
+    .btn-primary {
+      background: #3498db;
+      color: white;
+      border-color: #3498db;
+      padding: 12px 24px;
+      font-size: 14px;
+    }
+
+    .btn-primary:hover {
+      background: #2980b9;
+      border-color: #2980b9;
+    }
+
+    .btn-secondary {
+      background: #95a5a6;
+      color: white;
+      border-color: #95a5a6;
+    }
+
+    .btn-secondary:hover {
+      background: #7f8c8d;
+      border-color: #7f8c8d;
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: #3498db;
+      border-color: #3498db;
+    }
+
+    .btn-outline:hover {
+      background: #3498db;
+      color: white;
+    }
+
+    .btn-danger {
+      background: #e74c3c;
+      color: white;
+      border-color: #e74c3c;
+    }
+
+    .btn-danger:hover {
+      background: #c0392b;
+      border-color: #c0392b;
+    }
+
+    .info-card {
+      background: #f8f9fa;
+      border-left: 4px solid #3498db;
+    }
+
+    .info-card h3 {
+      color: #2c3e50;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .guidelines-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+    }
+
+    .guideline-section h4 {
+      color: #2c3e50;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+
+    .guideline-section ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .guideline-section li {
+      margin-bottom: 6px;
+      color: #34495e;
+      line-height: 1.4;
+      font-size: 13px;
+    }
+
+    @media (max-width: 768px) {
+      .page-header {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .header-actions {
+        flex-direction: column;
+      }
+
+      .files-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .guidelines-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .file-actions {
+        flex-direction: column;
+      }
+
+      .btn {
+        text-align: center;
+        justify-content: center;
+      }
+    }
+  </style>
+
+  <script>
+    // File upload drag and drop functionality
+    const uploadArea = document.querySelector('.upload-area');
+    const fileInput = document.querySelector('.file-input');
+
+    uploadArea.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadArea.style.borderColor = '#3498db';
+    });
+
+    uploadArea.addEventListener('dragleave', (e) => {
+      e.preventDefault();
+      uploadArea.style.borderColor = '#bdc3c7';
+    });
+
+    uploadArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadArea.style.borderColor = '#bdc3c7';
+      
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        fileInput.files = files;
+        // Show file name
+        const fileName = files[0].name;
+        const uploadText = document.querySelector('.upload-text');
+        uploadText.innerHTML = `<strong>Selected:</strong> ${fileName}`;
+      }
+    });
+
+    // File input change handler
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files.length > 0) {
+        const fileName = e.target.files[0].name;
+        const uploadText = document.querySelector('.upload-text');
+        uploadText.innerHTML = `<strong>Selected:</strong> ${fileName}`;
+      }
+    });
+  </script>
+</AdminLayout>

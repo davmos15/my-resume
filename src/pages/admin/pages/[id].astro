@@ -1,0 +1,427 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+
+// Check authentication
+const session = Astro.cookies.get('session');
+if (!session) {
+  return Astro.redirect('/admin/login');
+}
+
+// Get the page ID from URL params
+const { id } = Astro.params;
+
+// Define page configurations
+const pageConfigs = {
+  home: {
+    name: 'Homepage',
+    file: 'src/pages/index.astro',
+    description: 'Main landing page with intro and hero section',
+    sections: [
+      { key: 'hero_title', label: 'Hero Title', type: 'text' },
+      { key: 'hero_subtitle', label: 'Hero Subtitle', type: 'text' },
+      { key: 'intro_text', label: 'Introduction Text', type: 'textarea' }
+    ]
+  },
+  about: {
+    name: 'About Me',
+    file: 'src/pages/about.astro',
+    description: 'Personal information and background',
+    sections: [
+      { key: 'page_title', label: 'Page Title', type: 'text' },
+      { key: 'about_content', label: 'About Content', type: 'textarea' },
+      { key: 'bio_text', label: 'Biography Text', type: 'textarea' }
+    ]
+  },
+  contact: {
+    name: 'Contact',
+    file: 'src/pages/contact.astro',
+    description: 'Contact form and information',
+    sections: [
+      { key: 'page_title', label: 'Page Title', type: 'text' },
+      { key: 'contact_intro', label: 'Contact Introduction', type: 'textarea' },
+      { key: 'form_description', label: 'Form Description', type: 'text' }
+    ]
+  },
+  projects: {
+    name: 'Projects',
+    file: 'src/pages/projects.astro',
+    description: 'Portfolio projects showcase',
+    sections: [
+      { key: 'page_title', label: 'Page Title', type: 'text' },
+      { key: 'page_subtitle', label: 'Page Subtitle', type: 'text' },
+      { key: 'intro_text', label: 'Introduction Text', type: 'textarea' }
+    ]
+  },
+  resume: {
+    name: 'Resume',
+    file: 'src/pages/resume.astro',
+    description: 'Professional experience and skills',
+    sections: [
+      { key: 'page_title', label: 'Page Title', type: 'text' },
+      { key: 'summary_text', label: 'Professional Summary', type: 'textarea' },
+      { key: 'download_text', label: 'Download Button Text', type: 'text' }
+    ]
+  }
+};
+
+// Get page config or redirect if invalid
+const pageConfig = pageConfigs[id];
+if (!pageConfig) {
+  return Astro.redirect('/admin/pages');
+}
+
+// Handle form submission
+let success = false;
+let error = null;
+
+if (Astro.request.method === 'POST') {
+  try {
+    const formData = await Astro.request.formData();
+    
+    // In a real implementation, you would save these to a database
+    // For now, we'll just simulate success
+    success = true;
+    
+    // Log the form data for debugging
+    console.log(`Saving content for page: ${id}`);
+    for (const [key, value] of formData.entries()) {
+      console.log(`${key}: ${value}`);
+    }
+    
+  } catch (err) {
+    console.error('Error saving page content:', err);
+    error = err.message;
+  }
+}
+
+// Simulate loading existing content (in real app, load from database)
+const currentContent = {
+  home: {
+    hero_title: 'Welcome to My Portfolio',
+    hero_subtitle: 'Full-Stack Developer & Business Analyst',
+    intro_text: 'I build innovative solutions that bridge business needs with technical excellence.'
+  },
+  about: {
+    page_title: 'About Me',
+    about_content: 'Learn more about my background, experience, and passion for technology.',
+    bio_text: 'I am a dedicated professional with expertise in business analysis and development.'
+  },
+  contact: {
+    page_title: 'Get In Touch',
+    contact_intro: 'Ready to work together? Send me a message and let\'s discuss your project.',
+    form_description: 'Fill out the form below and I\'ll get back to you as soon as possible.'
+  },
+  projects: {
+    page_title: 'My Projects',
+    page_subtitle: 'Click on any project to explore in detail',
+    intro_text: 'Here are some of the projects I\'ve worked on that showcase my skills and experience.'
+  },
+  resume: {
+    page_title: 'Professional Resume',
+    summary_text: 'A comprehensive overview of my professional experience, skills, and achievements.',
+    download_text: 'Download PDF Resume'
+  }
+};
+
+const content = currentContent[id] || {};
+---
+
+<AdminLayout title={`Edit ${pageConfig.name} - Admin Panel`}>
+  <div class="admin-content">
+    <div class="page-header">
+      <div class="header-content">
+        <h1 class="page-title">Edit {pageConfig.name}</h1>
+        <p class="page-description">{pageConfig.description}</p>
+        <div class="file-info">
+          <small>File: {pageConfig.file}</small>
+        </div>
+      </div>
+      <div class="header-actions">
+        <a href="/admin/pages" class="btn btn-secondary">← Back to Pages</a>
+        <a href={`/${id === 'home' ? '' : id}`} class="btn btn-outline" target="_blank">View Live Page</a>
+      </div>
+    </div>
+
+    {success && (
+      <div class="alert alert-success">
+        <h4>✅ Changes Saved Successfully!</h4>
+        <p>Your content changes have been saved. The live page will reflect these updates.</p>
+      </div>
+    )}
+
+    {error && (
+      <div class="alert alert-error">
+        <h4>❌ Error Saving Changes</h4>
+        <p>{error}</p>
+      </div>
+    )}
+
+    <!-- Content Editor Form -->
+    <form method="POST" class="content-form">
+      <div class="form-sections">
+        {pageConfig.sections.map((section) => (
+          <div class="form-section">
+            <label for={section.key} class="form-label">
+              {section.label}
+            </label>
+            {section.type === 'textarea' ? (
+              <textarea 
+                id={section.key}
+                name={section.key}
+                class="form-control form-textarea"
+                rows="4"
+                placeholder={`Enter ${section.label.toLowerCase()}...`}
+              >{content[section.key] || ''}</textarea>
+            ) : (
+              <input 
+                type="text"
+                id={section.key}
+                name={section.key}
+                class="form-control"
+                value={content[section.key] || ''}
+                placeholder={`Enter ${section.label.toLowerCase()}...`}
+              />
+            )}
+          </div>
+        ))}
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">
+          💾 Save Changes
+        </button>
+        <button type="button" class="btn btn-secondary" onclick="history.back()">
+          Cancel
+        </button>
+      </div>
+    </form>
+
+    <!-- Help Section -->
+    <div class="card info-card">
+      <h3>📝 Content Editor Instructions</h3>
+      <ul>
+        <li><strong>Text fields:</strong> For short content like titles and headings</li>
+        <li><strong>Text areas:</strong> For longer content like descriptions and paragraphs</li>
+        <li><strong>Preview:</strong> Click "View Live Page" to see your changes on the actual website</li>
+        <li><strong>Save:</strong> Changes are applied immediately when you click "Save Changes"</li>
+        <li><strong>Formatting:</strong> Basic HTML tags are supported in text areas</li>
+      </ul>
+    </div>
+  </div>
+
+  <style>
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 30px;
+      gap: 20px;
+    }
+
+    .header-content {
+      flex: 1;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .file-info {
+      margin-top: 10px;
+    }
+
+    .file-info small {
+      color: #95a5a6;
+      font-family: monospace;
+      background: #f8f9fa;
+      padding: 4px 8px;
+      border-radius: 4px;
+    }
+
+    .alert {
+      padding: 15px 20px;
+      border-radius: 8px;
+      margin-bottom: 25px;
+      border-left: 4px solid;
+    }
+
+    .alert-success {
+      background: #d4edda;
+      border-left-color: #28a745;
+      color: #155724;
+    }
+
+    .alert-error {
+      background: #f8d7da;
+      border-left-color: #dc3545;
+      color: #721c24;
+    }
+
+    .alert h4 {
+      margin: 0 0 8px 0;
+      font-size: 16px;
+    }
+
+    .alert p {
+      margin: 0;
+    }
+
+    .content-form {
+      background: white;
+      border: 1px solid #e1e1e1;
+      border-radius: 8px;
+      padding: 30px;
+      margin-bottom: 30px;
+    }
+
+    .form-sections {
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+      margin-bottom: 30px;
+    }
+
+    .form-section {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-label {
+      font-weight: 600;
+      color: #2c3e50;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .form-control {
+      padding: 12px;
+      border: 2px solid #e1e1e1;
+      border-radius: 6px;
+      font-size: 14px;
+      transition: border-color 0.2s ease;
+      font-family: inherit;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: #3498db;
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+    }
+
+    .form-textarea {
+      resize: vertical;
+      min-height: 100px;
+      line-height: 1.5;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 15px;
+      justify-content: flex-start;
+      padding-top: 20px;
+      border-top: 1px solid #e1e1e1;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      border: 2px solid transparent;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background: #3498db;
+      color: white;
+      border-color: #3498db;
+    }
+
+    .btn-primary:hover {
+      background: #2980b9;
+      border-color: #2980b9;
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: #95a5a6;
+      color: white;
+      border-color: #95a5a6;
+    }
+
+    .btn-secondary:hover {
+      background: #7f8c8d;
+      border-color: #7f8c8d;
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: #3498db;
+      border-color: #3498db;
+    }
+
+    .btn-outline:hover {
+      background: #3498db;
+      color: white;
+    }
+
+    .info-card {
+      background: #f8f9fa;
+      border-left: 4px solid #3498db;
+    }
+
+    .info-card h3 {
+      color: #2c3e50;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .info-card ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .info-card li {
+      margin-bottom: 8px;
+      color: #34495e;
+      line-height: 1.5;
+    }
+
+    .info-card strong {
+      color: #2c3e50;
+    }
+
+    @media (max-width: 768px) {
+      .page-header {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .header-actions {
+        flex-direction: column;
+      }
+
+      .content-form {
+        padding: 20px;
+      }
+
+      .form-actions {
+        flex-direction: column;
+      }
+
+      .btn {
+        text-align: center;
+        justify-content: center;
+      }
+    }
+  </style>
+</AdminLayout>

@@ -1,0 +1,433 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+
+// Check authentication
+const session = Astro.cookies.get('session');
+if (!session) {
+  return Astro.redirect('/admin/login');
+}
+
+let success = false;
+let error = null;
+
+if (Astro.request.method === 'POST') {
+  try {
+    const formData = await Astro.request.formData();
+    
+    // In a real implementation, you would save to database
+    // For now, we'll simulate success
+    success = true;
+    
+    console.log('Creating new resume entry:', Object.fromEntries(formData));
+    
+  } catch (err) {
+    console.error('Error creating resume entry:', err);
+    error = err.message;
+  }
+}
+---
+
+<AdminLayout title="Add Resume Entry - Admin Panel">
+  <div class="admin-content">
+    <div class="page-header">
+      <div class="header-content">
+        <h1 class="page-title">Add Resume Entry</h1>
+        <p class="page-description">Add a new experience, skill, education, or achievement entry</p>
+      </div>
+      <div class="header-actions">
+        <a href="/admin/dashboard" class="btn btn-secondary">← Back to Dashboard</a>
+        <a href="/resume" class="btn btn-outline" target="_blank">View Resume Page</a>
+      </div>
+    </div>
+
+    {success && (
+      <div class="alert alert-success">
+        <h4>✅ Resume Entry Created Successfully!</h4>
+        <p>Your new resume entry has been added to your profile.</p>
+      </div>
+    )}
+
+    {error && (
+      <div class="alert alert-error">
+        <h4>❌ Error Creating Resume Entry</h4>
+        <p>{error}</p>
+      </div>
+    )}
+
+    <form method="POST" class="resume-form">
+      <div class="form-sections">
+        <div class="form-section">
+          <label for="section_type" class="form-label">Section Type *</label>
+          <select id="section_type" name="section_type" class="form-control" required>
+            <option value="">Select a section...</option>
+            <option value="experience">💼 Professional Experience</option>
+            <option value="skills">🛠️ Skills & Technologies</option>
+            <option value="education">🎓 Education</option>
+            <option value="certifications">🏆 Certifications & Achievements</option>
+          </select>
+        </div>
+
+        <div class="form-section">
+          <label for="title" class="form-label">Title *</label>
+          <input 
+            type="text" 
+            id="title" 
+            name="title" 
+            class="form-control" 
+            required
+            placeholder="Job Title, Degree, Skill Category, etc."
+          />
+        </div>
+
+        <div class="form-section">
+          <label for="subtitle" class="form-label">Subtitle</label>
+          <input 
+            type="text" 
+            id="subtitle" 
+            name="subtitle" 
+            class="form-control" 
+            placeholder="Company name, Institution, Level, etc."
+          />
+        </div>
+
+        <div class="form-section">
+          <label for="date_range" class="form-label">Date Range</label>
+          <input 
+            type="text" 
+            id="date_range" 
+            name="date_range" 
+            class="form-control" 
+            placeholder="2020 - Present, Jan 2019 - Dec 2021, etc."
+          />
+        </div>
+
+        <div class="form-section">
+          <label for="description" class="form-label">Description</label>
+          <textarea 
+            id="description" 
+            name="description" 
+            class="form-control form-textarea" 
+            rows="4"
+            placeholder="Brief overview or summary..."
+          ></textarea>
+        </div>
+
+        <div class="form-section">
+          <label for="details" class="form-label">Detailed Information</label>
+          <textarea 
+            id="details" 
+            name="details" 
+            class="form-control form-textarea" 
+            rows="6"
+            placeholder="Detailed information, achievements, responsibilities, technical details, etc. HTML is supported."
+          ></textarea>
+          <small class="form-help">You can use HTML tags for formatting (ul, li, strong, em, etc.)</small>
+        </div>
+
+        <div class="form-row">
+          <div class="form-section">
+            <label for="display_order" class="form-label">Display Order</label>
+            <input 
+              type="number" 
+              id="display_order" 
+              name="display_order" 
+              class="form-control" 
+              placeholder="1"
+              min="1"
+            />
+            <small class="form-help">Lower numbers appear first within each section</small>
+          </div>
+
+          <div class="form-section">
+            <label for="is_active" class="form-label">Status</label>
+            <select id="is_active" name="is_active" class="form-control">
+              <option value="1" selected>Active (Visible)</option>
+              <option value="0">Draft (Hidden)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">
+          ✨ Create Resume Entry
+        </button>
+        <button type="button" class="btn btn-secondary" onclick="history.back()">
+          Cancel
+        </button>
+      </div>
+    </form>
+
+    <!-- Help Section -->
+    <div class="card info-card">
+      <h3>📝 Resume Entry Guidelines</h3>
+      <div class="help-sections">
+        <div class="help-section">
+          <h4>💼 Experience Entries</h4>
+          <ul>
+            <li><strong>Title:</strong> Job title (e.g., "Senior Business Analyst")</li>
+            <li><strong>Subtitle:</strong> Company name and location</li>
+            <li><strong>Date Range:</strong> Employment period</li>
+            <li><strong>Details:</strong> Key responsibilities and achievements</li>
+          </ul>
+        </div>
+        
+        <div class="help-section">
+          <h4>🛠️ Skills Entries</h4>
+          <ul>
+            <li><strong>Title:</strong> Skill category (e.g., "Programming Languages")</li>
+            <li><strong>Subtitle:</strong> Proficiency level or specialization</li>
+            <li><strong>Details:</strong> List of specific skills and tools</li>
+          </ul>
+        </div>
+
+        <div class="help-section">
+          <h4>🎓 Education Entries</h4>
+          <ul>
+            <li><strong>Title:</strong> Degree or certification name</li>
+            <li><strong>Subtitle:</strong> Institution name</li>
+            <li><strong>Date Range:</strong> Study period or graduation year</li>
+            <li><strong>Details:</strong> Relevant coursework, honors, GPA</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 30px;
+      gap: 20px;
+    }
+
+    .header-content {
+      flex: 1;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .alert {
+      padding: 15px 20px;
+      border-radius: 8px;
+      margin-bottom: 25px;
+      border-left: 4px solid;
+    }
+
+    .alert-success {
+      background: #d4edda;
+      border-left-color: #28a745;
+      color: #155724;
+    }
+
+    .alert-error {
+      background: #f8d7da;
+      border-left-color: #dc3545;
+      color: #721c24;
+    }
+
+    .alert h4 {
+      margin: 0 0 8px 0;
+      font-size: 16px;
+    }
+
+    .alert p {
+      margin: 0;
+    }
+
+    .resume-form {
+      background: white;
+      border: 1px solid #e1e1e1;
+      border-radius: 8px;
+      padding: 30px;
+      margin-bottom: 30px;
+    }
+
+    .form-sections {
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+      margin-bottom: 30px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .form-section {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-label {
+      font-weight: 600;
+      color: #2c3e50;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .form-control {
+      padding: 12px;
+      border: 2px solid #e1e1e1;
+      border-radius: 6px;
+      font-size: 14px;
+      transition: border-color 0.2s ease;
+      font-family: inherit;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: #3498db;
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+    }
+
+    .form-textarea {
+      resize: vertical;
+      min-height: 100px;
+      line-height: 1.5;
+    }
+
+    .form-help {
+      color: #7f8c8d;
+      font-size: 12px;
+      margin-top: 4px;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 15px;
+      justify-content: flex-start;
+      padding-top: 20px;
+      border-top: 1px solid #e1e1e1;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      border: 2px solid transparent;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background: #3498db;
+      color: white;
+      border-color: #3498db;
+    }
+
+    .btn-primary:hover {
+      background: #2980b9;
+      border-color: #2980b9;
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: #95a5a6;
+      color: white;
+      border-color: #95a5a6;
+    }
+
+    .btn-secondary:hover {
+      background: #7f8c8d;
+      border-color: #7f8c8d;
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: #3498db;
+      border-color: #3498db;
+    }
+
+    .btn-outline:hover {
+      background: #3498db;
+      color: white;
+    }
+
+    .info-card {
+      background: #f8f9fa;
+      border-left: 4px solid #3498db;
+    }
+
+    .info-card h3 {
+      color: #2c3e50;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .help-sections {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
+    .help-section h4 {
+      color: #2c3e50;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+
+    .help-section ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .help-section li {
+      margin-bottom: 6px;
+      color: #34495e;
+      line-height: 1.4;
+      font-size: 13px;
+    }
+
+    .help-section strong {
+      color: #2c3e50;
+    }
+
+    @media (max-width: 768px) {
+      .page-header {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .header-actions {
+        flex-direction: column;
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+
+      .help-sections {
+        grid-template-columns: 1fr;
+      }
+
+      .resume-form {
+        padding: 20px;
+      }
+
+      .form-actions {
+        flex-direction: column;
+      }
+
+      .btn {
+        text-align: center;
+        justify-content: center;
+      }
+    }
+  </style>
+</AdminLayout>

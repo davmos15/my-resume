@@ -8,6 +8,13 @@
             <img src="/images/NM1.png" alt="Logo" id="logo">
         </a>
         
+        <!-- Mobile Menu Toggle -->
+        <button class="mobile-menu-toggle" id="mobile-toggle" aria-label="Toggle navigation menu">
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+        </button>
+        
         <ul class="nav-menu" id="navbar">
             <li class="nav-item">
                 <a href="/" class="nav-link">Home</a>
@@ -89,3 +96,90 @@
         </ul>
     </div>
 </nav>
+
+<script>
+    // Mobile navigation functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const mobileToggle = document.getElementById('mobile-toggle');
+        const navbar = document.getElementById('navbar');
+        const nav = document.querySelector('.topnav');
+        
+        // Toggle mobile menu
+        mobileToggle.addEventListener('click', function() {
+            navbar.classList.toggle('nav-menu-open');
+            mobileToggle.classList.toggle('active');
+        });
+        
+        // Close mobile menu when clicking on links
+        const navLinks = navbar.querySelectorAll('.nav-link:not(.theme-toggle)');
+        navLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                navbar.classList.remove('nav-menu-open');
+                mobileToggle.classList.remove('active');
+            });
+        });
+        
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!nav.contains(e.target)) {
+                navbar.classList.remove('nav-menu-open');
+                mobileToggle.classList.remove('active');
+            }
+        });
+        
+        // Handle theme dropdown for mobile
+        const themeToggle = document.querySelector('.theme-toggle');
+        const themeDropdown = document.querySelector('.theme-dropdown-menu');
+        
+        themeToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            if (window.innerWidth <= 768) {
+                themeDropdown.classList.toggle('show');
+            }
+        });
+        
+        // Close theme dropdown when clicking theme option
+        const themeOptions = themeDropdown.querySelectorAll('.theme-option');
+        themeOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                themeDropdown.classList.remove('show');
+                if (window.innerWidth <= 768) {
+                    navbar.classList.remove('nav-menu-open');
+                    mobileToggle.classList.remove('active');
+                }
+            });
+        });
+        
+        // Handle accordion functionality for mobile theme menu
+        const accordionHeaders = themeDropdown.querySelectorAll('.accordion-header');
+        accordionHeaders.forEach(header => {
+            header.addEventListener('click', function() {
+                const accordionItem = this.parentElement;
+                const content = accordionItem.querySelector('.accordion-content');
+                
+                // Close other accordion items
+                accordionHeaders.forEach(otherHeader => {
+                    if (otherHeader !== header) {
+                        const otherItem = otherHeader.parentElement;
+                        const otherContent = otherItem.querySelector('.accordion-content');
+                        otherItem.classList.remove('active');
+                        if (otherContent) {
+                            otherContent.style.maxHeight = null;
+                        }
+                    }
+                });
+                
+                // Toggle current accordion item
+                accordionItem.classList.toggle('active');
+                
+                if (accordionItem.classList.contains('active')) {
+                    content.style.maxHeight = content.scrollHeight + "px";
+                } else {
+                    content.style.maxHeight = null;
+                }
+            });
+        });
+    });
+</script>
