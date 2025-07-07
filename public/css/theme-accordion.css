@@ -56,22 +56,22 @@
     color: var(--link-color, #0066cc);
 }
 
-/* Accordion content */
+/* Accordion content - hidden by default */
 .accordion-content {
-    max-height: 0;
+    max-height: 0 !important;
     overflow: hidden;
     transition: max-height 0.3s ease-out;
     background-color: var(--bg-primary, #ffffff);
 }
 
-/* Show content on hover (desktop) */
+/* Show content on hover (desktop) - only when dropdown is visible */
 @media (min-width: 769px) {
-    .accordion-item:hover .accordion-content {
-        max-height: 500px;
+    .nav-item:hover .theme-dropdown-menu .accordion-item:hover .accordion-content {
+        max-height: 500px !important;
         transition: max-height 0.5s ease-in;
     }
     
-    .accordion-item:hover .accordion-header {
+    .nav-item:hover .theme-dropdown-menu .accordion-item:hover .accordion-header {
         background-color: var(--link-color, #0066cc);
         color: var(--bg-primary, #ffffff);
     }
@@ -79,7 +79,7 @@
 
 /* Show content when clicked (persists open) */
 .accordion-item.active .accordion-content {
-    max-height: 500px;
+    max-height: 500px !important;
     transition: max-height 0.5s ease-in;
 }
 

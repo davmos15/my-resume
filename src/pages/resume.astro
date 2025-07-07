@@ -105,7 +105,7 @@ try {
         <!-- Resume List -->
         <div class="resume-list">
           <!-- Experience Item -->
-          <div class="expandable-item" data-card-type="resume" data-section="experience">
+          <div class="expandable-item" data-card-type="resume" data-section="experience" id="Experience">
             <div class="item-header">
               <span class="item-emoji">💼</span>
               <div class="item-content-header">
@@ -145,7 +145,7 @@ try {
           </div>
           
           <!-- Skills Item -->
-          <div class="expandable-item" data-card-type="resume" data-section="skills">
+          <div class="expandable-item" data-card-type="resume" data-section="skills" id="Skills">
             <div class="item-header">
               <span class="item-emoji">🛠️</span>
               <div class="item-content-header">
@@ -185,7 +185,7 @@ try {
           </div>
           
           <!-- Education Item -->
-          <div class="expandable-item" data-card-type="resume" data-section="education">
+          <div class="expandable-item" data-card-type="resume" data-section="education" id="Education">
             <div class="item-header">
               <span class="item-emoji">🎓</span>
               <div class="item-content-header">
@@ -224,7 +224,7 @@ try {
           </div>
           
           <!-- Achievements Item -->
-          <div class="expandable-item" data-card-type="resume" data-section="achievements">
+          <div class="expandable-item" data-card-type="resume" data-section="achievements" id="Courses">
             <div class="item-header">
               <span class="item-emoji">🏆</span>
               <div class="item-content-header">
@@ -431,6 +431,27 @@ try {
       
       // Animate stats on load
       animateStats();
+      
+      // Handle hash navigation
+      function handleHashNavigation() {
+        const hash = window.location.hash.slice(1); // Remove #
+        if (hash) {
+          const targetSection = document.getElementById(hash);
+          if (targetSection && targetSection.classList.contains('expandable-item')) {
+            // Expand the target section
+            setTimeout(() => {
+              expandItem(targetSection);
+              targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+          }
+        }
+      }
+      
+      // Check hash on page load
+      handleHashNavigation();
+      
+      // Listen for hash changes
+      window.addEventListener('hashchange', handleHashNavigation);
       
       console.log('Resume expansion initialized');
     }

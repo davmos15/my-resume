@@ -106,6 +106,13 @@
         margin-right: 10px;
     }
     
+    /* Show dropdown on mobile when clicked */
+    .theme-dropdown-menu.show {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+    
     .afl-teams {
         grid-template-columns: 1fr;
     }
