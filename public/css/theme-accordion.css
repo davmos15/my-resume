@@ -64,16 +64,22 @@
     background-color: var(--bg-primary, #ffffff);
 }
 
-/* Show content on hover (desktop) - only when dropdown is visible */
+/* Show content on hover (desktop) - only when dropdown is visible and not clicked open */
 @media (min-width: 769px) {
-    .nav-item:hover .theme-dropdown-menu .accordion-item:hover .accordion-content {
+    .nav-item:hover .theme-dropdown-menu .accordion-item:hover:not(.active) .accordion-content {
         max-height: 500px !important;
         transition: max-height 0.5s ease-in;
     }
     
-    .nav-item:hover .theme-dropdown-menu .accordion-item:hover .accordion-header {
+    .nav-item:hover .theme-dropdown-menu .accordion-item:hover:not(.active) .accordion-header {
         background-color: var(--link-color, #0066cc);
         color: var(--bg-primary, #ffffff);
+    }
+    
+    /* When clicked open, maintain active state regardless of hover */
+    .nav-item .theme-dropdown-menu .accordion-item.active .accordion-header {
+        background-color: var(--link-color, #0066cc) !important;
+        color: var(--bg-primary, #ffffff) !important;
     }
 }
 

@@ -433,7 +433,11 @@ try {
       animateStats();
       
       // Handle hash navigation
+      let hashHandlingInProgress = false;
       function handleHashNavigation() {
+        if (hashHandlingInProgress) return;
+        hashHandlingInProgress = true;
+        
         const hash = window.location.hash.slice(1); // Remove #
         if (hash) {
           const targetSection = document.getElementById(hash);
@@ -442,13 +446,20 @@ try {
             setTimeout(() => {
               expandItem(targetSection);
               targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              hashHandlingInProgress = false;
             }, 100);
+          } else {
+            hashHandlingInProgress = false;
           }
+        } else {
+          hashHandlingInProgress = false;
         }
       }
       
       // Check hash on page load
-      handleHashNavigation();
+      setTimeout(() => {
+        handleHashNavigation();
+      }, 200);
       
       // Listen for hash changes
       window.addEventListener('hashchange', handleHashNavigation);

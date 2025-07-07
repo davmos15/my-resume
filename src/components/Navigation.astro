@@ -127,8 +127,24 @@
                 // If we're already on the resume page and clicking a hash link
                 if (window.location.pathname === '/resume' && href.startsWith('/resume#')) {
                     e.preventDefault();
+                    e.stopPropagation();
                     const hash = href.split('#')[1];
-                    window.location.hash = hash;
+                    // Use history.pushState to avoid triggering hashchange immediately
+                    history.pushState(null, null, '#' + hash);
+                    // Manually trigger the hash handling with a slight delay
+                    setTimeout(() => {
+                        const targetSection = document.getElementById(hash);
+                        if (targetSection && targetSection.classList.contains('expandable-item')) {
+                            // Close any currently expanded item first
+                            const currentlyExpanded = document.querySelector('.expandable-item.expanded');
+                            if (currentlyExpanded && currentlyExpanded !== targetSection) {
+                                currentlyExpanded.classList.remove('expanded');
+                            }
+                            // Expand the target section
+                            targetSection.classList.add('expanded');
+                            targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
+                    }, 50);
                     // Close dropdowns
                     navbar.classList.remove('nav-menu-open');
                     mobileToggle.classList.remove('active');
@@ -234,22 +250,32 @@
                     // Toggle clicked state
                     const wasActive = accordionItem.classList.contains('active');
                     
-                    // Close other accordion items
-                    accordionHeaders.forEach(otherHeader => {
-                        if (otherHeader !== header) {
-                            const otherItem = otherHeader.parentElement;
-                            const otherContent = otherItem.querySelector('.accordion-content');
-                            otherItem.classList.remove('active');
-                            if (otherContent) {
-                                otherContent.style.maxHeight = null;
+                    // Only close other accordion items if this one is being opened
+                    if (!wasActive) {
+                        accordionHeaders.forEach(otherHeader => {
+                            if (otherHeader !== header) {
+                                const otherItem = otherHeader.parentElement;
+                                const otherContent = otherItem.querySelector('.accordion-content');
+                                otherItem.classList.remove('active');
+                                if (otherContent) {
+                                    otherContent.style.maxHeight = null;
+                                }
                             }
-                        }
-                    });
+                        });
+                    }
                     
                     // Toggle current accordion item
                     if (!wasActive) {
                         accordionItem.classList.add('active');
                         content.style.maxHeight = content.scrollHeight + "px";
+                        // Ensure the theme dropdown stays open when accordion is clicked
+                        if (!isClickedOpen) {
+                            isClickedOpen = true;
+                            themeDropdown.classList.add('clicked-open');
+                            themeDropdown.style.opacity = '1';
+                            themeDropdown.style.visibility = 'visible';
+                            themeDropdown.style.transform = 'translateY(0)';
+                        }
                     } else {
                         accordionItem.classList.remove('active');
                         content.style.maxHeight = null;
