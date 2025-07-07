@@ -34,32 +34,103 @@ try {
 
     // Calculate stats for summary section
     let companies = new Set();
-    let oldestDate = new Date();
+    let totalExperienceMonths = 0;
     let yearsExp = 0;
 
     if (groupedSections.experience && groupedSections.experience.length > 0) {
         groupedSections.experience.forEach(job => {
+            // Extract company name from subtitle (more flexible)
             if (job.subtitle) {
-                const company = job.subtitle.split(' - ')[0];
-                companies.add(company);
-            }
-            if (job.date_range) {
-                const dateMatch = job.date_range.match(/(\d{4})/);
-                if (dateMatch) {
-                    const year = parseInt(dateMatch[1]);
-                    const jobDate = new Date(year, 0, 1);
-                    if (jobDate < oldestDate) oldestDate = jobDate;
+                // Try different formats: "Company - Role", "Company", "Role at Company"
+                let company = job.subtitle;
+                if (company.includes(' - ')) {
+                    company = company.split(' - ')[0];
+                } else if (company.includes(' at ')) {
+                    company = company.split(' at ').pop();
                 }
+                companies.add(company.trim());
+            }
+            
+            // Calculate experience duration from date_range
+            if (job.date_range) {
+                const duration = calculateJobDuration(job.date_range);
+                totalExperienceMonths += duration;
             }
         });
-        yearsExp = new Date().getFullYear() - oldestDate.getFullYear();
+        yearsExp = Math.floor(totalExperienceMonths / 12);
     }
 
     stats = {
-        years: yearsExp > 0 ? yearsExp : 1,
+        years: yearsExp > 0 ? yearsExp : 0,
         companies: companies.size,
         roles: groupedSections.experience ? groupedSections.experience.length : 0
     };
+    
+    // Helper function to calculate job duration in months
+    function calculateJobDuration(dateRange) {
+        try {
+            // Handle formats like "Jan 2020 - Present", "2020 - 2023", "Jan 2020 - Dec 2022"
+            const parts = dateRange.toLowerCase().split(' - ');
+            if (parts.length !== 2) return 12; // Default to 1 year if can't parse
+            
+            const startPart = parts[0].trim();
+            const endPart = parts[1].trim();
+            
+            // Parse start date
+            let startYear, startMonth = 0;
+            if (startPart.match(/^\d{4}$/)) {
+                startYear = parseInt(startPart);
+            } else {
+                const startMatch = startPart.match(/(\w+)\s+(\d{4})/);
+                if (startMatch) {
+                    startYear = parseInt(startMatch[2]);
+                    startMonth = getMonthNumber(startMatch[1]);
+                }
+            }
+            
+            // Parse end date
+            let endYear, endMonth = 11;
+            if (endPart === 'present' || endPart === 'current') {
+                endYear = new Date().getFullYear();
+                endMonth = new Date().getMonth();
+            } else if (endPart.match(/^\d{4}$/)) {
+                endYear = parseInt(endPart);
+            } else {
+                const endMatch = endPart.match(/(\w+)\s+(\d{4})/);
+                if (endMatch) {
+                    endYear = parseInt(endMatch[2]);
+                    endMonth = getMonthNumber(endMatch[1]);
+                }
+            }
+            
+            if (startYear && endYear) {
+                const months = (endYear - startYear) * 12 + (endMonth - startMonth);
+                return Math.max(months, 1); // At least 1 month
+            }
+            
+            return 12; // Default to 1 year
+        } catch (error) {
+            return 12; // Default to 1 year if parsing fails
+        }
+    }
+    
+    function getMonthNumber(monthName) {
+        const months = {
+            'jan': 0, 'january': 0,
+            'feb': 1, 'february': 1,
+            'mar': 2, 'march': 2,
+            'apr': 3, 'april': 3,
+            'may': 4,
+            'jun': 5, 'june': 5,
+            'jul': 6, 'july': 6,
+            'aug': 7, 'august': 7,
+            'sep': 8, 'september': 8,
+            'oct': 9, 'october': 9,
+            'nov': 10, 'november': 10,
+            'dec': 11, 'december': 11
+        };
+        return months[monthName.toLowerCase()] || 0;
+    }
 } catch (err) {
     console.error('Error fetching resume sections:', err);
     error = err.message;
@@ -80,15 +151,15 @@ try {
         <div class="summary-stats-section">
             <div class="summary-stats">
                 <div class="stat-item">
-                    <div class="stat-number" id="years-exp">0</div>
+                    <div class="stat-number" id="years-exp">{stats.years}</div>
                     <div class="stat-label">Years Experience</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-number" id="companies-count">0</div>
+                    <div class="stat-number" id="companies-count">{stats.companies}</div>
                     <div class="stat-label">Companies</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-number" id="roles-count">0</div>
+                    <div class="stat-number" id="roles-count">{stats.roles}</div>
                     <div class="stat-label">Roles</div>
                 </div>
             </div>
@@ -297,10 +368,15 @@ try {
       }
       
       function animateStats() {
-        // Get stats from the visible elements or use defaults
-        const years = parseInt(statsElements.years?.textContent) || 5;
-        const companies = parseInt(statsElements.companies?.textContent) || 3;
-        const roles = parseInt(statsElements.roles?.textContent) || 4;
+        // Get the actual calculated stats from the HTML
+        const years = parseInt(statsElements.years?.textContent) || 0;
+        const companies = parseInt(statsElements.companies?.textContent) || 0;
+        const roles = parseInt(statsElements.roles?.textContent) || 0;
+        
+        // Reset to 0 for animation
+        if (statsElements.years) statsElements.years.textContent = '0';
+        if (statsElements.companies) statsElements.companies.textContent = '0';
+        if (statsElements.roles) statsElements.roles.textContent = '0';
         
         setTimeout(() => {
           animateValue(statsElements.years, 0, years, 1000);
