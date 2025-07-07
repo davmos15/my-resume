@@ -26,8 +26,18 @@
     transition: all 0.3s ease;
 }
 
-/* Show dropdown on hover */
-.nav-item:hover .theme-dropdown-menu {
+/* Show dropdown on hover (desktop) */
+@media (min-width: 769px) {
+    .nav-item:hover .theme-dropdown-menu {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+}
+
+/* Show dropdown when clicked (persists open) */
+.theme-dropdown-menu.show,
+.theme-dropdown-menu.clicked-open {
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
