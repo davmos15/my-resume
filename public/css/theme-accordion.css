@@ -81,6 +81,11 @@
         background-color: var(--link-color, #0066cc) !important;
         color: var(--bg-primary, #ffffff) !important;
     }
+    
+    /* Prevent hover from affecting active items */
+    .nav-item:hover .theme-dropdown-menu .accordion-item.active:hover .accordion-content {
+        max-height: 500px !important;
+    }
 }
 
 /* Show content when clicked (persists open) */

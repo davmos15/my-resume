@@ -244,13 +244,16 @@
             accordionHeaders.forEach(header => {
                 header.addEventListener('click', function(e) {
                     e.stopPropagation();
+                    e.preventDefault();
                     const accordionItem = this.parentElement;
                     const content = accordionItem.querySelector('.accordion-content');
                     
                     // Toggle clicked state
                     const wasActive = accordionItem.classList.contains('active');
                     
-                    // Only close other accordion items if this one is being opened
+                    console.log('Accordion clicked:', this.textContent, 'wasActive:', wasActive);
+                    
+                    // Close other accordion items if this one is being opened
                     if (!wasActive) {
                         accordionHeaders.forEach(otherHeader => {
                             if (otherHeader !== header) {
@@ -258,7 +261,7 @@
                                 const otherContent = otherItem.querySelector('.accordion-content');
                                 otherItem.classList.remove('active');
                                 if (otherContent) {
-                                    otherContent.style.maxHeight = null;
+                                    otherContent.style.maxHeight = '0px';
                                 }
                             }
                         });
@@ -266,8 +269,11 @@
                     
                     // Toggle current accordion item
                     if (!wasActive) {
+                        // Opening the accordion
                         accordionItem.classList.add('active');
                         content.style.maxHeight = content.scrollHeight + "px";
+                        console.log('Opened accordion:', this.textContent);
+                        
                         // Ensure the theme dropdown stays open when accordion is clicked
                         if (!isClickedOpen) {
                             isClickedOpen = true;
@@ -277,8 +283,10 @@
                             themeDropdown.style.transform = 'translateY(0)';
                         }
                     } else {
+                        // Closing the accordion
                         accordionItem.classList.remove('active');
-                        content.style.maxHeight = null;
+                        content.style.maxHeight = '0px';
+                        console.log('Closed accordion:', this.textContent);
                     }
                 });
             });
