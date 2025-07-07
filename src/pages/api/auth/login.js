@@ -1,4 +1,5 @@
 import { verifyPassword, createSession } from '../../../middleware/auth.js';
+import { getAsync } from '../../../lib/db.js';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -18,11 +19,10 @@ export async function POST({ request }) {
       });
     }
     
-    // Check credentials
-    const adminUsername = process.env.ADMIN_USERNAME || 'admin';
-    const adminPasswordHash = process.env.ADMIN_PASSWORD_HASH;
+    // Check credentials against database
+    const user = await getAsync('SELECT * FROM users WHERE username = ?', [username]);
     
-    if (username !== adminUsername || !verifyPassword(password, adminPasswordHash)) {
+    if (!user || !verifyPassword(password, user.password)) {
       return new Response(JSON.stringify({ 
         success: false, 
         message: 'Invalid username or password' 
@@ -32,8 +32,18 @@ export async function POST({ request }) {
       });
     }
     
-    // Create session
-    const sessionId = createSession(username);
+    // Create session with user ID
+    const sessionId = createSession(user.id);
+    
+    if (!sessionId) {
+      return new Response(JSON.stringify({ 
+        success: false, 
+        message: 'Failed to create session' 
+      }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
     
     return new Response(JSON.stringify({ 
       success: true, 
