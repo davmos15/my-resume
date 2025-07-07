@@ -33,7 +33,7 @@ export async function POST({ request }) {
     }
     
     // Create session with user ID
-    const sessionId = createSession(user.id);
+    const sessionId = await createSession(user.id);
     
     if (!sessionId) {
       return new Response(JSON.stringify({ 

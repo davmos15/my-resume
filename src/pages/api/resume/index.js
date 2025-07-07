@@ -23,7 +23,19 @@ export async function GET(context) {
 
 export async function POST(context) {
   // Check authentication
-  const session = context.cookies.get('session');
+  const sessionId = context.cookies.get('session')?.value;
+  if (!sessionId) {
+    return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+      status: 401,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+  }
+  
+  // Import and check session
+  const { getSession } = await import('../../../middleware/auth.js');
+  const session = await getSession(sessionId);
   if (!session) {
     return new Response(JSON.stringify({ error: 'Unauthorized' }), {
       status: 401,

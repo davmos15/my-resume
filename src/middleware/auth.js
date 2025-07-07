@@ -1,20 +1,21 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
-import db from '../lib/db-init.js';
+import { runAsync, getAsync } from '../lib/db.js';
 
-export function createSession(userId) {
+export async function createSession(userId) {
   const sessionId = crypto.randomUUID();
   const now = Date.now();
   const expiresAt = now + (24 * 60 * 60 * 1000); // 24 hours
   
   try {
     // Clean up expired sessions first
-    db.prepare('DELETE FROM sessions WHERE expires_at < ?').run(now);
+    await runAsync('DELETE FROM sessions WHERE expires_at < $1', [now]);
     
     // Create new session
-    db.prepare(
-      'INSERT INTO sessions (id, user_id, created_at, last_access, expires_at) VALUES (?, ?, ?, ?, ?)'
-    ).run(sessionId, userId, now, now, expiresAt);
+    await runAsync(
+      'INSERT INTO sessions (id, user_id, created_at, last_access, expires_at) VALUES ($1, $2, $3, $4, $5)',
+      [sessionId, userId, now, now, expiresAt]
+    );
     
     return sessionId;
   } catch (error) {
@@ -23,20 +24,22 @@ export function createSession(userId) {
   }
 }
 
-export function getSession(sessionId) {
+export async function getSession(sessionId) {
   try {
     const now = Date.now();
     
     // Get session and check if it exists and is not expired
-    const session = db.prepare(
-      'SELECT * FROM sessions WHERE id = ? AND expires_at > ?'
-    ).get(sessionId, now);
+    const session = await getAsync(
+      'SELECT * FROM sessions WHERE id = $1 AND expires_at > $2',
+      [sessionId, now]
+    );
     
     if (session) {
       // Update last access time
-      db.prepare(
-        'UPDATE sessions SET last_access = ? WHERE id = ?'
-      ).run(now, sessionId);
+      await runAsync(
+        'UPDATE sessions SET last_access = $1 WHERE id = $2',
+        [now, sessionId]
+      );
       
       return {
         userId: session.user_id,
@@ -52,9 +55,9 @@ export function getSession(sessionId) {
   }
 }
 
-export function deleteSession(sessionId) {
+export async function deleteSession(sessionId) {
   try {
-    db.prepare('DELETE FROM sessions WHERE id = ?').run(sessionId);
+    await runAsync('DELETE FROM sessions WHERE id = $1', [sessionId]);
   } catch (error) {
     console.error('Error deleting session:', error);
   }
@@ -89,7 +92,7 @@ export function requireAuth(handler) {
     const cookies = parseCookies(request.headers.get('cookie') || '');
     const sessionId = cookies.session;
     
-    if (!sessionId || !getSession(sessionId)) {
+    if (!sessionId || !(await getSession(sessionId))) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), {
         status: 401,
         headers: {
