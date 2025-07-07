@@ -38,9 +38,9 @@
 /* Show dropdown when clicked (persists open) */
 .theme-dropdown-menu.show,
 .theme-dropdown-menu.clicked-open {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateY(0) !important;
 }
 
 /* Theme sections */

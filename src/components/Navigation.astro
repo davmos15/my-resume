@@ -119,6 +119,23 @@
             });
         });
         
+        // Handle resume dropdown links to prevent page reload when on resume page
+        const dropdownLinks = document.querySelectorAll('.dropdown-link');
+        dropdownLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                const href = this.getAttribute('href');
+                // If we're already on the resume page and clicking a hash link
+                if (window.location.pathname === '/resume' && href.startsWith('/resume#')) {
+                    e.preventDefault();
+                    const hash = href.split('#')[1];
+                    window.location.hash = hash;
+                    // Close dropdowns
+                    navbar.classList.remove('nav-menu-open');
+                    mobileToggle.classList.remove('active');
+                }
+            });
+        });
+        
         // Close mobile menu when clicking outside
         document.addEventListener('click', function(e) {
             if (!nav.contains(e.target)) {
@@ -141,8 +158,16 @@
                 isClickedOpen = !isClickedOpen;
                 if (isClickedOpen) {
                     themeDropdown.classList.add('clicked-open');
+                    // Prevent hover from interfering on desktop
+                    themeDropdown.style.opacity = '1';
+                    themeDropdown.style.visibility = 'visible';
+                    themeDropdown.style.transform = 'translateY(0)';
                 } else {
                     themeDropdown.classList.remove('clicked-open');
+                    // Reset styles
+                    themeDropdown.style.opacity = '';
+                    themeDropdown.style.visibility = '';
+                    themeDropdown.style.transform = '';
                     // Also remove active state from all accordions
                     const activeAccordions = themeDropdown.querySelectorAll('.accordion-item.active');
                     activeAccordions.forEach(item => {
@@ -174,11 +199,26 @@
         const themeOptions = themeDropdown.querySelectorAll('.theme-option');
         themeOptions.forEach(option => {
             option.addEventListener('click', function() {
-                themeDropdown.classList.remove('show');
+                // Close dropdown and reset click state
+                isClickedOpen = false;
+                themeDropdown.classList.remove('show', 'clicked-open');
+                themeDropdown.style.opacity = '';
+                themeDropdown.style.visibility = '';
+                themeDropdown.style.transform = '';
+                
+                // Close mobile menu if open
                 if (window.innerWidth <= 768) {
                     navbar.classList.remove('nav-menu-open');
                     mobileToggle.classList.remove('active');
                 }
+                
+                // Close all accordion items
+                const activeAccordions = themeDropdown.querySelectorAll('.accordion-item.active');
+                activeAccordions.forEach(item => {
+                    item.classList.remove('active');
+                    const content = item.querySelector('.accordion-content');
+                    if (content) content.style.maxHeight = null;
+                });
             });
         });
         
