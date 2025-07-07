@@ -344,12 +344,20 @@ async function handleFormSubmit(e) {
         window.location.reload();
       }, 1000);
     } else {
-      showMessage(result.error || 'Failed to save resume section', 'error');
+      // Handle authentication errors specifically
+      if (response.status === 401) {
+        showMessage('Session expired. Please log in again.', 'error');
+        setTimeout(() => {
+          window.location.href = '/admin/login';
+        }, 2000);
+      } else {
+        showMessage(result.error || 'Failed to save resume section', 'error');
+      }
     }
     
   } catch (error) {
     console.error('Error saving resume section:', error);
-    showMessage('Error saving resume section', 'error');
+    showMessage('Network error. Please check your connection and try again.', 'error');
   }
 }
 

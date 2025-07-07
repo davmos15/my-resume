@@ -1,37 +1,63 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
-
-// Simple in-memory session store (in production, use Redis or a database)
-const sessions = new Map();
+import db from '../lib/db-init.js';
 
 export function createSession(userId) {
   const sessionId = crypto.randomUUID();
-  const sessionData = {
-    userId,
-    createdAt: Date.now(),
-    lastAccess: Date.now()
-  };
-  sessions.set(sessionId, sessionData);
-  return sessionId;
+  const now = Date.now();
+  const expiresAt = now + (24 * 60 * 60 * 1000); // 24 hours
+  
+  try {
+    // Clean up expired sessions first
+    db.prepare('DELETE FROM sessions WHERE expires_at < ?').run(now);
+    
+    // Create new session
+    db.prepare(
+      'INSERT INTO sessions (id, user_id, created_at, last_access, expires_at) VALUES (?, ?, ?, ?, ?)'
+    ).run(sessionId, userId, now, now, expiresAt);
+    
+    return sessionId;
+  } catch (error) {
+    console.error('Error creating session:', error);
+    return null;
+  }
 }
 
 export function getSession(sessionId) {
-  const session = sessions.get(sessionId);
-  if (session) {
-    // Update last access time
-    session.lastAccess = Date.now();
-    // Check if session is expired (24 hours)
-    if (Date.now() - session.createdAt > 24 * 60 * 60 * 1000) {
-      sessions.delete(sessionId);
-      return null;
+  try {
+    const now = Date.now();
+    
+    // Get session and check if it exists and is not expired
+    const session = db.prepare(
+      'SELECT * FROM sessions WHERE id = ? AND expires_at > ?'
+    ).get(sessionId, now);
+    
+    if (session) {
+      // Update last access time
+      db.prepare(
+        'UPDATE sessions SET last_access = ? WHERE id = ?'
+      ).run(now, sessionId);
+      
+      return {
+        userId: session.user_id,
+        createdAt: session.created_at,
+        lastAccess: now
+      };
     }
-    return session;
+    
+    return null;
+  } catch (error) {
+    console.error('Error getting session:', error);
+    return null;
   }
-  return null;
 }
 
 export function deleteSession(sessionId) {
-  sessions.delete(sessionId);
+  try {
+    db.prepare('DELETE FROM sessions WHERE id = ?').run(sessionId);
+  } catch (error) {
+    console.error('Error deleting session:', error);
+  }
 }
 
 export function verifyPassword(password, hash) {

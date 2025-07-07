@@ -102,6 +102,15 @@ function initializeDatabase() {
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       is_read BOOLEAN DEFAULT 0
     );
+
+    CREATE TABLE IF NOT EXISTS sessions (
+      id TEXT PRIMARY KEY,
+      user_id INTEGER NOT NULL,
+      created_at INTEGER NOT NULL,
+      last_access INTEGER NOT NULL,
+      expires_at INTEGER NOT NULL,
+      FOREIGN KEY (user_id) REFERENCES users (id)
+    );
   `);
 
   // Insert default admin user if not exists
