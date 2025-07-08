@@ -1,5 +1,5 @@
 ---
-// Navigation component
+// Navigation component with hierarchical theme menu and side-sliding mobile menu
 ---
 
 <nav class="topnav" id="top">
@@ -37,77 +37,78 @@
             <li class="nav-item">
                 <a href="/contact" class="nav-link">Contact</a>
             </li>
-            <li class="nav-item">
-                <a href="#" class="nav-link theme-toggle"><span class="theme-icon">🎨</span> <span class="theme-text">Theme</span></a>
-                <div class="theme-dropdown-menu">
-                    <div class="theme-accordion">
-                        <div class="accordion-item">
-                            <div class="accordion-header">AFL Teams</div>
-                            <div class="accordion-content">
-                            <a href="#" class="theme-option" data-theme="afl-adelaide">Adelaide</a>
-                            <a href="#" class="theme-option" data-theme="afl-brisbane">Brisbane</a>
-                            <a href="#" class="theme-option" data-theme="afl-carlton">Carlton</a>
-                            <a href="#" class="theme-option" data-theme="afl-collingwood">Collingwood</a>
-                            <a href="#" class="theme-option" data-theme="afl-essendon">Essendon</a>
-                            <a href="#" class="theme-option" data-theme="afl-fremantle">Fremantle</a>
-                            <a href="#" class="theme-option" data-theme="afl-geelong">Geelong</a>
-                            <a href="#" class="theme-option" data-theme="afl-goldcoast">Gold Coast</a>
-                            <a href="#" class="theme-option" data-theme="afl-gws">GWS Giants</a>
-                            <a href="#" class="theme-option" data-theme="afl-hawthorn">Hawthorn</a>
-                            <a href="#" class="theme-option" data-theme="afl-melbourne">Melbourne</a>
-                            <a href="#" class="theme-option" data-theme="afl-northmelbourne">North Melbourne</a>
-                            <a href="#" class="theme-option" data-theme="afl-portadelaide">Port Adelaide</a>
-                            <a href="#" class="theme-option" data-theme="afl-richmond">Richmond</a>
-                            <a href="#" class="theme-option" data-theme="afl-stkilda">St Kilda</a>
-                            <a href="#" class="theme-option" data-theme="afl-sydney">Sydney</a>
-                            <a href="#" class="theme-option" data-theme="afl-westcoast">West Coast</a>
-                            <a href="#" class="theme-option" data-theme="afl-bulldogs">Western Bulldogs</a>
-                            </div>
-                        </div>
-                        <div class="accordion-item">
-                            <div class="accordion-header">Basic Themes</div>
-                            <div class="accordion-content">
-                                <a href="#" class="theme-option" data-theme="dark">Dark Theme</a>
-                                <a href="#" class="theme-option" data-theme="light">Light Theme</a>
-                            </div>
-                        </div>
-                        <div class="accordion-item">
-                            <div class="accordion-header">Companies</div>
-                            <div class="accordion-content">
-                            <a href="#" class="theme-option" data-theme="company-anthropic">Anthropic</a>
-                            <a href="#" class="theme-option" data-theme="company-apple">Apple</a>
-                            <a href="#" class="theme-option" data-theme="company-facebook">Facebook</a>
-                            <a href="#" class="theme-option" data-theme="company-google">Google</a>
-                            <a href="#" class="theme-option" data-theme="company-microsoft">Microsoft</a>
-                            <a href="#" class="theme-option" data-theme="company-openai">OpenAI</a>
-                            </div>
-                        </div>
-                        <div class="accordion-item">
-                            <div class="accordion-header">Fun Themes</div>
-                            <div class="accordion-content">
-                                <a href="#" class="theme-option" data-theme="glass">Glassmorphism</a>
-                                <a href="#" class="theme-option" data-theme="gradient">Gradient Wave</a>
-                                <a href="#" class="theme-option" data-theme="neon">Neon Glow</a>
-                            </div>
-                        </div>
-                    </div>
+            <li class="nav-item theme-section">
+                <button class="nav-link theme-toggle" aria-label="Theme selector">
+                    <span class="theme-icon">🎨</span>
+                    <span class="theme-text">Theme</span>
+                </button>
+                <div class="theme-main-menu">
+                    <button class="theme-category" data-category="basic">Basic Themes</button>
+                    <button class="theme-category" data-category="afl">AFL Teams</button>
+                    <button class="theme-category" data-category="company">Companies</button>
+                    <button class="theme-category" data-category="fun">Fun Themes</button>
+                </div>
+                <!-- Submenus for each category -->
+                <div class="theme-submenu" data-submenu="basic">
+                    <a href="#" class="theme-option" data-theme="light">Light Theme</a>
+                    <a href="#" class="theme-option" data-theme="dark">Dark Theme</a>
+                </div>
+                <div class="theme-submenu" data-submenu="afl">
+                    <a href="#" class="theme-option" data-theme="afl-adelaide">Adelaide</a>
+                    <a href="#" class="theme-option" data-theme="afl-brisbane">Brisbane</a>
+                    <a href="#" class="theme-option" data-theme="afl-carlton">Carlton</a>
+                    <a href="#" class="theme-option" data-theme="afl-collingwood">Collingwood</a>
+                    <a href="#" class="theme-option" data-theme="afl-essendon">Essendon</a>
+                    <a href="#" class="theme-option" data-theme="afl-fremantle">Fremantle</a>
+                    <a href="#" class="theme-option" data-theme="afl-geelong">Geelong</a>
+                    <a href="#" class="theme-option" data-theme="afl-goldcoast">Gold Coast</a>
+                    <a href="#" class="theme-option" data-theme="afl-gws">GWS Giants</a>
+                    <a href="#" class="theme-option" data-theme="afl-hawthorn">Hawthorn</a>
+                    <a href="#" class="theme-option" data-theme="afl-melbourne">Melbourne</a>
+                    <a href="#" class="theme-option" data-theme="afl-northmelbourne">North Melbourne</a>
+                    <a href="#" class="theme-option" data-theme="afl-portadelaide">Port Adelaide</a>
+                    <a href="#" class="theme-option" data-theme="afl-richmond">Richmond</a>
+                    <a href="#" class="theme-option" data-theme="afl-stkilda">St Kilda</a>
+                    <a href="#" class="theme-option" data-theme="afl-sydney">Sydney</a>
+                    <a href="#" class="theme-option" data-theme="afl-westcoast">West Coast</a>
+                    <a href="#" class="theme-option" data-theme="afl-bulldogs">Western Bulldogs</a>
+                </div>
+                <div class="theme-submenu" data-submenu="company">
+                    <a href="#" class="theme-option" data-theme="company-google">Google</a>
+                    <a href="#" class="theme-option" data-theme="company-facebook">Facebook</a>
+                    <a href="#" class="theme-option" data-theme="company-apple">Apple</a>
+                    <a href="#" class="theme-option" data-theme="company-microsoft">Microsoft</a>
+                    <a href="#" class="theme-option" data-theme="company-openai">OpenAI</a>
+                    <a href="#" class="theme-option" data-theme="company-anthropic">Anthropic</a>
+                </div>
+                <div class="theme-submenu" data-submenu="fun">
+                    <a href="#" class="theme-option" data-theme="glass">Glassmorphism</a>
+                    <a href="#" class="theme-option" data-theme="gradient">Gradient Wave</a>
+                    <a href="#" class="theme-option" data-theme="neon">Neon Glow</a>
                 </div>
             </li>
         </ul>
     </div>
 </nav>
 
+<!-- Mobile menu backdrop -->
+<div class="mobile-menu-backdrop" id="menu-backdrop"></div>
+
 <script>
     // Mobile navigation functionality
     document.addEventListener('DOMContentLoaded', function() {
         const mobileToggle = document.getElementById('mobile-toggle');
         const navbar = document.getElementById('navbar');
+        const backdrop = document.getElementById('menu-backdrop');
         const nav = document.querySelector('.topnav');
         
         // Toggle mobile menu
         mobileToggle.addEventListener('click', function() {
             navbar.classList.toggle('nav-menu-open');
             mobileToggle.classList.toggle('active');
+            backdrop.classList.toggle('active');
+            // Prevent body scroll when menu is open
+            document.body.classList.toggle('menu-open');
         });
         
         // Close mobile menu when clicking on links
@@ -116,7 +117,17 @@
             link.addEventListener('click', function() {
                 navbar.classList.remove('nav-menu-open');
                 mobileToggle.classList.remove('active');
+                backdrop.classList.remove('active');
+                document.body.classList.remove('menu-open');
             });
+        });
+        
+        // Close mobile menu when clicking backdrop
+        backdrop.addEventListener('click', function() {
+            navbar.classList.remove('nav-menu-open');
+            mobileToggle.classList.remove('active');
+            backdrop.classList.remove('active');
+            document.body.classList.remove('menu-open');
         });
         
         // Handle resume dropdown links to prevent page reload when on resume page
@@ -148,146 +159,180 @@
                     // Close dropdowns
                     navbar.classList.remove('nav-menu-open');
                     mobileToggle.classList.remove('active');
+                    backdrop.classList.remove('active');
+                    document.body.classList.remove('menu-open');
                 }
             });
         });
         
-        // Close mobile menu when clicking outside
-        document.addEventListener('click', function(e) {
-            if (!nav.contains(e.target)) {
-                navbar.classList.remove('nav-menu-open');
-                mobileToggle.classList.remove('active');
+        // Hierarchical theme menu functionality
+        const themeToggle = document.querySelector('.theme-toggle');
+        const themeSection = document.querySelector('.theme-section');
+        const themeMainMenu = document.querySelector('.theme-main-menu');
+        const categoryButtons = document.querySelectorAll('.theme-category');
+        const submenus = document.querySelectorAll('.theme-submenu');
+        let isThemeMenuOpen = false;
+        let activeCategory = null;
+        
+        // Toggle theme menu
+        themeToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            isThemeMenuOpen = !isThemeMenuOpen;
+            if (isThemeMenuOpen) {
+                themeMainMenu.classList.add('active');
+                themeSection.classList.add('menu-open');
+            } else {
+                themeMainMenu.classList.remove('active');
+                themeSection.classList.remove('menu-open');
+                // Hide all submenus
+                submenus.forEach(submenu => {
+                    submenu.classList.remove('active');
+                });
+                categoryButtons.forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                activeCategory = null;
             }
         });
         
-        // Handle theme dropdown - desktop hover and click persistence
-        const themeToggle = document.querySelector('.theme-toggle');
-        const themeDropdown = document.querySelector('.theme-dropdown-menu');
-        let isClickedOpen = false;
-        
-        if (themeToggle && themeDropdown) {
-            // Click to toggle (works on all devices)
-            themeToggle.addEventListener('click', function(e) {
+        // Handle category hover/click
+        categoryButtons.forEach(button => {
+            const category = button.dataset.category;
+            const submenu = document.querySelector(`[data-submenu="${category}"]`);
+            
+            // Desktop: Show submenu on hover
+            if (window.innerWidth > 768) {
+                button.addEventListener('mouseenter', function() {
+                    if (isThemeMenuOpen) {
+                        // Hide other submenus
+                        submenus.forEach(s => {
+                            if (s !== submenu) s.classList.remove('active');
+                        });
+                        categoryButtons.forEach(b => {
+                            if (b !== button) b.classList.remove('active');
+                        });
+                        // Show this submenu
+                        submenu.classList.add('active');
+                        button.classList.add('active');
+                        activeCategory = category;
+                    }
+                });
+            }
+            
+            // Mobile and desktop: Click to show submenu
+            button.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
                 
-                isClickedOpen = !isClickedOpen;
-                if (isClickedOpen) {
-                    themeDropdown.classList.add('clicked-open');
-                    // Prevent hover from interfering on desktop
-                    themeDropdown.style.opacity = '1';
-                    themeDropdown.style.visibility = 'visible';
-                    themeDropdown.style.transform = 'translateY(0)';
+                if (activeCategory === category) {
+                    // Toggle off if clicking the same category
+                    submenu.classList.remove('active');
+                    button.classList.remove('active');
+                    activeCategory = null;
                 } else {
-                    themeDropdown.classList.remove('clicked-open');
-                    // Reset styles
-                    themeDropdown.style.opacity = '';
-                    themeDropdown.style.visibility = '';
-                    themeDropdown.style.transform = '';
-                    // Also remove active state from all accordions
-                    const activeAccordions = themeDropdown.querySelectorAll('.accordion-item.active');
-                    activeAccordions.forEach(item => {
-                        item.classList.remove('active');
-                        const content = item.querySelector('.accordion-content');
-                        if (content) content.style.maxHeight = null;
+                    // Hide other submenus
+                    submenus.forEach(s => {
+                        if (s !== submenu) s.classList.remove('active');
                     });
+                    categoryButtons.forEach(b => {
+                        if (b !== button) b.classList.remove('active');
+                    });
+                    // Show this submenu
+                    submenu.classList.add('active');
+                    button.classList.add('active');
+                    activeCategory = category;
                 }
             });
-            
-            // Close dropdown when clicking outside
-            document.addEventListener('click', function(e) {
-                const themeNavItem = themeToggle.closest('.nav-item');
-                if (!themeNavItem.contains(e.target)) {
-                    isClickedOpen = false;
-                    themeDropdown.classList.remove('clicked-open', 'show');
-                    // Remove active accordions
-                    const activeAccordions = themeDropdown.querySelectorAll('.accordion-item.active');
-                    activeAccordions.forEach(item => {
-                        item.classList.remove('active');
-                        const content = item.querySelector('.accordion-content');
-                        if (content) content.style.maxHeight = null;
-                    });
-                }
-            });
-        }
+        });
         
-        // Close theme dropdown when clicking theme option
-        const themeOptions = themeDropdown.querySelectorAll('.theme-option');
+        // Close theme menu when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!themeSection.contains(e.target)) {
+                isThemeMenuOpen = false;
+                themeMainMenu.classList.remove('active');
+                themeSection.classList.remove('menu-open');
+                submenus.forEach(submenu => {
+                    submenu.classList.remove('active');
+                });
+                categoryButtons.forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                activeCategory = null;
+            }
+        });
+        
+        // Handle theme selection
+        const themeOptions = document.querySelectorAll('.theme-option');
         themeOptions.forEach(option => {
             option.addEventListener('click', function() {
-                // Close dropdown and reset click state
-                isClickedOpen = false;
-                themeDropdown.classList.remove('show', 'clicked-open');
-                themeDropdown.style.opacity = '';
-                themeDropdown.style.visibility = '';
-                themeDropdown.style.transform = '';
+                // Close all menus
+                isThemeMenuOpen = false;
+                themeMainMenu.classList.remove('active');
+                themeSection.classList.remove('menu-open');
+                submenus.forEach(submenu => {
+                    submenu.classList.remove('active');
+                });
+                categoryButtons.forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                activeCategory = null;
                 
                 // Close mobile menu if open
                 if (window.innerWidth <= 768) {
                     navbar.classList.remove('nav-menu-open');
                     mobileToggle.classList.remove('active');
+                    backdrop.classList.remove('active');
+                    document.body.classList.remove('menu-open');
                 }
-                
-                // Close all accordion items
-                const activeAccordions = themeDropdown.querySelectorAll('.accordion-item.active');
-                activeAccordions.forEach(item => {
-                    item.classList.remove('active');
-                    const content = item.querySelector('.accordion-content');
-                    if (content) content.style.maxHeight = null;
-                });
             });
         });
         
-        // Handle accordion functionality - click persists open state
-        if (themeDropdown) {
-            const accordionHeaders = themeDropdown.querySelectorAll('.accordion-header');
-            accordionHeaders.forEach(header => {
-                header.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    const accordionItem = this.parentElement;
-                    const content = accordionItem.querySelector('.accordion-content');
+        // Mobile theme categories
+        if (window.innerWidth <= 768) {
+            // Add theme categories to mobile menu
+            const mobileThemeContainer = document.createElement('div');
+            mobileThemeContainer.className = 'mobile-theme-container';
+            mobileThemeContainer.innerHTML = `
+                <div class="mobile-theme-section">
+                    <h3 class="mobile-theme-header">Themes</h3>
+                    <div class="mobile-theme-categories">
+                        <button class="mobile-theme-category" data-mobile-category="basic">Basic Themes</button>
+                        <button class="mobile-theme-category" data-mobile-category="afl">AFL Teams</button>
+                        <button class="mobile-theme-category" data-mobile-category="company">Companies</button>
+                        <button class="mobile-theme-category" data-mobile-category="fun">Fun Themes</button>
+                    </div>
+                    <div class="mobile-theme-options"></div>
+                </div>
+            `;
+            navbar.appendChild(mobileThemeContainer);
+            
+            const mobileCategories = mobileThemeContainer.querySelectorAll('.mobile-theme-category');
+            const mobileOptionsContainer = mobileThemeContainer.querySelector('.mobile-theme-options');
+            
+            mobileCategories.forEach(button => {
+                button.addEventListener('click', function() {
+                    const category = this.dataset.mobileCategory;
+                    const submenu = document.querySelector(`[data-submenu="${category}"]`);
                     
-                    // Toggle clicked state
-                    const wasActive = accordionItem.classList.contains('active');
+                    // Toggle active state
+                    mobileCategories.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
                     
-                    console.log('Accordion clicked:', this.textContent, 'wasActive:', wasActive);
+                    // Clone and show the options
+                    mobileOptionsContainer.innerHTML = submenu.innerHTML;
+                    mobileOptionsContainer.classList.add('active');
                     
-                    // Close other accordion items if this one is being opened
-                    if (!wasActive) {
-                        accordionHeaders.forEach(otherHeader => {
-                            if (otherHeader !== header) {
-                                const otherItem = otherHeader.parentElement;
-                                const otherContent = otherItem.querySelector('.accordion-content');
-                                otherItem.classList.remove('active');
-                                if (otherContent) {
-                                    otherContent.style.maxHeight = '0px';
-                                }
-                            }
+                    // Re-attach click handlers to cloned options
+                    const clonedOptions = mobileOptionsContainer.querySelectorAll('.theme-option');
+                    clonedOptions.forEach(option => {
+                        option.addEventListener('click', function() {
+                            // Trigger the original option's click
+                            const originalOption = document.querySelector(`.theme-submenu .theme-option[data-theme="${this.dataset.theme}"]`);
+                            if (originalOption) originalOption.click();
                         });
-                    }
-                    
-                    // Toggle current accordion item
-                    if (!wasActive) {
-                        // Opening the accordion
-                        accordionItem.classList.add('active');
-                        content.style.maxHeight = content.scrollHeight + "px";
-                        console.log('Opened accordion:', this.textContent);
-                        
-                        // Ensure the theme dropdown stays open when accordion is clicked
-                        if (!isClickedOpen) {
-                            isClickedOpen = true;
-                            themeDropdown.classList.add('clicked-open');
-                            themeDropdown.style.opacity = '1';
-                            themeDropdown.style.visibility = 'visible';
-                            themeDropdown.style.transform = 'translateY(0)';
-                        }
-                    } else {
-                        // Closing the accordion
-                        accordionItem.classList.remove('active');
-                        content.style.maxHeight = '0px';
-                        console.log('Closed accordion:', this.textContent);
-                    }
+                    });
                 });
             });
         }

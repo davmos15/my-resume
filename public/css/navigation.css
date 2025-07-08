@@ -1,10 +1,14 @@
-/* Modern Navigation CSS */
+/* Modern Navigation CSS - Updated with hierarchical theme menu and side-sliding mobile menu */
 
-/* Prevent horizontal scroll only */
+/* Prevent horizontal scroll and body scroll when menu is open */
 html, body {
     overflow-x: hidden;
     margin: 0;
     padding: 0;
+}
+
+body.menu-open {
+    overflow: hidden;
 }
 
 /* Base Navigation Styles */
@@ -110,8 +114,55 @@ body {
     align-items: center;
 }
 
-/* Theme dropdown menu - base styles */
-.theme-dropdown-menu {
+.nav-item {
+    position: relative;
+    margin: 0 5px;
+}
+
+.nav-link {
+    display: block;
+    padding: 15px 18px;
+    color: var(--nav-text, #333333);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    border-radius: 4px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.nav-link:hover {
+    background-color: var(--bg-accent, rgba(0,0,0,0.05));
+    color: var(--link-hover, #0066cc);
+}
+
+/* Theme Toggle Button */
+.theme-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.theme-icon {
+    font-size: 20px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.theme-text {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+/* Hierarchical Theme Menu */
+.theme-section {
+    position: relative;
+}
+
+.theme-main-menu {
     position: absolute;
     top: 100%;
     right: 0;
@@ -119,60 +170,87 @@ body {
     border: 1px solid var(--border-color, #e0e0e0);
     border-radius: 8px;
     box-shadow: 0 8px 24px var(--shadow-color, rgba(0,0,0,0.15));
-    min-width: 280px;
-    max-height: 400px;
-    overflow-y: auto;
+    min-width: 200px;
     opacity: 0;
     visibility: hidden;
     transform: translateY(-10px);
     transition: all 0.3s ease;
     z-index: 1002;
-}
-
-/* Theme accordion for desktop */
-.theme-accordion {
     padding: 8px 0;
 }
 
-.accordion-item {
-    border-bottom: 1px solid var(--border-color, #e0e0e0);
+.theme-main-menu.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
 }
 
-.accordion-item:last-child {
-    border-bottom: none;
-}
-
-.accordion-header {
-    padding: 12px 16px;
-    font-weight: 600;
+.theme-category {
+    display: block;
+    width: 100%;
+    padding: 12px 20px;
+    background: none;
+    border: none;
+    text-align: left;
     color: var(--text-primary, #333333);
-    cursor: pointer;
-    transition: background-color 0.2s ease;
     font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    font-family: inherit;
 }
 
-.accordion-header:hover {
+.theme-category::after {
+    content: '›';
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 18px;
+    opacity: 0.5;
+    transition: transform 0.2s ease;
+}
+
+.theme-category:hover,
+.theme-category.active {
     background-color: var(--bg-accent, #f5f5f5);
+    color: var(--link-hover, #0066cc);
 }
 
-/* Desktop: always show theme options, no accordion */
-@media (min-width: 769px) {
-    .accordion-content {
-        display: block !important;
-        max-height: none !important;
-        padding: 0;
-    }
-    
-    .accordion-header {
-        pointer-events: none;
-        background: var(--bg-accent, #f5f5f5);
-        font-size: 12px;
-        padding: 8px 16px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
+.theme-category.active::after {
+    transform: translateY(-50%) translateX(3px);
+    opacity: 1;
 }
 
+/* Theme Submenus */
+.theme-submenu {
+    position: absolute;
+    top: 0;
+    left: 100%;
+    margin-left: 8px;
+    background-color: var(--bg-secondary, #ffffff);
+    border: 1px solid var(--border-color, #e0e0e0);
+    border-radius: 8px;
+    box-shadow: 0 8px 24px var(--shadow-color, rgba(0,0,0,0.15));
+    min-width: 200px;
+    max-height: 400px;
+    overflow-y: auto;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(-10px);
+    transition: all 0.3s ease;
+    z-index: 1003;
+    padding: 8px 0;
+}
+
+.theme-submenu.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0);
+}
+
+/* Theme Options */
 .theme-option {
     display: block;
     padding: 10px 20px;
@@ -193,34 +271,20 @@ body {
     color: white;
 }
 
-/* Ensure theme dropdown shows on hover for desktop */
-@media (min-width: 769px) {
-    .nav-item:hover .theme-dropdown-menu {
-        opacity: 1;
-        visibility: visible;
-        transform: translateY(0);
-    }
+/* AFL submenu - Grid layout */
+.theme-submenu[data-submenu="afl"] {
+    min-width: 250px;
+    padding: 12px;
 }
 
-.nav-item {
-    position: relative;
-    margin: 0 5px;
-}
-
-.nav-link {
-    display: block;
-    padding: 15px 18px;
-    color: var(--nav-text, #333333);
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 16px;
-    transition: all 0.3s ease;
+.theme-submenu[data-submenu="afl"] .theme-option {
+    display: inline-block;
+    width: calc(50% - 4px);
+    margin: 2px;
+    padding: 8px 12px;
+    text-align: center;
     border-radius: 4px;
-}
-
-.nav-link:hover {
-    background-color: var(--bg-accent, rgba(0,0,0,0.05));
-    color: var(--link-hover, #0066cc);
+    font-size: 13px;
 }
 
 /* Dropdown Styles */
@@ -248,20 +312,10 @@ body {
 }
 
 /* Show dropdown on hover for desktop */
-.nav-item.dropdown:hover .dropdown-menu,
-.dropdown:hover .dropdown-menu {
-    opacity: 1 !important;
-    visibility: visible !important;
-    transform: translateY(0) !important;
-}
-
-/* Show theme dropdown on hover for desktop */
-@media (min-width: 769px) {
-    .nav-item:hover .theme-dropdown-menu {
-        opacity: 1 !important;
-        visibility: visible !important;
-        transform: translateY(0) !important;
-    }
+.nav-item.dropdown:hover .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
 }
 
 .dropdown-menu li {
@@ -280,6 +334,25 @@ body {
 .dropdown-link:hover {
     background-color: var(--bg-accent, #f5f5f5);
     color: var(--link-hover, #0066cc);
+}
+
+/* Mobile Menu Backdrop */
+.mobile-menu-backdrop {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 998;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.mobile-menu-backdrop.active {
+    display: block;
+    opacity: 1;
 }
 
 /* Mobile Responsiveness */
@@ -303,33 +376,26 @@ body {
         display: flex;
     }
     
-    /* Mobile menu styling */
+    /* Mobile menu - side sliding from right */
     .nav-menu {
         position: fixed;
-        top: 55px;
-        left: 0;
-        right: 0;
+        top: 0;
+        right: -300px; /* Start off-screen to the right */
+        width: 300px;
+        height: 100vh;
         background-color: var(--nav-bg, #ffffff);
         flex-direction: column;
         align-items: stretch;
-        padding: 20px 0;
-        border-top: 1px solid var(--border-color, #e0e0e0);
-        box-shadow: 0 4px 12px var(--shadow-color, rgba(0,0,0,0.15));
-        max-height: calc(100vh - 55px);
+        padding: 60px 0 20px 0;
+        box-shadow: -4px 0 12px var(--shadow-color, rgba(0,0,0,0.15));
         overflow-y: auto;
-        
-        /* Hide by default */
-        transform: translateY(-100%);
-        opacity: 0;
-        visibility: hidden;
-        transition: all 0.3s ease;
+        transition: transform 0.3s ease;
+        z-index: 999;
     }
     
     /* Show mobile menu when active */
     .nav-menu.nav-menu-open {
-        transform: translateY(0);
-        opacity: 1;
-        visibility: visible;
+        transform: translateX(-300px); /* Slide in from right */
     }
     
     .nav-item {
@@ -350,99 +416,88 @@ body {
         border-radius: 0;
     }
     
-    /* Hide resume dropdown on mobile - convert to direct link */
+    /* Hide theme text on mobile */
+    .theme-text {
+        display: none;
+    }
+    
+    /* Hide desktop theme menus on mobile */
+    .theme-main-menu,
+    .theme-submenu {
+        display: none !important;
+    }
+    
+    /* Hide resume dropdown on mobile */
     .nav-item.dropdown .dropdown-menu {
         display: none !important;
     }
     
-    /* Theme dropdown for mobile */
-    .nav-item .theme-dropdown-menu {
-        position: static;
-        display: none;
-        background: var(--bg-secondary, #f8f9fa);
-        border: none;
-        border-radius: 0;
-        box-shadow: none;
-        opacity: 1 !important;
-        visibility: visible !important;
-        transform: none !important;
-        min-width: auto;
-        width: 100%;
-        padding: 0;
-        margin: 0;
-        max-height: 300px;
-        overflow-y: auto;
-    }
-    
-    .nav-item .theme-dropdown-menu.show {
-        display: block;
-    }
-    
-    /* Theme accordion styling for mobile */
-    .theme-accordion {
-        width: 100%;
-    }
-    
-    .accordion-item {
-        border-bottom: 1px solid var(--border-color, #e0e0e0);
-    }
-    
-    .accordion-header {
-        padding: 12px 20px;
-        background: var(--bg-secondary, #f8f9fa);
-        cursor: pointer;
-        font-weight: 600;
-        font-size: 14px;
-        color: var(--text-primary, #333333);
-        transition: background-color 0.2s ease;
-        position: relative;
-    }
-    
-    .accordion-header:hover {
-        background: var(--bg-accent, #e9ecef);
-    }
-    
-    .accordion-header::after {
-        content: '+';
-        position: absolute;
-        right: 20px;
-        top: 50%;
-        transform: translateY(-50%);
-        transition: transform 0.2s ease;
-    }
-    
-    .accordion-item.active .accordion-header::after {
-        content: '−';
-    }
-    
-    .accordion-content {
-        max-height: 0;
-        overflow: hidden;
-        transition: max-height 0.3s ease;
-        background: var(--nav-bg, #ffffff);
-    }
-    
-    .accordion-item.active .accordion-content {
+    /* Mobile theme container */
+    .mobile-theme-container {
+        padding: 20px;
+        background-color: var(--bg-secondary, #f8f9fa);
         border-top: 1px solid var(--border-color, #e0e0e0);
+        margin-top: 20px;
     }
     
-    .theme-option {
-        display: block;
-        padding: 10px 40px;
+    .mobile-theme-header {
+        font-size: 18px;
+        font-weight: 600;
         color: var(--text-primary, #333333);
-        text-decoration: none;
+        margin: 0 0 15px 0;
+    }
+    
+    .mobile-theme-categories {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-bottom: 15px;
+    }
+    
+    .mobile-theme-category {
+        padding: 12px 16px;
+        background-color: var(--bg-primary, #ffffff);
+        border: 1px solid var(--border-color, #e0e0e0);
+        border-radius: 8px;
         font-size: 14px;
-        transition: background-color 0.2s ease;
-        border-bottom: 1px solid var(--border-color, #f0f0f0);
+        font-weight: 500;
+        color: var(--text-primary, #333333);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-align: left;
+        font-family: inherit;
     }
     
-    .theme-option:last-child {
-        border-bottom: none;
+    .mobile-theme-category:hover,
+    .mobile-theme-category.active {
+        background-color: var(--link-color, #0066cc);
+        color: white;
+        border-color: var(--link-color, #0066cc);
     }
     
-    .theme-option:hover {
-        background: var(--bg-accent, #f5f5f5);
-        color: var(--link-hover, #0066cc);
+    .mobile-theme-options {
+        display: none;
+        grid-template-columns: 1fr;
+        gap: 4px;
+        margin-top: 10px;
+    }
+    
+    .mobile-theme-options.active {
+        display: grid;
+    }
+    
+    .mobile-theme-options .theme-option {
+        padding: 10px 16px;
+        background-color: var(--bg-primary, #ffffff);
+        border: 1px solid var(--border-color, #e0e0e0);
+        border-radius: 4px;
+        margin: 0;
+        font-size: 13px;
+    }
+    
+    /* AFL teams in mobile - 2 column grid */
+    .mobile-theme-options[data-category="afl"] {
+        grid-template-columns: 1fr 1fr;
     }
 }
 
@@ -457,8 +512,12 @@ body {
     }
     
     .nav-menu {
-        top: 50px;
-        max-height: calc(100vh - 50px);
+        width: 280px;
+        right: -280px;
+    }
+    
+    .nav-menu.nav-menu-open {
+        transform: translateX(-280px);
     }
     
     .nav-link {
@@ -466,13 +525,59 @@ body {
         font-size: 15px;
     }
     
-    .accordion-header {
-        padding: 10px 15px;
+    .mobile-theme-header {
+        font-size: 16px;
+    }
+    
+    .mobile-theme-category {
+        padding: 10px 14px;
         font-size: 13px;
     }
     
-    .theme-option {
-        padding: 8px 30px;
-        font-size: 13px;
+    .mobile-theme-options .theme-option {
+        padding: 8px 12px;
+        font-size: 12px;
     }
+}
+
+/* Scrollbar styling for theme menus */
+.theme-submenu::-webkit-scrollbar,
+.nav-menu::-webkit-scrollbar {
+    width: 6px;
+}
+
+.theme-submenu::-webkit-scrollbar-track,
+.nav-menu::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.theme-submenu::-webkit-scrollbar-thumb,
+.nav-menu::-webkit-scrollbar-thumb {
+    background-color: var(--border-color, #ccc);
+    border-radius: 3px;
+}
+
+/* Ensure proper z-index hierarchy */
+.topnav {
+    z-index: 1000;
+}
+
+.mobile-menu-backdrop {
+    z-index: 998;
+}
+
+.nav-menu {
+    z-index: 999;
+}
+
+.dropdown-menu {
+    z-index: 1001;
+}
+
+.theme-main-menu {
+    z-index: 1002;
+}
+
+.theme-submenu {
+    z-index: 1003;
 }
