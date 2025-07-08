@@ -37,7 +37,7 @@ export const POST = async ({ request }) => {
     const result = await runAsync(`
       INSERT INTO contact_messages 
       (name, email, subject, message, created_at, is_read) 
-      VALUES (?, ?, ?, ?, datetime('now'), 0)
+      VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, false)
     `, [
       name.trim(),
       email.trim(),

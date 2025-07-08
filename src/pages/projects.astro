@@ -5,7 +5,7 @@ import { allAsync } from '../lib/db.js';
 // Fetch projects
 let projects = [];
 try {
-  projects = await allAsync('SELECT * FROM projects WHERE is_active = 1 ORDER BY display_order, id DESC');
+  projects = await allAsync('SELECT * FROM projects WHERE is_active = true ORDER BY display_order, id DESC');
 } catch (err) {
   console.error('Error fetching projects:', err);
 }

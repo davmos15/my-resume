@@ -2,7 +2,7 @@ import { allAsync, runAsync } from '../../../lib/db.js';
 
 export async function GET(context) {
   try {
-    const sections = await allAsync('SELECT * FROM resume_sections WHERE is_active = 1 ORDER BY section_type, display_order');
+    const sections = await allAsync('SELECT * FROM resume_sections WHERE is_active = true ORDER BY section_type, display_order');
     
     return new Response(JSON.stringify(sections), {
       status: 200,

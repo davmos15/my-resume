@@ -14,7 +14,7 @@ export async function GET(context) {
 
   try {
     // Get counts from database using better-sqlite3 syntax
-    const projectsResult = await getAsync('SELECT COUNT(*) as count FROM projects WHERE is_active = 1');
+    const projectsResult = await getAsync('SELECT COUNT(*) as count FROM projects WHERE is_active = true');
     const pagesResult = await getAsync('SELECT COUNT(DISTINCT page_name) as count FROM page_content');
     const filesResult = await getAsync('SELECT COUNT(*) as count FROM files');
     const resumeResult = await getAsync('SELECT COUNT(*) as count FROM resume_entries');
