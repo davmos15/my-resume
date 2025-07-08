@@ -70,60 +70,28 @@ if (!pageConfig) {
   return Astro.redirect('/admin/pages');
 }
 
-// Handle form submission
+// Load existing content from database
+import { allAsync } from '../../lib/db.js';
+
+let currentContent = {};
+try {
+  const sections = await allAsync(
+    'SELECT section_name, content FROM page_content WHERE page_name = ?',
+    [id]
+  );
+  
+  sections.forEach(section => {
+    currentContent[section.section_name] = section.content;
+  });
+} catch (err) {
+  console.error('Error loading page content:', err);
+}
+
+// Handle form submission will be done via JavaScript
 let success = false;
 let error = null;
 
-if (Astro.request.method === 'POST') {
-  try {
-    const formData = await Astro.request.formData();
-    
-    // In a real implementation, you would save these to a database
-    // For now, we'll just simulate success
-    success = true;
-    
-    // Log the form data for debugging
-    console.log(`Saving content for page: ${id}`);
-    for (const [key, value] of formData.entries()) {
-      console.log(`${key}: ${value}`);
-    }
-    
-  } catch (err) {
-    console.error('Error saving page content:', err);
-    error = err.message;
-  }
-}
-
-// Simulate loading existing content (in real app, load from database)
-const currentContent = {
-  home: {
-    hero_title: 'Welcome to My Portfolio',
-    hero_subtitle: 'Full-Stack Developer & Business Analyst',
-    intro_text: 'I build innovative solutions that bridge business needs with technical excellence.'
-  },
-  about: {
-    page_title: 'About Me',
-    about_content: 'Learn more about my background, experience, and passion for technology.',
-    bio_text: 'I am a dedicated professional with expertise in business analysis and development.'
-  },
-  contact: {
-    page_title: 'Get In Touch',
-    contact_intro: 'Ready to work together? Send me a message and let\'s discuss your project.',
-    form_description: 'Fill out the form below and I\'ll get back to you as soon as possible.'
-  },
-  projects: {
-    page_title: 'My Projects',
-    page_subtitle: 'Click on any project to explore in detail',
-    intro_text: 'Here are some of the projects I\'ve worked on that showcase my skills and experience.'
-  },
-  resume: {
-    page_title: 'Professional Resume',
-    summary_text: 'A comprehensive overview of my professional experience, skills, and achievements.',
-    download_text: 'Download PDF Resume'
-  }
-};
-
-const content = currentContent[id] || {};
+const content = currentContent;
 ---
 
 <AdminLayout title={`Edit ${pageConfig.name} - Admin Panel`}>
@@ -157,7 +125,7 @@ const content = currentContent[id] || {};
     )}
 
     <!-- Content Editor Form -->
-    <form method="POST" class="content-form">
+    <form id="content-form" class="content-form">
       <div class="form-sections">
         {pageConfig.sections.map((section) => (
           <div class="form-section">
@@ -424,4 +392,57 @@ const content = currentContent[id] || {};
       }
     }
   </style>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const form = document.getElementById('content-form');
+      const submitButton = form.querySelector('button[type="submit"]');
+      
+      form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        // Disable submit button during submission
+        const originalText = submitButton.textContent;
+        submitButton.disabled = true;
+        submitButton.textContent = 'Saving...';
+        
+        try {
+          const formData = new FormData(form);
+          const sections = {};
+          
+          // Convert form data to sections object
+          for (const [key, value] of formData.entries()) {
+            sections[key] = value;
+          }
+          
+          const response = await fetch('/api/admin/pages', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              pageName: window.location.pathname.split('/').pop(),
+              sections: sections
+            })
+          });
+          
+          const result = await response.json();
+          
+          if (result.success) {
+            // Show success message
+            window.location.reload();
+          } else {
+            alert('Error saving content: ' + result.message);
+          }
+        } catch (error) {
+          console.error('Error saving content:', error);
+          alert('Error saving content. Please try again.');
+        } finally {
+          // Re-enable submit button
+          submitButton.disabled = false;
+          submitButton.textContent = originalText;
+        }
+      });
+    });
+  </script>
 </AdminLayout>
