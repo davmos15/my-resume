@@ -387,11 +387,6 @@ try {
       }
       
       function animateStats() {
-        // Get the actual calculated stats from the HTML
-        const years = parseInt(statsElements.years?.textContent) || 0;
-        const companies = parseInt(statsElements.companies?.textContent) || 0;
-        const roles = parseInt(statsElements.roles?.textContent) || 0;
-        
         const result = calculateAndSetBarHeights();
         const { years, companies, roles, heights } = result;
         
