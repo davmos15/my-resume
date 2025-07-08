@@ -151,15 +151,21 @@ try {
         <div class="summary-stats-section">
             <div class="summary-stats">
                 <div class="stat-item">
-                    <div class="stat-number" id="years-exp">{stats.years}</div>
+                    <div class="stat-bar">
+                        <div class="stat-number" id="years-exp">{stats.years}</div>
+                    </div>
                     <div class="stat-label">Years Experience</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-number" id="companies-count">{stats.companies}</div>
+                    <div class="stat-bar">
+                        <div class="stat-number" id="companies-count">{stats.companies}</div>
+                    </div>
                     <div class="stat-label">Companies</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-number" id="roles-count">{stats.roles}</div>
+                    <div class="stat-bar">
+                        <div class="stat-number" id="roles-count">{stats.roles}</div>
+                    </div>
                     <div class="stat-label">Roles</div>
                 </div>
             </div>
@@ -342,6 +348,34 @@ try {
         const years = parseInt(statsElements.years?.textContent) || 0;
         const companies = parseInt(statsElements.companies?.textContent) || 0;
         const roles = parseInt(statsElements.roles?.textContent) || 0;
+        
+        // Calculate bar heights based on values (max height 150px)
+        const maxValue = Math.max(years, companies, roles, 10); // Ensure minimum for scaling
+        const maxHeight = 150;
+        const minHeight = 50;
+        
+        const calculateHeight = (value) => {
+          const ratio = value / maxValue;
+          return Math.max(minHeight, ratio * maxHeight);
+        };
+        
+        const height1 = calculateHeight(years);
+        const height2 = calculateHeight(companies);
+        const height3 = calculateHeight(roles);
+        
+        // Set CSS custom properties for bar heights
+        const statsContainer = document.querySelector('.summary-stats');
+        if (statsContainer) {
+          statsContainer.style.setProperty('--bar-height-1', height1);
+          statsContainer.style.setProperty('--bar-height-2', height2);
+          statsContainer.style.setProperty('--bar-height-3', height3);
+          
+          // Set final heights for animation
+          const bars = statsContainer.querySelectorAll('.stat-bar');
+          bars[0]?.style.setProperty('--final-height', height1);
+          bars[1]?.style.setProperty('--final-height', height2);
+          bars[2]?.style.setProperty('--final-height', height3);
+        }
         
         // Reset to 0 for animation
         if (statsElements.years) statsElements.years.textContent = '0';
