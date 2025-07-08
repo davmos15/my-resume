@@ -1,12 +1,13 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import db from '../lib/db.js';
+import { allAsync } from '../lib/db.js';
 
 // Helper function to get page content
-function getPageContent(pageName: string) {
-    const sections = db.prepare(
-        'SELECT section_name, content FROM page_content WHERE page_name = ?'
-    ).all(pageName);
+async function getPageContent(pageName: string) {
+    const sections = await allAsync(
+        'SELECT section_name, content FROM page_content WHERE page_name = ?',
+        [pageName]
+    );
     
     const content: Record<string, string> = {};
     sections.forEach((section: any) => {
@@ -19,7 +20,7 @@ function getPageContent(pageName: string) {
 // Fetch the about page content
 let content: Record<string, string> = {};
 try {
-    content = getPageContent('about');
+    content = await getPageContent('about');
 } catch (error) {
     console.error('About page error:', error);
     content = {};

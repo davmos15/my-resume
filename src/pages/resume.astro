@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import db from '../lib/db.js';
+import { allAsync } from '../lib/db.js';
 
 // Initialize variables
 let groupedSections = {};
@@ -9,11 +9,11 @@ let stats = { years: 0, companies: 0, roles: 0 };
 
 try {
     // Fetch resume items from database grouped by type
-    const sections = db.prepare(`
+    const sections = await allAsync(`
         SELECT * FROM resume_sections 
         WHERE is_active = 1 
         ORDER BY section_type, display_order
-    `).all();
+    `);
 
     // Group sections by type
     groupedSections = sections.reduce((acc, section) => {

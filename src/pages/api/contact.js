@@ -1,4 +1,4 @@
-import db from '../../lib/db.js';
+import { runAsync } from '../../lib/db.js';
 
 export const POST = async ({ request }) => {
   try {
@@ -34,22 +34,20 @@ export const POST = async ({ request }) => {
     }
     
     // Store message in database
-    const stmt = db.prepare(`
+    const result = await runAsync(`
       INSERT INTO contact_messages 
       (name, email, subject, message, created_at, is_read) 
       VALUES (?, ?, ?, ?, datetime('now'), 0)
-    `);
-    
-    const result = stmt.run(
+    `, [
       name.trim(),
       email.trim(),
       header?.trim() || 'No subject',
       description.trim()
-    );
+    ]);
     
     // Log the submission
     console.log('New contact form submission:', {
-      id: result.lastInsertRowid,
+      id: result.lastInsertRowid || result.id,
       from: name,
       email: email,
       subject: header || 'No subject',

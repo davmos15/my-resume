@@ -1,12 +1,11 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import db from '../lib/db.js';
+import { allAsync } from '../lib/db.js';
 
 // Fetch projects
 let projects = [];
 try {
-  const stmt = db.prepare('SELECT * FROM projects WHERE is_active = 1 ORDER BY display_order, id DESC');
-  projects = stmt.all();
+  projects = await allAsync('SELECT * FROM projects WHERE is_active = 1 ORDER BY display_order, id DESC');
 } catch (err) {
   console.error('Error fetching projects:', err);
 }
