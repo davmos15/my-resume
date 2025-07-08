@@ -349,32 +349,47 @@ try {
         const companies = parseInt(statsElements.companies?.textContent) || 0;
         const roles = parseInt(statsElements.roles?.textContent) || 0;
         
-        // Calculate bar heights based on values (max height 150px)
-        const maxValue = Math.max(years, companies, roles, 10); // Ensure minimum for scaling
-        const maxHeight = 150;
-        const minHeight = 50;
+        // Calculate proportional bar heights
+        const values = [years, companies, roles];
+        const maxValue = Math.max(...values, 1); // Ensure minimum 1 for division
         
-        const calculateHeight = (value) => {
-          const ratio = value / maxValue;
-          return Math.max(minHeight, ratio * maxHeight);
+        // Responsive container heights
+        const getContainerHeight = () => {
+          if (window.innerWidth <= 480) return 130; // Small mobile
+          if (window.innerWidth <= 768) return 155; // Tablet
+          return 200; // Desktop
         };
         
-        const height1 = calculateHeight(years);
-        const height2 = calculateHeight(companies);
-        const height3 = calculateHeight(roles);
+        const containerHeight = getContainerHeight();
+        const minHeight = 25; // Minimum visible height for small values
         
-        // Set CSS custom properties for bar heights
+        const calculateProportionalHeight = (value) => {
+          if (value === 0) return minHeight;
+          // Calculate proportional height, ensuring smallest non-zero value gets reasonable height
+          const ratio = value / maxValue;
+          const proportionalHeight = ratio * containerHeight;
+          return Math.max(minHeight, proportionalHeight);
+        };
+        
+        const heights = values.map(calculateProportionalHeight);
+        
+        // Set heights directly on the bars
         const statsContainer = document.querySelector('.summary-stats');
         if (statsContainer) {
-          statsContainer.style.setProperty('--bar-height-1', height1);
-          statsContainer.style.setProperty('--bar-height-2', height2);
-          statsContainer.style.setProperty('--bar-height-3', height3);
-          
-          // Set final heights for animation
           const bars = statsContainer.querySelectorAll('.stat-bar');
-          bars[0]?.style.setProperty('--final-height', height1);
-          bars[1]?.style.setProperty('--final-height', height2);
-          bars[2]?.style.setProperty('--final-height', height3);
+          
+          bars.forEach((bar, index) => {
+            if (bar) {
+              bar.style.height = '0px'; // Start from 0 for animation
+              bar.style.setProperty('--final-height', heights[index]);
+              
+              // Animate to final height
+              setTimeout(() => {
+                bar.style.transition = 'height 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                bar.style.height = heights[index] + 'px';
+              }, 100 + (index * 100)); // Stagger animation
+            }
+          });
         }
         
         // Reset to 0 for animation
@@ -382,11 +397,19 @@ try {
         if (statsElements.companies) statsElements.companies.textContent = '0';
         if (statsElements.roles) statsElements.roles.textContent = '0';
         
+        // Animate numbers with staggered timing to match bar animation
         setTimeout(() => {
-          animateValue(statsElements.years, 0, years, 1000);
-          animateValue(statsElements.companies, 0, companies, 1000);
-          animateValue(statsElements.roles, 0, roles, 1000);
-        }, 500);
+          animateValue(statsElements.years, 0, years, 800);
+        }, 200);
+        
+        setTimeout(() => {
+          animateValue(statsElements.companies, 0, companies, 800);
+        }, 300);
+        
+        
+        setTimeout(() => {
+          animateValue(statsElements.roles, 0, roles, 800);
+        }, 400);
       }
       
       function toggleItem(item) {
