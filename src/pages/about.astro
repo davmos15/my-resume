@@ -26,25 +26,27 @@ try {
     content = {};
 }
 
-// Default values if content doesn't exist
-const bio = content.bio || "I'm Nadav Moskow, I work in IT Operations and am currently working on migrating our support team from Zendesk to Salesforce Service cloud. If you want to learn more about my experience and other projects I've worked on you can click through to see my resume.";
-const hobbies = content.hobbies || "In my spare time, I love playing cricket, running (come find me at the next marathon), watching movies or sports or analysing some obscure stats (especially if they relate to movies, running or sport).";
-const tagline = content.tagline || "I'm always up for a chat (or a run)!";
-const quote = content.quote || "\"I'm the type of person that if you ask me a question and I don't know the answer, I'm gonna tell you that I don't know. But I bet you what, I know how to find the answer and I will find the answer.\"";
-const quoteAuthor = content.quote_author || "Chris Gardner - Pursuit of Happyness";
+// Use database values only
+const bio = content.bio || "";
+const hobbies = content.hobbies || "";
+const tagline = content.tagline || "";
+const quote = content.quote || "";
+const quoteAuthor = content.quote_author || "";
 ---
 
 <BaseLayout title="About - Nadav Moskow">
     <div id="about-page" class="about">
         <img id="picture" src="/images/IMG_7191.jpg" alt="Picture of Nadav">
-        <p>{bio}</p>
-        <p>{hobbies}</p>
-        <p>{tagline}</p>
-        <p>Get in touch via the <a href="/contact">contact page</a></p>
-        <p>
-            {quote}<br>
-            <strong>{quoteAuthor}</strong>
-        </p>
+        {bio && <p>{bio}</p>}
+        {hobbies && <p>{hobbies}</p>}
+        {tagline && <p>{tagline}</p>}
+        {content.contact_prompt ? <p set:html={content.contact_prompt}></p> : <p>Get in touch via the <a href="/contact">contact page</a></p>}
+        {quote && (
+            <p>
+                {quote}<br>
+                {quoteAuthor && <strong>{quoteAuthor}</strong>}
+            </p>
+        )}
     </div>
     <hr>
 </BaseLayout>
