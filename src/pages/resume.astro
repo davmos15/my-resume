@@ -343,7 +343,7 @@ try {
         }, 30);
       }
       
-      function animateStats() {
+      function calculateAndSetBarHeights() {
         // Get the actual calculated stats from the HTML
         const years = parseInt(statsElements.years?.textContent) || 0;
         const companies = parseInt(statsElements.companies?.textContent) || 0;
@@ -353,19 +353,18 @@ try {
         const values = [years, companies, roles];
         const maxValue = Math.max(...values, 1); // Ensure minimum 1 for division
         
-        // Responsive container heights
-        const getContainerHeight = () => {
-          if (window.innerWidth <= 480) return 130; // Small mobile
-          if (window.innerWidth <= 768) return 155; // Tablet
-          return 200; // Desktop
-        };
-        
-        const containerHeight = getContainerHeight();
-        const minHeight = 25; // Minimum visible height for small values
+        // Get actual container height from CSS (dynamic vh-based)
+        const statsContainer = document.querySelector('.summary-stats');
+        const containerHeight = statsContainer ? 
+          parseInt(window.getComputedStyle(statsContainer).height) - 50 : // Subtract padding-bottom
+          200; // Fallback
+          
+        const minHeight = Math.max(20, containerHeight * 0.15); // Min height: 15% of container
         
         const calculateProportionalHeight = (value) => {
           if (value === 0) return minHeight;
-          // Calculate proportional height, ensuring smallest non-zero value gets reasonable height
+          // The tallest bar should reach the full container height
+          // All others scale proportionally
           const ratio = value / maxValue;
           const proportionalHeight = ratio * containerHeight;
           return Math.max(minHeight, proportionalHeight);
@@ -374,6 +373,29 @@ try {
         const heights = values.map(calculateProportionalHeight);
         
         // Set heights directly on the bars
+        if (statsContainer) {
+          const bars = statsContainer.querySelectorAll('.stat-bar');
+          
+          bars.forEach((bar, index) => {
+            if (bar) {
+              bar.style.height = heights[index] + 'px';
+            }
+          });
+        }
+        
+        return { years, companies, roles, heights };
+      }
+      
+      function animateStats() {
+        // Get the actual calculated stats from the HTML
+        const years = parseInt(statsElements.years?.textContent) || 0;
+        const companies = parseInt(statsElements.companies?.textContent) || 0;
+        const roles = parseInt(statsElements.roles?.textContent) || 0;
+        
+        const result = calculateAndSetBarHeights();
+        const { years, companies, roles, heights } = result;
+        
+        // Reset heights to 0 for animation
         const statsContainer = document.querySelector('.summary-stats');
         if (statsContainer) {
           const bars = statsContainer.querySelectorAll('.stat-bar');
@@ -381,7 +403,6 @@ try {
           bars.forEach((bar, index) => {
             if (bar) {
               bar.style.height = '0px'; // Start from 0 for animation
-              bar.style.setProperty('--final-height', heights[index]);
               
               // Animate to final height
               setTimeout(() => {
@@ -566,6 +587,17 @@ try {
       
       // Listen for hash changes
       window.addEventListener('hashchange', handleHashNavigation);
+      
+      // Recalculate bar heights on window resize
+      let resizeTimeout;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+          if (document.querySelector('.summary-stats')) {
+            calculateAndSetBarHeights();
+          }
+        }, 150); // Debounce resize events
+      });
       
       console.log('Resume expansion initialized');
     }

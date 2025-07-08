@@ -205,7 +205,7 @@
 /* Summary Stats Section */
 .summary-stats-section {
     text-align: center;
-    margin: 30px 0 40px 0;
+    margin: 4vh 0 40px 0; /* 4vh spacing below navigation */
 }
 
 .summary-stats {
@@ -215,7 +215,9 @@
     gap: 20px;
     max-width: 400px;
     margin: 0 auto 30px;
-    height: 250px; /* Fixed container height */
+    height: calc(40vh - 60px); /* Dynamic height: tallest bar ~4vh below nav */
+    min-height: 200px; /* Ensure minimum height on very small screens */
+    max-height: 300px; /* Cap maximum height */
     padding-bottom: 50px; /* Space for labels */
     position: relative;
 }
@@ -564,7 +566,9 @@
 @media (max-width: 768px) {
     .summary-stats {
         gap: 15px;
-        height: 200px;
+        height: calc(35vh - 50px); /* Slightly shorter on mobile */
+        min-height: 180px;
+        max-height: 250px;
         max-width: 300px;
         padding-bottom: 45px;
     }
@@ -636,7 +640,9 @@
 @media (max-width: 480px) {
     .summary-stats {
         gap: 10px;
-        height: 170px;
+        height: calc(30vh - 40px); /* Even more compact on small screens */
+        min-height: 150px;
+        max-height: 200px;
         max-width: 250px;
         padding-bottom: 40px;
     }
