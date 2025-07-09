@@ -23,7 +23,7 @@ const sectionTypes = ['experience', 'education', 'skills', 'certifications'];
   <!-- Add New Section Form -->
   <div class="card">
     <h2>Add New Resume Section</h2>
-    <form id="resumeForm" class="resume-form">
+    <form id="resumeForm" class="resume-form admin-form">
       <div class="form-row">
         <div class="form-group">
           <label for="section_type">Section Type *</label>
@@ -153,6 +153,8 @@ const sectionTypes = ['experience', 'education', 'skills', 'certifications'];
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 0.9rem;
+  background-color: white !important;
+  color: black !important;
 }
 
 .sections-grid {
@@ -279,6 +281,14 @@ let editingSectionId = null;
 document.addEventListener('DOMContentLoaded', function() {
   const form = document.getElementById('resumeForm');
   form.addEventListener('submit', handleFormSubmit);
+  
+  // Initialize rich text editors for any textareas
+  const textareas = document.querySelectorAll('#resumeForm textarea');
+  textareas.forEach(textarea => {
+    if (window.initRichTextEditor) {
+      window.initRichTextEditor(textarea);
+    }
+  });
 
   // Edit and delete buttons
   document.addEventListener('click', function(e) {

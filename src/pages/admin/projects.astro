@@ -21,7 +21,7 @@ try {
   <!-- Add New Project Form -->
   <div class="card">
     <h2>Add New Project</h2>
-    <form id="projectForm" class="project-form">
+    <form id="projectForm" class="project-form admin-form">
       <div class="form-row">
         <div class="form-group">
           <label for="title">Title *</label>
@@ -168,6 +168,8 @@ try {
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 0.9rem;
+  background-color: white !important;
+  color: black !important;
 }
 
 .form-group input:focus,
@@ -345,6 +347,14 @@ document.addEventListener('DOMContentLoaded', function() {
   // Form submission
   const form = document.getElementById('projectForm');
   form.addEventListener('submit', handleFormSubmit);
+  
+  // Initialize rich text editors for any textareas
+  const textareas = document.querySelectorAll('#projectForm textarea');
+  textareas.forEach(textarea => {
+    if (window.initRichTextEditor) {
+      window.initRichTextEditor(textarea);
+    }
+  });
 
   // Edit buttons
   document.addEventListener('click', function(e) {
