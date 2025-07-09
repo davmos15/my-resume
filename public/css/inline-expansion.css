@@ -370,9 +370,10 @@
     padding: 15px;
     cursor: pointer;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     transition: background-color 0.2s ease;
+    position: relative;
 }
 
 .job-header:hover {
@@ -418,6 +419,8 @@
     justify-content: center;
     flex-shrink: 0;
     font-weight: bold;
+    position: absolute;
+    right: 15px;
 }
 
 .job-toggle:hover {
@@ -610,13 +613,13 @@
     
     .job-header {
         padding: 12px;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
+        justify-content: center;
+        align-items: center;
     }
     
     .job-toggle {
-        align-self: flex-end;
+        position: absolute;
+        right: 12px;
     }
     
     .project-links {
