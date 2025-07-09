@@ -99,12 +99,14 @@
 .item-content {
     max-height: 0;
     overflow: hidden;
-    transition: max-height 0.4s ease-in-out;
+    transition: max-height 0.6s cubic-bezier(0.4, 0, 0.2, 1);
     background: var(--bg-primary);
 }
 
 .expandable-item.expanded .item-content {
-    max-height: 2000px;
+    max-height: 5000px; /* Large enough for any content */
+    overflow: visible;
+    transition: max-height 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .item-content-inner {
@@ -431,12 +433,14 @@
     padding: 0;
     max-height: 0;
     overflow: hidden;
-    transition: max-height 0.3s ease;
+    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .job-item.expanded .job-details {
-    max-height: 800px;
+    max-height: 2000px; /* Large enough for any job description */
+    overflow: visible;
     padding: 0 15px 15px;
+    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .job-description {
@@ -444,6 +448,7 @@
     line-height: 1.6;
     padding-top: 15px;
     border-top: 1px solid var(--border-color);
+    text-align: justify;
 }
 
 .job-description ul {
