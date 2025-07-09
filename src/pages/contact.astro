@@ -63,7 +63,7 @@ const errorMessage = content.error_message || "";
     
     <!-- Contact Form Section -->
     <div class="contact-form-container">
-      {formTitle ? <h2>{formTitle}</h2> : <h2>Send Me a Message</h2>}
+      {formTitle && <h2>{formTitle}</h2>}
       <div class="form-style">
         <form id="contact-form-element">
           <input type="text" name="header" placeholder="Subject (Optional)" />
