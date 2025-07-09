@@ -228,11 +228,23 @@ try {
             </div>
             <div class="item-content">
               <div class="item-content-inner">
-                    <div class="skills-grid">
-                      {(groupedSections.skills || []).map((skill) => (
-                        <div class="skill-category">
-                          <h4>{skill.title}</h4>
-                          <div set:html={skill.description || skill.details || 'No details available'} />
+                    <div class="skills-list">
+                      {(groupedSections.skills || []).map((skill, index) => (
+                        <div class="skill-item" data-skill-id={skill.id}>
+                          <div class="skill-header" data-skill-index={index}>
+                            <div class="skill-info">
+                              <h4>{skill.title}</h4>
+                              {skill.subtitle && (
+                                <div class="skill-meta">
+                                  <span class="skill-subtitle">{skill.subtitle}</span>
+                                </div>
+                              )}
+                            </div>
+                            <button class="skill-toggle" data-skill-index={index}>+</button>
+                          </div>
+                          <div class="skill-details" id={`skill-details-${index}`}>
+                            <div class="skill-description" set:html={skill.description || skill.details || 'No description available'} />
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -253,12 +265,21 @@ try {
             <div class="item-content">
               <div class="item-content-inner">
                     <div class="education-list">
-                      {(groupedSections.education || []).map((edu) => (
-                        <div class="education-item">
-                          <h4>{edu.title}</h4>
-                          {edu.subtitle && <p class="education-school">{edu.subtitle}</p>}
-                          {edu.date_range && <p class="education-dates">{edu.date_range}</p>}
-                          <div set:html={edu.description || edu.details || 'No details available'} />
+                      {(groupedSections.education || []).map((edu, index) => (
+                        <div class="edu-item" data-edu-id={edu.id}>
+                          <div class="edu-header" data-edu-index={index}>
+                            <div class="edu-info">
+                              <h4>{edu.title}</h4>
+                              <div class="edu-meta">
+                                {edu.subtitle && <span class="edu-school">{edu.subtitle}</span>}
+                                {edu.date_range && <span class="edu-dates">{edu.date_range}</span>}
+                              </div>
+                            </div>
+                            <button class="edu-toggle" data-edu-index={index}>+</button>
+                          </div>
+                          <div class="edu-details" id={`edu-details-${index}`}>
+                            <div class="edu-description" set:html={edu.description || edu.details || 'No description available'} />
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -278,12 +299,23 @@ try {
             </div>
             <div class="item-content">
               <div class="item-content-inner">
-                    <div class="achievements-grid">
-                      {(groupedSections.certifications || []).map((achievement) => (
-                        <div class="achievement-item">
-                          <h4>{achievement.title}</h4>
-                          {achievement.subtitle && <p class="achievement-subtitle">{achievement.subtitle}</p>}
-                          <div set:html={achievement.description || achievement.details || 'No details available'} />
+                    <div class="achievements-list">
+                      {(groupedSections.certifications || []).map((achievement, index) => (
+                        <div class="achievement-item" data-achievement-id={achievement.id}>
+                          <div class="achievement-header" data-achievement-index={index}>
+                            <div class="achievement-info">
+                              <h4>{achievement.title}</h4>
+                              {achievement.subtitle && (
+                                <div class="achievement-meta">
+                                  <span class="achievement-subtitle">{achievement.subtitle}</span>
+                                </div>
+                              )}
+                            </div>
+                            <button class="achievement-toggle" data-achievement-index={index}>+</button>
+                          </div>
+                          <div class="achievement-details" id={`achievement-details-${index}`}>
+                            <div class="achievement-description" set:html={achievement.description || achievement.details || 'No description available'} />
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -451,6 +483,30 @@ try {
           if (toggle) toggle.textContent = '+';
         });
         
+        // Collapse any expanded skills in this item
+        const expandedSkills = item.querySelectorAll('.skill-item.expanded');
+        expandedSkills.forEach(skill => {
+          skill.classList.remove('expanded');
+          const toggle = skill.querySelector('.skill-toggle');
+          if (toggle) toggle.textContent = '+';
+        });
+        
+        // Collapse any expanded education items in this item
+        const expandedEdu = item.querySelectorAll('.edu-item.expanded');
+        expandedEdu.forEach(edu => {
+          edu.classList.remove('expanded');
+          const toggle = edu.querySelector('.edu-toggle');
+          if (toggle) toggle.textContent = '+';
+        });
+        
+        // Collapse any expanded achievements in this item
+        const expandedAchievements = item.querySelectorAll('.achievement-item.expanded');
+        expandedAchievements.forEach(achievement => {
+          achievement.classList.remove('expanded');
+          const toggle = achievement.querySelector('.achievement-toggle');
+          if (toggle) toggle.textContent = '+';
+        });
+        
         console.log('Collapsed resume item');
       }
       
@@ -471,6 +527,57 @@ try {
         }
       }
       
+      function toggleSkill(skillIndex, toggleBtn) {
+        const skillDetails = document.getElementById(`skill-details-${skillIndex}`);
+        const skillItem = toggleBtn.closest('.skill-item');
+        
+        if (!skillDetails || !skillItem) return;
+        
+        if (skillItem.classList.contains('expanded')) {
+          skillItem.classList.remove('expanded');
+          toggleBtn.textContent = '+';
+          console.log('Collapsed skill:', skillIndex);
+        } else {
+          skillItem.classList.add('expanded');
+          toggleBtn.textContent = '−';
+          console.log('Expanded skill:', skillIndex);
+        }
+      }
+      
+      function toggleEdu(eduIndex, toggleBtn) {
+        const eduDetails = document.getElementById(`edu-details-${eduIndex}`);
+        const eduItem = toggleBtn.closest('.edu-item');
+        
+        if (!eduDetails || !eduItem) return;
+        
+        if (eduItem.classList.contains('expanded')) {
+          eduItem.classList.remove('expanded');
+          toggleBtn.textContent = '+';
+          console.log('Collapsed edu:', eduIndex);
+        } else {
+          eduItem.classList.add('expanded');
+          toggleBtn.textContent = '−';
+          console.log('Expanded edu:', eduIndex);
+        }
+      }
+      
+      function toggleAchievement(achievementIndex, toggleBtn) {
+        const achievementDetails = document.getElementById(`achievement-details-${achievementIndex}`);
+        const achievementItem = toggleBtn.closest('.achievement-item');
+        
+        if (!achievementDetails || !achievementItem) return;
+        
+        if (achievementItem.classList.contains('expanded')) {
+          achievementItem.classList.remove('expanded');
+          toggleBtn.textContent = '+';
+          console.log('Collapsed achievement:', achievementIndex);
+        } else {
+          achievementItem.classList.add('expanded');
+          toggleBtn.textContent = '−';
+          console.log('Expanded achievement:', achievementIndex);
+        }
+      }
+      
       // Event delegation for all resume interactions
       document.addEventListener('click', function(e) {
         // Handle job toggle buttons
@@ -479,6 +586,33 @@ try {
           e.stopPropagation();
           const jobIndex = e.target.getAttribute('data-job-index');
           toggleJob(jobIndex, e.target);
+          return;
+        }
+        
+        // Handle skill toggle buttons
+        if (e.target && e.target.classList.contains('skill-toggle')) {
+          e.preventDefault();
+          e.stopPropagation();
+          const skillIndex = e.target.getAttribute('data-skill-index');
+          toggleSkill(skillIndex, e.target);
+          return;
+        }
+        
+        // Handle edu toggle buttons
+        if (e.target && e.target.classList.contains('edu-toggle')) {
+          e.preventDefault();
+          e.stopPropagation();
+          const eduIndex = e.target.getAttribute('data-edu-index');
+          toggleEdu(eduIndex, e.target);
+          return;
+        }
+        
+        // Handle achievement toggle buttons
+        if (e.target && e.target.classList.contains('achievement-toggle')) {
+          e.preventDefault();
+          e.stopPropagation();
+          const achievementIndex = e.target.getAttribute('data-achievement-index');
+          toggleAchievement(achievementIndex, e.target);
           return;
         }
         
@@ -491,6 +625,45 @@ try {
           const toggleBtn = document.querySelector(`[data-job-index="${jobIndex}"].job-toggle`);
           if (toggleBtn) {
             toggleJob(jobIndex, toggleBtn);
+          }
+          return;
+        }
+        
+        // Handle skill header clicks (exclude toggle button)
+        if (e.target && e.target.closest && e.target.closest('.skill-header') && !e.target.closest('.skill-toggle')) {
+          e.preventDefault();
+          e.stopPropagation();
+          const skillHeader = e.target.closest('.skill-header');
+          const skillIndex = skillHeader.getAttribute('data-skill-index');
+          const toggleBtn = document.querySelector(`[data-skill-index="${skillIndex}"].skill-toggle`);
+          if (toggleBtn) {
+            toggleSkill(skillIndex, toggleBtn);
+          }
+          return;
+        }
+        
+        // Handle edu header clicks (exclude toggle button)
+        if (e.target && e.target.closest && e.target.closest('.edu-header') && !e.target.closest('.edu-toggle')) {
+          e.preventDefault();
+          e.stopPropagation();
+          const eduHeader = e.target.closest('.edu-header');
+          const eduIndex = eduHeader.getAttribute('data-edu-index');
+          const toggleBtn = document.querySelector(`[data-edu-index="${eduIndex}"].edu-toggle`);
+          if (toggleBtn) {
+            toggleEdu(eduIndex, toggleBtn);
+          }
+          return;
+        }
+        
+        // Handle achievement header clicks (exclude toggle button)
+        if (e.target && e.target.closest && e.target.closest('.achievement-header') && !e.target.closest('.achievement-toggle')) {
+          e.preventDefault();
+          e.stopPropagation();
+          const achievementHeader = e.target.closest('.achievement-header');
+          const achievementIndex = achievementHeader.getAttribute('data-achievement-index');
+          const toggleBtn = document.querySelector(`[data-achievement-index="${achievementIndex}"].achievement-toggle`);
+          if (toggleBtn) {
+            toggleAchievement(achievementIndex, toggleBtn);
           }
           return;
         }
