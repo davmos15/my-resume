@@ -26,27 +26,19 @@ try {
     content = {};
 }
 
-// Use database values only
-const bio = content.bio || "";
-const hobbies = content.hobbies || "";
-const tagline = content.tagline || "";
-const quote = content.quote || "";
-const quoteAuthor = content.quote_author || "";
+// Use database values only - match actual database field names
+const pageTitle = content.page_title || "";
+const aboutContent = content.about_content || "";
+const bioText = content.bio_text || "";
 ---
 
 <BaseLayout title="About - Nadav Moskow">
     <div id="about-page" class="about">
+        {pageTitle && <h1>{pageTitle}</h1>}
         <img id="picture" src="/images/IMG_7191.jpg" alt="Picture of Nadav">
-        {bio && <p>{bio}</p>}
-        {hobbies && <p>{hobbies}</p>}
-        {tagline && <p>{tagline}</p>}
-        {content.contact_prompt ? <p set:html={content.contact_prompt}></p> : <p>Get in touch via the <a href="/contact">contact page</a></p>}
-        {quote && (
-            <p>
-                {quote}<br>
-                {quoteAuthor && <strong>{quoteAuthor}</strong>}
-            </p>
-        )}
+        {aboutContent && <p>{aboutContent}</p>}
+        {bioText && <p set:html={bioText}></p>}
+        <p>Get in touch via the <a href="/contact">contact page</a></p>
     </div>
     <hr>
 </BaseLayout>
