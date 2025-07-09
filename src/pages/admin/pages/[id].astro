@@ -125,18 +125,17 @@ const content = currentContent;
     )}
 
     <!-- Content Editor Form -->
-    <form id="content-form" class="content-form">
+    <form id="content-form" class="content-form admin-form">
       <div class="form-sections">
         {pageConfig.sections.map((section) => (
-          <div class="form-section">
-            <label for={section.key} class="form-label">
+          <div class="form-group">
+            <label for={section.key}>
               {section.label}
             </label>
             {section.type === 'textarea' ? (
               <textarea 
                 id={section.key}
                 name={section.key}
-                class="form-control form-textarea"
                 rows="4"
                 placeholder={`Enter ${section.label.toLowerCase()}...`}
               >{content[section.key] || ''}</textarea>
@@ -145,7 +144,6 @@ const content = currentContent;
                 type="text"
                 id={section.key}
                 name={section.key}
-                class="form-control"
                 value={content[section.key] || ''}
                 placeholder={`Enter ${section.label.toLowerCase()}...`}
               />
@@ -169,10 +167,10 @@ const content = currentContent;
       <h3>📝 Content Editor Instructions</h3>
       <ul>
         <li><strong>Text fields:</strong> For short content like titles and headings</li>
-        <li><strong>Text areas:</strong> For longer content like descriptions and paragraphs</li>
+        <li><strong>Text areas:</strong> For longer content with rich text formatting toolbar</li>
+        <li><strong>Formatting:</strong> Use the toolbar buttons for <strong>bold</strong>, <em>italic</em>, <u>underline</u>, bullet lists, numbered lists, and links</li>
         <li><strong>Preview:</strong> Click "View Live Page" to see your changes on the actual website</li>
         <li><strong>Save:</strong> Changes are applied immediately when you click "Save Changes"</li>
-        <li><strong>Formatting:</strong> Basic HTML tags are supported in text areas</li>
       </ul>
     </div>
   </div>
