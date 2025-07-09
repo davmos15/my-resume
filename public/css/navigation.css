@@ -374,6 +374,8 @@ body {
     /* Show mobile menu toggle */
     .mobile-menu-toggle {
         display: flex;
+        background: none !important;
+        margin-right: 8px; /* Offset from right edge */
     }
     
     /* Mobile menu - side sliding from right */

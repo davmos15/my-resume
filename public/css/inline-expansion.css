@@ -207,7 +207,7 @@
 /* Summary Stats Section */
 .summary-stats-section {
     text-align: center;
-    margin: 4vh 0 40px 0; /* 4vh spacing below navigation */
+    margin: 0 0 40px 0; /* Remove top margin */
 }
 
 .summary-stats {
@@ -748,9 +748,9 @@
 @media (max-width: 768px) {
     .summary-stats {
         gap: 15px;
-        height: calc((35vh - 50px) * 0.8); /* Reduced by 20% */
-        min-height: 144px; /* Reduced from 180px */
-        max-height: 200px; /* Reduced from 250px */
+        height: 180px; /* Fixed height for mobile to ensure proportional bars */
+        min-height: 180px;
+        max-height: 180px;
         max-width: 300px;
         padding-bottom: 45px;
     }
@@ -828,9 +828,9 @@
 @media (max-width: 480px) {
     .summary-stats {
         gap: 10px;
-        height: calc((30vh - 40px) * 0.8); /* Reduced by 20% */
-        min-height: 120px; /* Reduced from 150px */
-        max-height: 160px; /* Reduced from 200px */
+        height: 150px; /* Fixed height for small mobile to ensure proportional bars */
+        min-height: 150px;
+        max-height: 150px;
         max-width: 250px;
         padding-bottom: 40px;
     }
