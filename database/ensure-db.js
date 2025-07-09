@@ -7,6 +7,12 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const dbPath = path.join(__dirname, 'portfolio.db');
 
+// Skip SQLite initialization if using PostgreSQL
+if (process.env.POSTGRES_URL || process.env.VERCEL) {
+    console.log('PostgreSQL environment detected. Skipping SQLite initialization.');
+    process.exit(0);
+}
+
 // Check if database exists
 if (!fs.existsSync(dbPath)) {
     console.log('Database not found. Initializing...');
