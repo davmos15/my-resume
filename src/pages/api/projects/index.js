@@ -51,12 +51,12 @@ export async function POST({ request }) {
 
   try {
     const data = await request.json();
-    const { title, emoji, subtitle, description, technologies, github_link, live_link, display_order, image_path } = data;
+    const { title, emoji, subtitle, description, technologies, github_link, live_link, display_order, image_path, is_active } = data;
     
     await runAsync(
       `INSERT INTO projects (title, emoji, subtitle, description, technologies, github_link, live_link, display_order, image_path, is_active) 
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1)`,
-      [title, emoji || '🚀', subtitle || null, description, technologies, github_link || null, live_link || null, display_order || 0, image_path || null]
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [title, emoji || '🚀', subtitle || null, description, technologies, github_link || null, live_link || null, display_order || 0, image_path || null, is_active ? 1 : 0]
     );
     
     return new Response(JSON.stringify({ success: true, message: 'Project created successfully' }), {
