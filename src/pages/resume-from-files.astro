@@ -1,132 +1,112 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { allAsync } from '../lib/db.js';
+import fs from 'fs';
+import path from 'path';
 
-// Initialize variables
-let groupedSections = {};
+// Read resume data from JSON files
+const resumeDir = path.join(process.cwd(), 'src/content/resume');
+let resumeData = {
+    experience: [],
+    skills: [],
+    education: [],
+    certifications: []
+};
 let error = null;
-let stats = { years: 0, companies: 0, roles: 0 };
 
 try {
-    // Fetch resume items from database grouped by type
-    const sections = await allAsync(`
-        SELECT * FROM resume_sections 
-        WHERE is_active = true 
-        ORDER BY section_type, display_order
-    `);
-
-    // Group sections by type
-    groupedSections = sections.reduce((acc, section) => {
-        if (!acc[section.section_type]) {
-            acc[section.section_type] = [];
-        }
-        acc[section.section_type].push({
-            id: section.id,
-            type: section.section_type,
-            title: section.title,
-            subtitle: section.subtitle,
-            date_range: section.date_range,
-            description: section.description,
-            details: section.details
-        });
-        return acc;
-    }, {});
-
-    // Calculate stats for summary section
-    let companies = new Set();
-    let totalExperienceMonths = 0;
-    let yearsExp = 0;
-
-    if (groupedSections.experience && groupedSections.experience.length > 0) {
-        groupedSections.experience.forEach(job => {
-            if (job.subtitle) {
-                let company = job.subtitle;
-                if (company.includes(' - ')) {
-                    company = company.split(' - ')[0];
-                } else if (company.includes(' at ')) {
-                    company = company.split(' at ').pop();
-                }
-                companies.add(company.trim());
-            }
-            
-            if (job.date_range) {
-                const duration = calculateJobDuration(job.date_range);
-                totalExperienceMonths += duration;
-            }
-        });
-        yearsExp = Math.floor(totalExperienceMonths / 12);
-    }
-
-    stats = {
-        years: yearsExp > 0 ? yearsExp : 0,
-        companies: companies.size,
-        roles: groupedSections.experience ? groupedSections.experience.length : 0
-    };
-    
-    function calculateJobDuration(dateRange) {
-        try {
-            const parts = dateRange.toLowerCase().split(' - ');
-            if (parts.length !== 2) return 12;
-            
-            const startPart = parts[0].trim();
-            const endPart = parts[1].trim();
-            
-            let startYear, startMonth = 0;
-            if (startPart.match(/^\d{4}$/)) {
-                startYear = parseInt(startPart);
-            } else {
-                const startMatch = startPart.match(/(\w+)\s+(\d{4})/);
-                if (startMatch) {
-                    startYear = parseInt(startMatch[2]);
-                    startMonth = getMonthNumber(startMatch[1]);
-                }
-            }
-            
-            let endYear, endMonth = 11;
-            if (endPart === 'present' || endPart === 'current') {
-                endYear = new Date().getFullYear();
-                endMonth = new Date().getMonth();
-            } else if (endPart.match(/^\d{4}$/)) {
-                endYear = parseInt(endPart);
-            } else {
-                const endMatch = endPart.match(/(\w+)\s+(\d{4})/);
-                if (endMatch) {
-                    endYear = parseInt(endMatch[2]);
-                    endMonth = getMonthNumber(endMatch[1]);
-                }
-            }
-            
-            if (startYear && endYear) {
-                const months = (endYear - startYear) * 12 + (endMonth - startMonth);
-                return Math.max(months, 1);
-            }
-            
-            return 12;
-        } catch (error) {
-            return 12;
-        }
-    }
-    
-    function getMonthNumber(monthName) {
-        const months = {
-            'jan': 0, 'january': 0,
-            'feb': 1, 'february': 1,
-            'mar': 2, 'march': 2,
-            'apr': 3, 'april': 3,
-            'may': 4,
-            'jun': 5, 'june': 5,
-            'jul': 6, 'july': 6,
-            'aug': 7, 'august': 7,
-            'sep': 8, 'september': 8,
-            'oct': 9, 'october': 9,
-            'nov': 10, 'november': 10,
-            'dec': 11, 'december': 11
-        };
-        return months[monthName.toLowerCase()] || 0;
+    const resumeDataPath = path.join(resumeDir, 'resume-data.json');
+    if (fs.existsSync(resumeDataPath)) {
+        const data = JSON.parse(fs.readFileSync(resumeDataPath, 'utf8'));
+        resumeData = { ...resumeData, ...data };
     }
 } catch (err) {
-    console.error('Error fetching resume sections:', err);
+    console.error('Error loading resume data:', err);
     error = err.message;
+}
+
+// Calculate stats
+let stats = { years: 0, companies: 0, roles: 0 };
+
+if (resumeData.experience && resumeData.experience.length > 0) {
+    let companies = new Set();
+    let totalExperienceMonths = 0;
+
+    resumeData.experience.forEach(job => {
+        if (job.subtitle) {
+            let company = job.subtitle;
+            if (company.includes(' - ')) {
+                company = company.split(' - ')[0];
+            } else if (company.includes(' at ')) {
+                company = company.split(' at ').pop();
+            }
+            companies.add(company.trim());
+        }
+        
+        if (job.date_range) {
+            const duration = calculateJobDuration(job.date_range);
+            totalExperienceMonths += duration;
+        }
+    });
+
+    stats = {
+        years: Math.floor(totalExperienceMonths / 12),
+        companies: companies.size,
+        roles: resumeData.experience.length
+    };
+}
+
+function calculateJobDuration(dateRange) {
+    try {
+        const parts = dateRange.toLowerCase().split(' - ');
+        if (parts.length !== 2) return 12;
+        
+        const startPart = parts[0].trim();
+        const endPart = parts[1].trim();
+        
+        let startYear, startMonth = 0;
+        if (startPart.match(/^\d{4}$/)) {
+            startYear = parseInt(startPart);
+        } else {
+            const startMatch = startPart.match(/(\w+)\s+(\d{4})/);
+            if (startMatch) {
+                startYear = parseInt(startMatch[2]);
+                startMonth = getMonthNumber(startMatch[1]);
+            }
+        }
+        
+        let endYear, endMonth = 11;
+        if (endPart === 'present' || endPart === 'current') {
+            endYear = new Date().getFullYear();
+            endMonth = new Date().getMonth();
+        } else if (endPart.match(/^\d{4}$/)) {
+            endYear = parseInt(endPart);
+        } else {
+            const endMatch = endPart.match(/(\w+)\s+(\d{4})/);
+            if (endMatch) {
+                endYear = parseInt(endMatch[2]);
+                endMonth = getMonthNumber(endMatch[1]);
+            }
+        }
+        
+        if (startYear && endYear) {
+            const months = (endYear - startYear) * 12 + (endMonth - startMonth);
+            return Math.max(months, 1);
+        }
+        
+        return 12;
+    } catch (error) {
+        return 12;
+    }
+}
+
+function getMonthNumber(monthName) {
+    const months = {
+        'jan': 0, 'january': 0, 'feb': 1, 'february': 1, 'mar': 2, 'march': 2,
+        'apr': 3, 'april': 3, 'may': 4, 'jun': 5, 'june': 5, 'jul': 6, 'july': 6,
+        'aug': 7, 'august': 7, 'sep': 8, 'september': 8, 'oct': 9, 'october': 9,
+        'nov': 10, 'november': 10, 'dec': 11, 'december': 11
+    };
+    return months[monthName.toLowerCase()] || 0;
 }
 ---
 
@@ -271,14 +251,8 @@ try {
         }
 
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         /* Timeline Style for Experience */
@@ -407,160 +381,18 @@ try {
             font-weight: 500;
         }
 
-        /* Education Cards */
-        .education-grid {
-            display: grid;
-            gap: 20px;
-        }
-
-        .education-card {
-            background: var(--bg-secondary);
-            padding: 25px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            border-left: 4px solid var(--link-color);
-            transition: all 0.3s ease;
-        }
-
-        .education-card:hover {
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            transform: translateX(5px);
-        }
-
-        .education-title {
-            font-size: 1.2em;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin: 0 0 8px 0;
-        }
-
-        .education-school {
-            font-size: 1em;
-            color: var(--link-color);
-            font-weight: 500;
-            margin: 0 0 5px 0;
-        }
-
-        .education-date {
-            font-size: 0.9em;
-            color: var(--text-secondary);
-            font-style: italic;
-            margin-bottom: 15px;
-        }
-
-        .education-description {
-            color: var(--text-primary);
-            line-height: 1.6;
-        }
-
-        /* Achievements Grid */
-        .achievements-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-        }
-
-        .achievement-card {
-            background: linear-gradient(135deg, var(--bg-secondary), var(--bg-primary));
-            padding: 20px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .achievement-card::before {
-            content: '🏆';
-            position: absolute;
-            top: -20px;
-            right: -20px;
-            font-size: 4em;
-            opacity: 0.1;
-        }
-
-        .achievement-card:hover {
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-            transform: translateY(-2px);
-        }
-
-        .achievement-title {
-            font-size: 1.1em;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin: 0 0 10px 0;
-        }
-
-        .achievement-description {
-            color: var(--text-primary);
-            line-height: 1.5;
-            font-size: 0.95em;
-        }
-
         /* Mobile Responsiveness */
         @media (max-width: 768px) {
-            #resume-page {
-                padding: 20px 15px;
-            }
-
-            .resume-header h1 {
-                font-size: 2em;
-            }
-
-            .stats-bar {
-                gap: 20px;
-            }
-
-            .stat-number {
-                font-size: 2em;
-            }
-
-            .tab-nav {
-                flex-wrap: wrap;
-                gap: 5px;
-            }
-
-            .tab-button {
-                padding: 10px 15px;
-                font-size: 0.9em;
-                flex: 1;
-                min-width: 100px;
-            }
-
-            .tab-icon {
-                display: none;
-            }
-
-            .timeline {
-                padding-left: 30px;
-            }
-
-            .timeline-item {
-                padding: 20px;
-            }
-
-            .skills-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .achievements-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .stats-bar {
-                flex-direction: column;
-                gap: 15px;
-            }
-
-            .tab-nav {
-                gap: 0;
-            }
-
-            .tab-button {
-                border-radius: 0;
-            }
+            #resume-page { padding: 20px 15px; }
+            .resume-header h1 { font-size: 2em; }
+            .stats-bar { gap: 20px; }
+            .stat-number { font-size: 2em; }
+            .tab-nav { flex-wrap: wrap; gap: 5px; }
+            .tab-button { padding: 10px 15px; font-size: 0.9em; flex: 1; min-width: 100px; }
+            .tab-icon { display: none; }
+            .timeline { padding-left: 30px; }
+            .timeline-item { padding: 20px; }
+            .skills-grid { grid-template-columns: 1fr; }
         }
     </style>
     
@@ -624,7 +456,7 @@ try {
                     <!-- Experience Tab -->
                     <div class="tab-content active" id="experience-tab">
                         <div class="timeline">
-                            {(groupedSections.experience || []).map((job) => (
+                            {resumeData.experience.map((job) => (
                                 <div class="timeline-item">
                                     <div class="timeline-header">
                                         <h3 class="timeline-title">{job.title}</h3>
@@ -640,7 +472,7 @@ try {
                     <!-- Skills Tab -->
                     <div class="tab-content" id="skills-tab">
                         <div class="skills-grid">
-                            {(groupedSections.skills || []).map((skill) => (
+                            {resumeData.skills.map((skill) => (
                                 <div class="skill-category">
                                     <h3>{skill.title}</h3>
                                     <div class="skill-tags">
@@ -656,7 +488,7 @@ try {
                     <!-- Education Tab -->
                     <div class="tab-content" id="education-tab">
                         <div class="education-grid">
-                            {(groupedSections.education || []).map((edu) => (
+                            {resumeData.education.map((edu) => (
                                 <div class="education-card">
                                     <h3 class="education-title">{edu.title}</h3>
                                     {edu.subtitle && <p class="education-school">{edu.subtitle}</p>}
@@ -670,7 +502,7 @@ try {
                     <!-- Achievements Tab -->
                     <div class="tab-content" id="achievements-tab">
                         <div class="achievements-grid">
-                            {(groupedSections.certifications || []).map((achievement) => (
+                            {resumeData.certifications.map((achievement) => (
                                 <div class="achievement-card">
                                     <h3 class="achievement-title">{achievement.title}</h3>
                                     <div class="achievement-description" set:html={achievement.description || achievement.details || achievement.subtitle || ''} />
@@ -684,7 +516,7 @@ try {
     </div>
 
     <script>
-        // Tab functionality
+        // Same tab functionality as before...
         document.addEventListener('DOMContentLoaded', function() {
             const tabButtons = document.querySelectorAll('.tab-button');
             const tabContents = document.querySelectorAll('.tab-content');
@@ -692,12 +524,8 @@ try {
             tabButtons.forEach(button => {
                 button.addEventListener('click', function() {
                     const targetTab = this.dataset.tab;
-
-                    // Remove active class from all buttons and contents
                     tabButtons.forEach(btn => btn.classList.remove('active'));
                     tabContents.forEach(content => content.classList.remove('active'));
-
-                    // Add active class to clicked button and corresponding content
                     this.classList.add('active');
                     document.getElementById(`${targetTab}-tab`)?.classList.add('active');
                 });
@@ -708,30 +536,20 @@ try {
                 const hash = window.location.hash.slice(1).toLowerCase();
                 if (hash) {
                     const tabMap = {
-                        'experience': 'experience',
-                        'skills': 'skills',
-                        'education': 'education',
-                        'courses': 'achievements',
-                        'achievements': 'achievements'
+                        'experience': 'experience', 'skills': 'skills', 'education': 'education',
+                        'courses': 'achievements', 'achievements': 'achievements'
                     };
-
                     const targetTab = tabMap[hash];
                     if (targetTab) {
-                        const targetButton = document.querySelector(`[data-tab="${targetTab}"]`);
-                        if (targetButton) {
-                            targetButton.click();
-                        }
+                        document.querySelector(`[data-tab="${targetTab}"]`)?.click();
                     }
                 }
             }
 
-            // Check hash on page load
             handleHashNavigation();
-
-            // Listen for hash changes
             window.addEventListener('hashchange', handleHashNavigation);
 
-            // Animate stats on load
+            // Animate stats
             function animateValue(element, start, end, duration) {
                 if (!element) return;
                 const range = end - start;
@@ -748,7 +566,6 @@ try {
                 }, 30);
             }
 
-            // Get stats elements
             const yearsEl = document.getElementById('years-stat');
             const companiesEl = document.getElementById('companies-stat');
             const rolesEl = document.getElementById('roles-stat');
@@ -758,42 +575,16 @@ try {
                 const companies = parseInt(companiesEl.textContent);
                 const roles = parseInt(rolesEl.textContent);
 
-                // Reset to 0 for animation
                 yearsEl.textContent = '0';
                 companiesEl.textContent = '0';
                 rolesEl.textContent = '0';
 
-                // Animate after a short delay
                 setTimeout(() => {
                     animateValue(yearsEl, 0, years, 800);
                     animateValue(companiesEl, 0, companies, 800);
                     animateValue(rolesEl, 0, roles, 800);
                 }, 200);
             }
-
-            // Add scroll animations
-            const observerOptions = {
-                threshold: 0.1,
-                rootMargin: '0px 0px -50px 0px'
-            };
-
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.style.opacity = '1';
-                        entry.target.style.transform = 'translateY(0)';
-                    }
-                });
-            }, observerOptions);
-
-            // Observe timeline items
-            document.querySelectorAll('.timeline-item').forEach((el, index) => {
-                el.style.opacity = '0';
-                el.style.transform = 'translateY(20px)';
-                el.style.transition = 'all 0.6s ease';
-                el.style.transitionDelay = `${index * 0.1}s`;
-                observer.observe(el);
-            });
         });
     </script>
 </BaseLayout>

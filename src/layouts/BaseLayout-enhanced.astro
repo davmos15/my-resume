@@ -1,0 +1,461 @@
+---
+export interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content="Nadav Moskow - Full Stack Developer Portfolio" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    
+    <!-- Preload fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/themes.css">
+    <link rel="stylesheet" href="/css/navigation.css">
+    
+    <!-- View Transitions API -->
+    <meta name="view-transition" content="same-origin" />
+    
+    <style>
+      /* Enhanced animations and transitions */
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes fadeInLeft {
+        from {
+          opacity: 0;
+          transform: translateX(-30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      @keyframes fadeInRight {
+        from {
+          opacity: 0;
+          transform: translateX(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      @keyframes slideDown {
+        from {
+          opacity: 0;
+          transform: translateY(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes pulse {
+        0%, 100% {
+          opacity: 1;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 0.8;
+          transform: scale(1.05);
+        }
+      }
+
+      @keyframes shimmer {
+        0% {
+          background-position: -468px 0;
+        }
+        100% {
+          background-position: 468px 0;
+        }
+      }
+
+      /* Page transition animations */
+      .page-transition-enter {
+        animation: fadeInUp 0.6s ease-out;
+      }
+
+      .page-transition-leave {
+        animation: fadeInUp 0.3s ease-in reverse;
+      }
+
+      /* Scroll-triggered animations */
+      .animate-on-scroll {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 0.6s ease-out;
+      }
+
+      .animate-on-scroll.animate {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      /* Loading states */
+      .loading-skeleton {
+        background: linear-gradient(90deg, var(--bg-secondary) 25%, var(--bg-accent) 50%, var(--bg-secondary) 75%);
+        background-size: 400% 100%;
+        animation: shimmer 1.2s ease-in-out infinite;
+      }
+
+      /* Hover enhancements */
+      .hover-lift {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .hover-lift:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+      }
+
+      /* Interactive elements */
+      .interactive {
+        position: relative;
+        overflow: hidden;
+      }
+
+      .interactive::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+        transition: left 0.5s ease;
+        pointer-events: none;
+      }
+
+      .interactive:hover::before {
+        left: 100%;
+      }
+
+      /* Focus management */
+      .focus-visible {
+        outline: 2px solid var(--link-color);
+        outline-offset: 2px;
+        border-radius: 4px;
+      }
+
+      /* Reduced motion support */
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+
+      /* Performance optimizations */
+      .will-change-transform {
+        will-change: transform;
+      }
+
+      .will-change-opacity {
+        will-change: opacity;
+      }
+
+      /* Font loading optimization */
+      body {
+        font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        font-display: swap;
+      }
+
+      /* Critical CSS for above-the-fold content */
+      .critical-content {
+        contain: layout style paint;
+      }
+    </style>
+  </head>
+  <body class="page-transition-enter">
+    <div id="app" class="critical-content">
+      <slot name="navigation" />
+      <main class="main-content">
+        <slot />
+      </main>
+      <slot name="footer" />
+    </div>
+
+    <!-- Enhanced JavaScript -->
+    <script>
+      // Initialize enhanced features
+      document.addEventListener('DOMContentLoaded', function() {
+        initializeEnhancements();
+      });
+
+      function initializeEnhancements() {
+        // Initialize scroll animations
+        initScrollAnimations();
+        
+        // Initialize theme system
+        initThemeSystem();
+        
+        // Initialize performance optimizations
+        initPerformanceOptimizations();
+        
+        // Initialize accessibility features
+        initAccessibility();
+        
+        // Initialize page transitions
+        initPageTransitions();
+      }
+
+      // Scroll-triggered animations
+      function initScrollAnimations() {
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('animate');
+              // Add staggered animation delay for multiple elements
+              const siblings = Array.from(entry.target.parentElement?.children || []);
+              const index = siblings.indexOf(entry.target);
+              entry.target.style.animationDelay = `${index * 0.1}s`;
+            }
+          });
+        }, {
+          threshold: 0.1,
+          rootMargin: '0px 0px -50px 0px'
+        });
+
+        // Observe elements for animation
+        document.querySelectorAll('.animate-on-scroll').forEach(el => {
+          observer.observe(el);
+        });
+      }
+
+      // Enhanced theme system
+      function initThemeSystem() {
+        // Apply saved theme immediately to prevent flash
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        
+        // Update logo for AFL themes
+        if (savedTheme.startsWith('afl-')) {
+          const logo = document.getElementById('logo');
+          if (logo) logo.classList.add('afl-logo');
+        }
+
+        // Listen for theme changes
+        document.addEventListener('themeChanged', (e) => {
+          const newTheme = e.detail.theme;
+          document.documentElement.style.setProperty('--transition-duration', '0.3s');
+          
+          setTimeout(() => {
+            document.documentElement.style.removeProperty('--transition-duration');
+          }, 300);
+        });
+      }
+
+      // Performance optimizations
+      function initPerformanceOptimizations() {
+        // Lazy load images
+        if ('IntersectionObserver' in window) {
+          const imageObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+              if (entry.isIntersecting) {
+                const img = entry.target;
+                if (img.dataset.src) {
+                  img.src = img.dataset.src;
+                  img.removeAttribute('data-src');
+                  imageObserver.unobserve(img);
+                }
+              }
+            });
+          });
+
+          document.querySelectorAll('img[data-src]').forEach(img => {
+            imageObserver.observe(img);
+          });
+        }
+
+        // Preload critical resources
+        const criticalLinks = ['/css/styles.css', '/css/themes.css'];
+        criticalLinks.forEach(href => {
+          const link = document.createElement('link');
+          link.rel = 'preload';
+          link.as = 'style';
+          link.href = href;
+          document.head.appendChild(link);
+        });
+      }
+
+      // Accessibility enhancements
+      function initAccessibility() {
+        // Enhanced focus management
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Tab') {
+            document.body.classList.add('using-keyboard');
+          }
+        });
+
+        document.addEventListener('mousedown', () => {
+          document.body.classList.remove('using-keyboard');
+        });
+
+        // Skip to main content
+        const skipLink = document.createElement('a');
+        skipLink.href = '#main-content';
+        skipLink.textContent = 'Skip to main content';
+        skipLink.className = 'skip-link';
+        skipLink.style.cssText = `
+          position: absolute;
+          top: -40px;
+          left: 6px;
+          background: var(--link-color);
+          color: white;
+          padding: 8px;
+          text-decoration: none;
+          border-radius: 4px;
+          z-index: 9999;
+          transition: top 0.2s ease;
+        `;
+        
+        skipLink.addEventListener('focus', () => {
+          skipLink.style.top = '6px';
+        });
+        
+        skipLink.addEventListener('blur', () => {
+          skipLink.style.top = '-40px';
+        });
+
+        document.body.insertBefore(skipLink, document.body.firstChild);
+
+        // ARIA live region for dynamic content
+        const liveRegion = document.createElement('div');
+        liveRegion.setAttribute('aria-live', 'polite');
+        liveRegion.setAttribute('aria-atomic', 'true');
+        liveRegion.className = 'sr-only';
+        liveRegion.id = 'live-region';
+        document.body.appendChild(liveRegion);
+      }
+
+      // Page transitions with View Transitions API fallback
+      function initPageTransitions() {
+        if (!document.startViewTransition) {
+          // Fallback for browsers without View Transitions API
+          document.addEventListener('click', (e) => {
+            const link = e.target.closest('a[href]');
+            if (link && link.hostname === location.hostname && !link.target) {
+              e.preventDefault();
+              
+              document.body.classList.add('page-transition-leave');
+              
+              setTimeout(() => {
+                window.location.href = link.href;
+              }, 300);
+            }
+          });
+        }
+      }
+
+      // Utility functions
+      function announceToScreenReader(message) {
+        const liveRegion = document.getElementById('live-region');
+        if (liveRegion) {
+          liveRegion.textContent = message;
+          setTimeout(() => {
+            liveRegion.textContent = '';
+          }, 1000);
+        }
+      }
+
+      function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+          const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+          };
+          clearTimeout(timeout);
+          timeout = setTimeout(later, wait);
+        };
+      }
+
+      // Export utilities for other scripts
+      window.portfolioUtils = {
+        announceToScreenReader,
+        debounce
+      };
+
+      // Error handling
+      window.addEventListener('error', (e) => {
+        console.error('Portfolio Error:', e.error);
+        // Could send to analytics service
+      });
+
+      // Performance monitoring
+      if ('performance' in window) {
+        window.addEventListener('load', () => {
+          setTimeout(() => {
+            const perfData = performance.getEntriesByType('navigation')[0];
+            console.log('Page Load Time:', perfData.loadEventEnd - perfData.loadEventStart, 'ms');
+          }, 0);
+        });
+      }
+    </script>
+
+    <!-- Service Worker for caching (optional) -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js').catch(console.error);
+      }
+    </script>
+  </body>
+</html>
+
+<style>
+  /* Screen reader only content */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* Enhanced focus styles for keyboard users */
+  body.using-keyboard *:focus {
+    outline: 2px solid var(--link-color);
+    outline-offset: 2px;
+  }
+
+  body:not(.using-keyboard) *:focus {
+    outline: none;
+  }
+
+  /* Skip link styles */
+  .skip-link:focus {
+    top: 6px !important;
+  }
+</style>

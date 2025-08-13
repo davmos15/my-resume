@@ -1,0 +1,784 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { allAsync } from '../lib/db.js';
+
+// Initialize variables
+let groupedSections = {};
+let error = null;
+let stats = { years: 0, companies: 0, roles: 0 };
+
+try {
+    // Fetch resume items from database grouped by type
+    const sections = await allAsync(`
+        SELECT * FROM resume_sections 
+        WHERE is_active = true 
+        ORDER BY section_type, display_order
+    `);
+
+    // Group sections by type
+    groupedSections = sections.reduce((acc, section) => {
+        if (!acc[section.section_type]) {
+            acc[section.section_type] = [];
+        }
+        acc[section.section_type].push({
+            id: section.id,
+            type: section.section_type,
+            title: section.title,
+            subtitle: section.subtitle,
+            date_range: section.date_range,
+            description: section.description,
+            details: section.details
+        });
+        return acc;
+    }, {});
+
+    // Calculate stats for summary section
+    let companies = new Set();
+    let totalExperienceMonths = 0;
+    let yearsExp = 0;
+
+    if (groupedSections.experience && groupedSections.experience.length > 0) {
+        groupedSections.experience.forEach(job => {
+            // Extract company name from subtitle (more flexible)
+            if (job.subtitle) {
+                // Try different formats: "Company - Role", "Company", "Role at Company"
+                let company = job.subtitle;
+                if (company.includes(' - ')) {
+                    company = company.split(' - ')[0];
+                } else if (company.includes(' at ')) {
+                    company = company.split(' at ').pop();
+                }
+                companies.add(company.trim());
+            }
+            
+            // Calculate experience duration from date_range
+            if (job.date_range) {
+                const duration = calculateJobDuration(job.date_range);
+                totalExperienceMonths += duration;
+            }
+        });
+        yearsExp = Math.floor(totalExperienceMonths / 12);
+    }
+
+    stats = {
+        years: yearsExp > 0 ? yearsExp : 0,
+        companies: companies.size,
+        roles: groupedSections.experience ? groupedSections.experience.length : 0
+    };
+    
+    // Helper function to calculate job duration in months
+    function calculateJobDuration(dateRange) {
+        try {
+            // Handle formats like "Jan 2020 - Present", "2020 - 2023", "Jan 2020 - Dec 2022"
+            const parts = dateRange.toLowerCase().split(' - ');
+            if (parts.length !== 2) return 12; // Default to 1 year if can't parse
+            
+            const startPart = parts[0].trim();
+            const endPart = parts[1].trim();
+            
+            // Parse start date
+            let startYear, startMonth = 0;
+            if (startPart.match(/^\d{4}$/)) {
+                startYear = parseInt(startPart);
+            } else {
+                const startMatch = startPart.match(/(\w+)\s+(\d{4})/);
+                if (startMatch) {
+                    startYear = parseInt(startMatch[2]);
+                    startMonth = getMonthNumber(startMatch[1]);
+                }
+            }
+            
+            // Parse end date
+            let endYear, endMonth = 11;
+            if (endPart === 'present' || endPart === 'current') {
+                endYear = new Date().getFullYear();
+                endMonth = new Date().getMonth();
+            } else if (endPart.match(/^\d{4}$/)) {
+                endYear = parseInt(endPart);
+            } else {
+                const endMatch = endPart.match(/(\w+)\s+(\d{4})/);
+                if (endMatch) {
+                    endYear = parseInt(endMatch[2]);
+                    endMonth = getMonthNumber(endMatch[1]);
+                }
+            }
+            
+            if (startYear && endYear) {
+                const months = (endYear - startYear) * 12 + (endMonth - startMonth);
+                return Math.max(months, 1); // At least 1 month
+            }
+            
+            return 12; // Default to 1 year
+        } catch (error) {
+            return 12; // Default to 1 year if parsing fails
+        }
+    }
+    
+    function getMonthNumber(monthName) {
+        const months = {
+            'jan': 0, 'january': 0,
+            'feb': 1, 'february': 1,
+            'mar': 2, 'march': 2,
+            'apr': 3, 'april': 3,
+            'may': 4,
+            'jun': 5, 'june': 5,
+            'jul': 6, 'july': 6,
+            'aug': 7, 'august': 7,
+            'sep': 8, 'september': 8,
+            'oct': 9, 'october': 9,
+            'nov': 10, 'november': 10,
+            'dec': 11, 'december': 11
+        };
+        return months[monthName.toLowerCase()] || 0;
+    }
+} catch (err) {
+    console.error('Error fetching resume sections:', err);
+    error = err.message;
+}
+---
+
+<BaseLayout title="Resume - Nadav Moskow">
+    <link rel="stylesheet" href="/css/inline-expansion.css">
+    
+    <div id="resume-dashboard">
+        {error ? (
+            <div class="error-message">
+                <p>Error loading resume data: {error}</p>
+            </div>
+        ) : (
+            <>
+        <!-- Professional Summary Section -->
+        <div class="summary-stats-section">
+            <div class="summary-stats">
+                <div class="stat-item">
+                    <div class="stat-bar">
+                        <div class="stat-number" id="years-exp">{stats.years}</div>
+                    </div>
+                    <div class="stat-label">Years Experience</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-bar">
+                        <div class="stat-number" id="companies-count">{stats.companies}</div>
+                    </div>
+                    <div class="stat-label">Companies</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-bar">
+                        <div class="stat-number" id="roles-count">{stats.roles}</div>
+                    </div>
+                    <div class="stat-label">Roles</div>
+                </div>
+            </div>
+            
+            <!-- Download Button -->
+            <a href="/images/Nadav Moskow - Resume.pdf" target="_blank" download>
+                <button class="download-btn">
+                    <span>📄</span>
+                    Download PDF Resume
+                </button>
+            </a>
+        </div>
+
+        <!-- Resume List -->
+        <div class="resume-list">
+          <!-- Experience Item -->
+          <div class="expandable-item" data-card-type="resume" data-section="experience" id="Experience">
+            <div class="item-header">
+              <span class="item-emoji">💼</span>
+              <div class="item-content-header">
+                <h3 class="item-title">Professional Experience</h3>
+                <p class="item-subtitle">{stats.years} years across {stats.companies} companies</p>
+              </div>
+              <button class="close-button" aria-label="Close expanded view">✕</button>
+            </div>
+            <div class="item-content">
+              <div class="item-content-inner">
+                    <div class="job-list">
+                      {(groupedSections.experience || []).map((job, index) => (
+                        <div class="job-item" data-job-id={job.id}>
+                          <div class="job-header" data-job-index={index}>
+                            <div class="job-info">
+                              <h4>{job.title}</h4>
+                              <div class="job-meta">
+                                <span class="job-company">{job.subtitle}</span>
+                                <span class="job-dates">{job.date_range}</span>
+                              </div>
+                            </div>
+                            <button class="job-toggle" data-job-index={index}>+</button>
+                          </div>
+                          <div class="job-details" id={`job-details-${index}`}>
+                            <div class="job-description" set:html={job.description || job.details || 'No description available'} />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Skills Item -->
+          <div class="expandable-item" data-card-type="resume" data-section="skills" id="Skills">
+            <div class="item-header">
+              <span class="item-emoji">🛠️</span>
+              <div class="item-content-header">
+                <h3 class="item-title">Skills & Technologies</h3>
+                <p class="item-subtitle">Technical expertise & tools</p>
+              </div>
+              <button class="close-button" aria-label="Close expanded view">✕</button>
+            </div>
+            <div class="item-content">
+              <div class="item-content-inner">
+                    <div class="skills-list">
+                      {(groupedSections.skills || []).map((skill, index) => (
+                        <div class="skill-item" data-skill-id={skill.id}>
+                          <div class="skill-header" data-skill-index={index}>
+                            <div class="skill-info">
+                              <h4>{skill.title}</h4>
+                              {skill.subtitle && (
+                                <div class="skill-meta">
+                                  <span class="skill-subtitle">{skill.subtitle}</span>
+                                </div>
+                              )}
+                            </div>
+                            <button class="skill-toggle" data-skill-index={index}>+</button>
+                          </div>
+                          <div class="skill-details" id={`skill-details-${index}`}>
+                            <div class="skill-description" set:html={skill.description || skill.details || 'No description available'} />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Education Item -->
+          <div class="expandable-item" data-card-type="resume" data-section="education" id="Education">
+            <div class="item-header">
+              <span class="item-emoji">🎓</span>
+              <div class="item-content-header">
+                <h3 class="item-title">Education</h3>
+                <p class="item-subtitle">Academic background</p>
+              </div>
+              <button class="close-button" aria-label="Close expanded view">✕</button>
+            </div>
+            <div class="item-content">
+              <div class="item-content-inner">
+                    <div class="education-list">
+                      {(groupedSections.education || []).map((edu, index) => (
+                        <div class="edu-item" data-edu-id={edu.id}>
+                          <div class="edu-header" data-edu-index={index}>
+                            <div class="edu-info">
+                              <h4>{edu.title}</h4>
+                              <div class="edu-meta">
+                                {edu.subtitle && <span class="edu-school">{edu.subtitle}</span>}
+                                {edu.date_range && <span class="edu-dates">{edu.date_range}</span>}
+                              </div>
+                            </div>
+                            <button class="edu-toggle" data-edu-index={index}>+</button>
+                          </div>
+                          <div class="edu-details" id={`edu-details-${index}`}>
+                            <div class="edu-description" set:html={edu.description || edu.details || 'No description available'} />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Achievements Item -->
+          <div class="expandable-item" data-card-type="resume" data-section="achievements" id="Courses">
+            <div class="item-header">
+              <span class="item-emoji">🏆</span>
+              <div class="item-content-header">
+                <h3 class="item-title">Key Achievements</h3>
+                <p class="item-subtitle">Professional accomplishments</p>
+              </div>
+              <button class="close-button" aria-label="Close expanded view">✕</button>
+            </div>
+            <div class="item-content">
+              <div class="item-content-inner">
+                    <div class="achievements-list">
+                      {(groupedSections.certifications || []).map((achievement, index) => (
+                        <div class="achievement-item" data-achievement-id={achievement.id}>
+                          <div class="achievement-header" data-achievement-index={index}>
+                            <div class="achievement-info">
+                              <h4>{achievement.title}</h4>
+                              {achievement.subtitle && (
+                                <div class="achievement-meta">
+                                  <span class="achievement-subtitle">{achievement.subtitle}</span>
+                                </div>
+                              )}
+                            </div>
+                            <button class="achievement-toggle" data-achievement-index={index}>+</button>
+                          </div>
+                          <div class="achievement-details" id={`achievement-details-${index}`}>
+                            <div class="achievement-description" set:html={achievement.description || achievement.details || 'No description available'} />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        </>
+        )}
+    </div>
+  
+  <script>
+    // Resume expansion functionality
+    function initResumeExpansion() {
+      let currentlyExpanded = null;
+      
+      // Get stats from the page data
+      const statsElements = {
+        years: document.getElementById('years-exp'),
+        companies: document.getElementById('companies-count'),
+        roles: document.getElementById('roles-count')
+      };
+      
+      function animateValue(element, start, end, duration) {
+        if (!element) return;
+        const range = end - start;
+        const increment = range / (duration / 30);
+        let current = start;
+        
+        const timer = setInterval(function() {
+          current += increment;
+          if (current >= end) {
+            current = end;
+            clearInterval(timer);
+          }
+          element.textContent = Math.floor(current);
+        }, 30);
+      }
+      
+      function calculateAndSetBarHeights() {
+        // Get the actual calculated stats from the HTML
+        const years = parseInt(statsElements.years?.textContent) || 0;
+        const companies = parseInt(statsElements.companies?.textContent) || 0;
+        const roles = parseInt(statsElements.roles?.textContent) || 0;
+        
+        // Calculate proportional bar heights
+        const values = [years, companies, roles];
+        const maxValue = Math.max(...values, 1); // Ensure minimum 1 for division
+        
+        // Get actual container height from CSS (dynamic vh-based)
+        const statsContainer = document.querySelector('.summary-stats');
+        const containerHeight = statsContainer ? 
+          parseInt(window.getComputedStyle(statsContainer).height) - 50 : // Subtract padding-bottom
+          200; // Fallback
+          
+        const minHeight = Math.max(20, containerHeight * 0.15); // Min height: 15% of container
+        
+        const calculateProportionalHeight = (value) => {
+          if (value === 0) return minHeight;
+          // The tallest bar should reach the full container height
+          // All others scale proportionally
+          const ratio = value / maxValue;
+          const proportionalHeight = ratio * containerHeight;
+          return Math.max(minHeight, proportionalHeight);
+        };
+        
+        const heights = values.map(calculateProportionalHeight);
+        
+        // Set heights directly on the bars
+        if (statsContainer) {
+          const bars = statsContainer.querySelectorAll('.stat-bar');
+          
+          bars.forEach((bar, index) => {
+            if (bar) {
+              bar.style.height = heights[index] + 'px';
+            }
+          });
+        }
+        
+        return { years, companies, roles, heights };
+      }
+      
+      function animateStats() {
+        const result = calculateAndSetBarHeights();
+        const { years, companies, roles, heights } = result;
+        
+        // Reset heights to 0 for animation
+        const statsContainer = document.querySelector('.summary-stats');
+        if (statsContainer) {
+          const bars = statsContainer.querySelectorAll('.stat-bar');
+          
+          bars.forEach((bar, index) => {
+            if (bar) {
+              bar.style.height = '0px'; // Start from 0 for animation
+              
+              // Animate to final height
+              setTimeout(() => {
+                bar.style.transition = 'height 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                bar.style.height = heights[index] + 'px';
+              }, 100 + (index * 100)); // Stagger animation
+            }
+          });
+        }
+        
+        // Reset to 0 for animation
+        if (statsElements.years) statsElements.years.textContent = '0';
+        if (statsElements.companies) statsElements.companies.textContent = '0';
+        if (statsElements.roles) statsElements.roles.textContent = '0';
+        
+        // Animate numbers with staggered timing to match bar animation
+        setTimeout(() => {
+          animateValue(statsElements.years, 0, years, 800);
+        }, 200);
+        
+        setTimeout(() => {
+          animateValue(statsElements.companies, 0, companies, 800);
+        }, 300);
+        
+        
+        setTimeout(() => {
+          animateValue(statsElements.roles, 0, roles, 800);
+        }, 400);
+      }
+      
+      function toggleItem(item) {
+        if (item.classList.contains('expanded')) {
+          collapseItem(item);
+        } else {
+          expandItem(item);
+        }
+      }
+      
+      function expandItem(item) {
+        // Collapse any currently expanded item
+        if (currentlyExpanded && currentlyExpanded !== item) {
+          collapseItem(currentlyExpanded);
+        }
+        
+        // Expand the new item
+        item.classList.add('expanded');
+        currentlyExpanded = item;
+        
+        // Scroll to item
+        setTimeout(() => {
+          item.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'start' 
+          });
+        }, 300);
+        
+        console.log('Expanded resume item');
+      }
+      
+      function collapseItem(item) {
+        item.classList.remove('expanded');
+        if (currentlyExpanded === item) {
+          currentlyExpanded = null;
+        }
+        
+        // Collapse any expanded jobs in this item
+        const expandedJobs = item.querySelectorAll('.job-item.expanded');
+        expandedJobs.forEach(job => {
+          job.classList.remove('expanded');
+          const toggle = job.querySelector('.job-toggle');
+          if (toggle) toggle.textContent = '+';
+        });
+        
+        // Collapse any expanded skills in this item
+        const expandedSkills = item.querySelectorAll('.skill-item.expanded');
+        expandedSkills.forEach(skill => {
+          skill.classList.remove('expanded');
+          const toggle = skill.querySelector('.skill-toggle');
+          if (toggle) toggle.textContent = '+';
+        });
+        
+        // Collapse any expanded education items in this item
+        const expandedEdu = item.querySelectorAll('.edu-item.expanded');
+        expandedEdu.forEach(edu => {
+          edu.classList.remove('expanded');
+          const toggle = edu.querySelector('.edu-toggle');
+          if (toggle) toggle.textContent = '+';
+        });
+        
+        // Collapse any expanded achievements in this item
+        const expandedAchievements = item.querySelectorAll('.achievement-item.expanded');
+        expandedAchievements.forEach(achievement => {
+          achievement.classList.remove('expanded');
+          const toggle = achievement.querySelector('.achievement-toggle');
+          if (toggle) toggle.textContent = '+';
+        });
+        
+        console.log('Collapsed resume item');
+      }
+      
+      function toggleJob(jobIndex, toggleBtn) {
+        const jobDetails = document.getElementById(`job-details-${jobIndex}`);
+        const jobItem = toggleBtn.closest('.job-item');
+        
+        if (!jobDetails || !jobItem) return;
+        
+        if (jobItem.classList.contains('expanded')) {
+          jobItem.classList.remove('expanded');
+          toggleBtn.textContent = '+';
+          console.log('Collapsed job:', jobIndex);
+        } else {
+          jobItem.classList.add('expanded');
+          toggleBtn.textContent = '−';
+          console.log('Expanded job:', jobIndex);
+        }
+      }
+      
+      function toggleSkill(skillIndex, toggleBtn) {
+        const skillDetails = document.getElementById(`skill-details-${skillIndex}`);
+        const skillItem = toggleBtn.closest('.skill-item');
+        
+        if (!skillDetails || !skillItem) return;
+        
+        if (skillItem.classList.contains('expanded')) {
+          skillItem.classList.remove('expanded');
+          toggleBtn.textContent = '+';
+          console.log('Collapsed skill:', skillIndex);
+        } else {
+          skillItem.classList.add('expanded');
+          toggleBtn.textContent = '−';
+          console.log('Expanded skill:', skillIndex);
+        }
+      }
+      
+      function toggleEdu(eduIndex, toggleBtn) {
+        const eduDetails = document.getElementById(`edu-details-${eduIndex}`);
+        const eduItem = toggleBtn.closest('.edu-item');
+        
+        if (!eduDetails || !eduItem) return;
+        
+        if (eduItem.classList.contains('expanded')) {
+          eduItem.classList.remove('expanded');
+          toggleBtn.textContent = '+';
+          console.log('Collapsed edu:', eduIndex);
+        } else {
+          eduItem.classList.add('expanded');
+          toggleBtn.textContent = '−';
+          console.log('Expanded edu:', eduIndex);
+        }
+      }
+      
+      function toggleAchievement(achievementIndex, toggleBtn) {
+        const achievementDetails = document.getElementById(`achievement-details-${achievementIndex}`);
+        const achievementItem = toggleBtn.closest('.achievement-item');
+        
+        if (!achievementDetails || !achievementItem) return;
+        
+        if (achievementItem.classList.contains('expanded')) {
+          achievementItem.classList.remove('expanded');
+          toggleBtn.textContent = '+';
+          console.log('Collapsed achievement:', achievementIndex);
+        } else {
+          achievementItem.classList.add('expanded');
+          toggleBtn.textContent = '−';
+          console.log('Expanded achievement:', achievementIndex);
+        }
+      }
+      
+      // Event delegation for all resume interactions
+      document.addEventListener('click', function(e) {
+        // Handle job toggle buttons
+        if (e.target && e.target.classList.contains('job-toggle')) {
+          e.preventDefault();
+          e.stopPropagation();
+          const jobIndex = e.target.getAttribute('data-job-index');
+          toggleJob(jobIndex, e.target);
+          return;
+        }
+        
+        // Handle skill toggle buttons
+        if (e.target && e.target.classList.contains('skill-toggle')) {
+          e.preventDefault();
+          e.stopPropagation();
+          const skillIndex = e.target.getAttribute('data-skill-index');
+          toggleSkill(skillIndex, e.target);
+          return;
+        }
+        
+        // Handle edu toggle buttons
+        if (e.target && e.target.classList.contains('edu-toggle')) {
+          e.preventDefault();
+          e.stopPropagation();
+          const eduIndex = e.target.getAttribute('data-edu-index');
+          toggleEdu(eduIndex, e.target);
+          return;
+        }
+        
+        // Handle achievement toggle buttons
+        if (e.target && e.target.classList.contains('achievement-toggle')) {
+          e.preventDefault();
+          e.stopPropagation();
+          const achievementIndex = e.target.getAttribute('data-achievement-index');
+          toggleAchievement(achievementIndex, e.target);
+          return;
+        }
+        
+        // Handle job header clicks (exclude toggle button)
+        if (e.target && e.target.closest && e.target.closest('.job-header') && !e.target.closest('.job-toggle')) {
+          e.preventDefault();
+          e.stopPropagation();
+          const jobHeader = e.target.closest('.job-header');
+          const jobIndex = jobHeader.getAttribute('data-job-index');
+          const toggleBtn = document.querySelector(`[data-job-index="${jobIndex}"].job-toggle`);
+          if (toggleBtn) {
+            toggleJob(jobIndex, toggleBtn);
+          }
+          return;
+        }
+        
+        // Handle skill header clicks (exclude toggle button)
+        if (e.target && e.target.closest && e.target.closest('.skill-header') && !e.target.closest('.skill-toggle')) {
+          e.preventDefault();
+          e.stopPropagation();
+          const skillHeader = e.target.closest('.skill-header');
+          const skillIndex = skillHeader.getAttribute('data-skill-index');
+          const toggleBtn = document.querySelector(`[data-skill-index="${skillIndex}"].skill-toggle`);
+          if (toggleBtn) {
+            toggleSkill(skillIndex, toggleBtn);
+          }
+          return;
+        }
+        
+        // Handle edu header clicks (exclude toggle button)
+        if (e.target && e.target.closest && e.target.closest('.edu-header') && !e.target.closest('.edu-toggle')) {
+          e.preventDefault();
+          e.stopPropagation();
+          const eduHeader = e.target.closest('.edu-header');
+          const eduIndex = eduHeader.getAttribute('data-edu-index');
+          const toggleBtn = document.querySelector(`[data-edu-index="${eduIndex}"].edu-toggle`);
+          if (toggleBtn) {
+            toggleEdu(eduIndex, toggleBtn);
+          }
+          return;
+        }
+        
+        // Handle achievement header clicks (exclude toggle button)
+        if (e.target && e.target.closest && e.target.closest('.achievement-header') && !e.target.closest('.achievement-toggle')) {
+          e.preventDefault();
+          e.stopPropagation();
+          const achievementHeader = e.target.closest('.achievement-header');
+          const achievementIndex = achievementHeader.getAttribute('data-achievement-index');
+          const toggleBtn = document.querySelector(`[data-achievement-index="${achievementIndex}"].achievement-toggle`);
+          if (toggleBtn) {
+            toggleAchievement(achievementIndex, toggleBtn);
+          }
+          return;
+        }
+        
+        // Handle main item interactions
+        const item = e.target && e.target.closest ? e.target.closest('.expandable-item') : null;
+        if (!item) return;
+        
+        // Handle close button
+        if (e.target.closest('.close-button')) {
+          e.preventDefault();
+          e.stopPropagation();
+          collapseItem(item);
+          return;
+        }
+        
+        // Handle header clicks
+        if (e.target.closest('.item-header') && !e.target.closest('.close-button')) {
+          e.preventDefault();
+          e.stopPropagation();
+          toggleItem(item);
+          return;
+        }
+        
+        // Allow links in expanded content to work normally
+        if (e.target.closest('.item-content a')) {
+          return;
+        }
+      });
+      
+      // Handle escape key
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && currentlyExpanded) {
+          collapseItem(currentlyExpanded);
+        }
+      });
+      
+      // Animate stats on load
+      animateStats();
+      
+      // Handle hash navigation
+      let hashHandlingInProgress = false;
+      function handleHashNavigation() {
+        if (hashHandlingInProgress) return;
+        hashHandlingInProgress = true;
+        
+        const hash = window.location.hash.slice(1); // Remove #
+        if (hash) {
+          const targetSection = document.getElementById(hash);
+          if (targetSection && targetSection.classList.contains('expandable-item')) {
+            // Expand the target section
+            setTimeout(() => {
+              expandItem(targetSection);
+              targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              hashHandlingInProgress = false;
+            }, 100);
+          } else {
+            hashHandlingInProgress = false;
+          }
+        } else {
+          hashHandlingInProgress = false;
+        }
+      }
+      
+      // Check hash on page load
+      setTimeout(() => {
+        handleHashNavigation();
+      }, 200);
+      
+      // Listen for hash changes
+      window.addEventListener('hashchange', handleHashNavigation);
+      
+      // Recalculate bar heights on window resize
+      let resizeTimeout;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+          if (document.querySelector('.summary-stats')) {
+            calculateAndSetBarHeights();
+          }
+        }, 150); // Debounce resize events
+      });
+      
+      console.log('Resume expansion initialized');
+    }
+    
+    // Initialize immediately or when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initResumeExpansion);
+    } else {
+      initResumeExpansion();
+    }
+  </script>
+    
+  <style>
+    #resume-dashboard {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 0 20px 40px 20px;
+    }
+    
+    .error-message {
+      text-align: center;
+      color: var(--color-error, #dc3545);
+      padding: 2rem;
+      background-color: var(--color-error-bg, #f8d7da);
+      border-radius: 0.5rem;
+      margin: 2rem 0;
+    }
+    
+    /* Mobile adjustments */
+    @media (max-width: 768px) {
+      #resume-dashboard {
+        padding: 0 10px 20px 10px;
+      }
+    }
+  </style>
+</BaseLayout>

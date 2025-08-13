@@ -1,0 +1,442 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import fs from 'fs';
+import path from 'path';
+import matter from 'gray-matter';
+import { marked } from 'marked';
+
+// Get the project slug from the URL
+const { slug } = Astro.params;
+
+// Read the project markdown file
+const projectsDir = path.join(process.cwd(), 'src/content/projects');
+const projectPath = path.join(projectsDir, `${slug}.md`);
+
+let project = null;
+let htmlContent = '';
+
+try {
+  if (fs.existsSync(projectPath)) {
+    const fileContent = fs.readFileSync(projectPath, 'utf8');
+    const { data, content } = matter(fileContent);
+    project = data;
+    
+    // Convert markdown to HTML
+    htmlContent = marked(content);
+  }
+} catch (error) {
+  console.error('Error loading project:', error);
+}
+
+// If project not found, show 404
+if (!project) {
+  return Astro.redirect('/projects');
+}
+
+// Static paths for build
+export async function getStaticPaths() {
+  const projectsDir = path.join(process.cwd(), 'src/content/projects');
+  
+  try {
+    if (fs.existsSync(projectsDir)) {
+      const files = fs.readdirSync(projectsDir).filter(file => file.endsWith('.md'));
+      
+      return files.map(file => ({
+        params: { slug: file.replace('.md', '') }
+      }));
+    }
+  } catch (error) {
+    console.error('Error getting static paths:', error);
+  }
+  
+  return [];
+}
+---
+
+<BaseLayout title={`${project.title} - Nadav Moskow`}>
+  <style>
+    .project-detail {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    /* Back button */
+    .back-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--link-color);
+      text-decoration: none;
+      font-weight: 500;
+      margin-bottom: 30px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .back-button:hover {
+      background: var(--bg-secondary);
+      transform: translateX(-3px);
+    }
+
+    .back-button svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* Project header */
+    .project-header {
+      text-align: center;
+      margin-bottom: 50px;
+      padding-bottom: 30px;
+      border-bottom: 2px solid var(--border-color);
+    }
+
+    .project-emoji {
+      font-size: 4em;
+      margin-bottom: 20px;
+      display: block;
+      animation: bounce 1s ease;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .project-title {
+      font-size: 2.5em;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin: 0 0 10px 0;
+    }
+
+    .project-subtitle {
+      font-size: 1.2em;
+      color: var(--text-secondary);
+      margin: 0 0 30px 0;
+    }
+
+    /* Action buttons */
+    .project-actions {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .action-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      background: var(--link-color);
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .action-button:hover {
+      background: var(--link-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .action-button.secondary {
+      background: transparent;
+      color: var(--link-color);
+      border: 2px solid var(--link-color);
+    }
+
+    .action-button.secondary:hover {
+      background: var(--link-color);
+      color: white;
+    }
+
+    .action-button svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* Technologies */
+    .technologies {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 30px 0;
+    }
+
+    .tech-tag {
+      background: linear-gradient(135deg, var(--link-color), var(--link-hover));
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.9em;
+      font-weight: 500;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      animation: fadeInUp 0.5s ease backwards;
+    }
+
+    .tech-tag:nth-child(1) { animation-delay: 0.1s; }
+    .tech-tag:nth-child(2) { animation-delay: 0.2s; }
+    .tech-tag:nth-child(3) { animation-delay: 0.3s; }
+    .tech-tag:nth-child(4) { animation-delay: 0.4s; }
+    .tech-tag:nth-child(5) { animation-delay: 0.5s; }
+    .tech-tag:nth-child(6) { animation-delay: 0.6s; }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Content */
+    .project-content {
+      color: var(--text-primary);
+      line-height: 1.8;
+      font-size: 1.05em;
+    }
+
+    .project-content h2 {
+      font-size: 1.8em;
+      font-weight: 600;
+      margin: 40px 0 20px 0;
+      color: var(--text-primary);
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--border-color);
+    }
+
+    .project-content h3 {
+      font-size: 1.4em;
+      font-weight: 600;
+      margin: 30px 0 15px 0;
+      color: var(--text-primary);
+    }
+
+    .project-content p {
+      margin-bottom: 20px;
+    }
+
+    .project-content ul {
+      margin: 20px 0;
+      padding-left: 30px;
+    }
+
+    .project-content li {
+      margin: 10px 0;
+      position: relative;
+    }
+
+    .project-content li::before {
+      content: "▸";
+      position: absolute;
+      left: -20px;
+      color: var(--link-color);
+      font-weight: bold;
+    }
+
+    .project-content strong {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .project-content code {
+      background: var(--bg-secondary);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9em;
+      color: var(--link-color);
+    }
+
+    .project-content pre {
+      background: var(--bg-secondary);
+      padding: 20px;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 20px 0;
+      border: 1px solid var(--border-color);
+    }
+
+    .project-content pre code {
+      background: none;
+      padding: 0;
+      color: var(--text-primary);
+    }
+
+    /* Related projects section */
+    .related-projects {
+      margin-top: 60px;
+      padding-top: 40px;
+      border-top: 2px solid var(--border-color);
+    }
+
+    .related-title {
+      font-size: 1.5em;
+      font-weight: 600;
+      text-align: center;
+      margin-bottom: 30px;
+      color: var(--text-primary);
+    }
+
+    /* Mobile responsiveness */
+    @media (max-width: 768px) {
+      .project-detail {
+        padding: 20px 15px;
+      }
+
+      .project-title {
+        font-size: 2em;
+      }
+
+      .project-subtitle {
+        font-size: 1em;
+      }
+
+      .project-emoji {
+        font-size: 3em;
+      }
+
+      .project-actions {
+        flex-direction: column;
+      }
+
+      .action-button {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .project-content {
+        font-size: 1em;
+      }
+
+      .project-content h2 {
+        font-size: 1.5em;
+      }
+
+      .project-content h3 {
+        font-size: 1.2em;
+      }
+    }
+
+    /* Theme-specific adjustments */
+    [data-theme="dark"] .project-content code {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    [data-theme="dark"] .project-content pre {
+      background: rgba(0, 0, 0, 0.3);
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    [data-theme="glass"] .project-content pre {
+      background: rgba(255, 255, 255, 0.5);
+      backdrop-filter: blur(10px);
+    }
+  </style>
+
+  <div class="project-detail">
+    <!-- Back to projects -->
+    <a href="/projects" class="back-button">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+      </svg>
+      Back to Projects
+    </a>
+
+    <!-- Project header -->
+    <header class="project-header">
+      <span class="project-emoji">{project.emoji || '🚀'}</span>
+      <h1 class="project-title">{project.title}</h1>
+      {project.subtitle && <p class="project-subtitle">{project.subtitle}</p>}
+      
+      <!-- Technologies -->
+      {project.technologies && (
+        <div class="technologies">
+          {(Array.isArray(project.technologies) ? project.technologies : project.technologies.split(',')).map(tech => (
+            <span class="tech-tag">{tech.trim()}</span>
+          ))}
+        </div>
+      )}
+
+      <!-- Action buttons -->
+      <div class="project-actions">
+        {project.live && (
+          <a href={project.live} target="_blank" rel="noopener noreferrer" class="action-button">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3m-2 16H5V5h7V3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7h-2v7z"/>
+            </svg>
+            View Live Demo
+          </a>
+        )}
+        {project.github && (
+          <a href={project.github} target="_blank" rel="noopener noreferrer" class="action-button secondary">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+            </svg>
+            View Source Code
+          </a>
+        )}
+      </div>
+    </header>
+
+    <!-- Project content -->
+    <article class="project-content" set:html={htmlContent}>
+    </article>
+
+    <!-- Related projects (future implementation) -->
+    <section class="related-projects" style="display: none;">
+      <h2 class="related-title">Related Projects</h2>
+      <!-- Add related projects grid here -->
+    </section>
+  </div>
+
+  <script>
+    // Add smooth scroll behavior
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
+    });
+
+    // Add animation on scroll
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'translateY(0)';
+        }
+      });
+    }, observerOptions);
+
+    // Observe content sections
+    document.querySelectorAll('.project-content h2, .project-content h3').forEach(el => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(20px)';
+      el.style.transition = 'all 0.6s ease';
+      observer.observe(el);
+    });
+  </script>
+</BaseLayout>

@@ -1,0 +1,340 @@
+---
+// Navigation component with hierarchical theme menu and side-sliding mobile menu
+---
+
+<nav class="topnav" id="top">
+    <div class="nav-container">
+        <a href="/" class="logo-link">
+            <img src="/images/NM1.png" alt="Logo" id="logo">
+        </a>
+        
+        <!-- Mobile Menu Toggle -->
+        <button class="mobile-menu-toggle" id="mobile-toggle" aria-label="Toggle navigation menu">
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+        </button>
+        
+        <ul class="nav-menu" id="navbar">
+            <li class="nav-item">
+                <a href="/" class="nav-link">Home</a>
+            </li>
+            <li class="nav-item dropdown">
+                <a href="/resume" class="nav-link dropdown-toggle">My Resume</a>
+                <ul class="dropdown-menu">
+                    <li><a href="/resume#Experience" class="dropdown-link">Experience</a></li>
+                    <li><a href="/resume#Skills" class="dropdown-link">Skills & Tools</a></li>
+                    <li><a href="/resume#Courses" class="dropdown-link">Courses & Achievements</a></li>
+                    <li><a href="/resume#Education" class="dropdown-link">Education</a></li>
+                </ul>
+            </li>
+            <li class="nav-item">
+                <a href="/projects" class="nav-link">Projects</a>
+            </li>
+            <li class="nav-item">
+                <a href="/about" class="nav-link">About Me</a>
+            </li>
+            <li class="nav-item">
+                <a href="/contact" class="nav-link">Contact</a>
+            </li>
+            <li class="nav-item theme-section">
+                <button class="nav-link theme-toggle" aria-label="Theme selector">
+                    <span class="theme-icon">🎨</span>
+                    <span class="theme-text">Theme</span>
+                </button>
+                <div class="theme-main-menu">
+                    <button class="theme-category" data-category="basic">Basic Themes</button>
+                    <button class="theme-category" data-category="afl">AFL Teams</button>
+                    <button class="theme-category" data-category="company">Companies</button>
+                    <button class="theme-category" data-category="fun">Fun Themes</button>
+                </div>
+                <!-- Submenus for each category -->
+                <div class="theme-submenu" data-submenu="basic">
+                    <a href="#" class="theme-option" data-theme="light">Light Theme</a>
+                    <a href="#" class="theme-option" data-theme="dark">Dark Theme</a>
+                </div>
+                <div class="theme-submenu" data-submenu="afl">
+                    <a href="#" class="theme-option" data-theme="afl-adelaide">Adelaide</a>
+                    <a href="#" class="theme-option" data-theme="afl-brisbane">Brisbane</a>
+                    <a href="#" class="theme-option" data-theme="afl-carlton">Carlton</a>
+                    <a href="#" class="theme-option" data-theme="afl-collingwood">Collingwood</a>
+                    <a href="#" class="theme-option" data-theme="afl-essendon">Essendon</a>
+                    <a href="#" class="theme-option" data-theme="afl-fremantle">Fremantle</a>
+                    <a href="#" class="theme-option" data-theme="afl-geelong">Geelong</a>
+                    <a href="#" class="theme-option" data-theme="afl-goldcoast">Gold Coast</a>
+                    <a href="#" class="theme-option" data-theme="afl-gws">GWS Giants</a>
+                    <a href="#" class="theme-option" data-theme="afl-hawthorn">Hawthorn</a>
+                    <a href="#" class="theme-option" data-theme="afl-melbourne">Melbourne</a>
+                    <a href="#" class="theme-option" data-theme="afl-northmelbourne">North Melbourne</a>
+                    <a href="#" class="theme-option" data-theme="afl-portadelaide">Port Adelaide</a>
+                    <a href="#" class="theme-option" data-theme="afl-richmond">Richmond</a>
+                    <a href="#" class="theme-option" data-theme="afl-stkilda">St Kilda</a>
+                    <a href="#" class="theme-option" data-theme="afl-sydney">Sydney</a>
+                    <a href="#" class="theme-option" data-theme="afl-westcoast">West Coast</a>
+                    <a href="#" class="theme-option" data-theme="afl-bulldogs">Western Bulldogs</a>
+                </div>
+                <div class="theme-submenu" data-submenu="company">
+                    <a href="#" class="theme-option" data-theme="company-google">Google</a>
+                    <a href="#" class="theme-option" data-theme="company-facebook">Facebook</a>
+                    <a href="#" class="theme-option" data-theme="company-apple">Apple</a>
+                    <a href="#" class="theme-option" data-theme="company-microsoft">Microsoft</a>
+                    <a href="#" class="theme-option" data-theme="company-openai">OpenAI</a>
+                    <a href="#" class="theme-option" data-theme="company-anthropic">Anthropic</a>
+                </div>
+                <div class="theme-submenu" data-submenu="fun">
+                    <a href="#" class="theme-option" data-theme="glass">Glassmorphism</a>
+                    <a href="#" class="theme-option" data-theme="gradient">Gradient Wave</a>
+                    <a href="#" class="theme-option" data-theme="neon">Neon Glow</a>
+                </div>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<!-- Mobile menu backdrop -->
+<div class="mobile-menu-backdrop" id="menu-backdrop"></div>
+
+<script>
+    // Mobile navigation functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const mobileToggle = document.getElementById('mobile-toggle');
+        const navbar = document.getElementById('navbar');
+        const backdrop = document.getElementById('menu-backdrop');
+        const nav = document.querySelector('.topnav');
+        
+        // Toggle mobile menu
+        mobileToggle.addEventListener('click', function() {
+            navbar.classList.toggle('nav-menu-open');
+            mobileToggle.classList.toggle('active');
+            backdrop.classList.toggle('active');
+            // Prevent body scroll when menu is open
+            document.body.classList.toggle('menu-open');
+        });
+        
+        // Close mobile menu when clicking on links
+        const navLinks = navbar.querySelectorAll('.nav-link:not(.theme-toggle)');
+        navLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                navbar.classList.remove('nav-menu-open');
+                mobileToggle.classList.remove('active');
+                backdrop.classList.remove('active');
+                document.body.classList.remove('menu-open');
+            });
+        });
+        
+        // Close mobile menu when clicking backdrop
+        backdrop.addEventListener('click', function() {
+            navbar.classList.remove('nav-menu-open');
+            mobileToggle.classList.remove('active');
+            backdrop.classList.remove('active');
+            document.body.classList.remove('menu-open');
+        });
+        
+        // Handle resume dropdown links to prevent page reload when on resume page
+        const dropdownLinks = document.querySelectorAll('.dropdown-link');
+        dropdownLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                const href = this.getAttribute('href');
+                // If we're already on the resume page and clicking a hash link
+                if (window.location.pathname === '/resume' && href.startsWith('/resume#')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const hash = href.split('#')[1];
+                    // Use history.pushState to avoid triggering hashchange immediately
+                    history.pushState(null, null, '#' + hash);
+                    // Manually trigger the hash handling with a slight delay
+                    setTimeout(() => {
+                        const targetSection = document.getElementById(hash);
+                        if (targetSection && targetSection.classList.contains('expandable-item')) {
+                            // Close any currently expanded item first
+                            const currentlyExpanded = document.querySelector('.expandable-item.expanded');
+                            if (currentlyExpanded && currentlyExpanded !== targetSection) {
+                                currentlyExpanded.classList.remove('expanded');
+                            }
+                            // Expand the target section
+                            targetSection.classList.add('expanded');
+                            targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
+                    }, 50);
+                    // Close dropdowns
+                    navbar.classList.remove('nav-menu-open');
+                    mobileToggle.classList.remove('active');
+                    backdrop.classList.remove('active');
+                    document.body.classList.remove('menu-open');
+                }
+            });
+        });
+        
+        // Hierarchical theme menu functionality
+        const themeToggle = document.querySelector('.theme-toggle');
+        const themeSection = document.querySelector('.theme-section');
+        const themeMainMenu = document.querySelector('.theme-main-menu');
+        const categoryButtons = document.querySelectorAll('.theme-category');
+        const submenus = document.querySelectorAll('.theme-submenu');
+        let isThemeMenuOpen = false;
+        let activeCategory = null;
+        
+        // Toggle theme menu
+        themeToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            isThemeMenuOpen = !isThemeMenuOpen;
+            if (isThemeMenuOpen) {
+                themeMainMenu.classList.add('active');
+                themeSection.classList.add('menu-open');
+            } else {
+                themeMainMenu.classList.remove('active');
+                themeSection.classList.remove('menu-open');
+                // Hide all submenus
+                submenus.forEach(submenu => {
+                    submenu.classList.remove('active');
+                });
+                categoryButtons.forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                activeCategory = null;
+            }
+        });
+        
+        // Handle category hover/click
+        categoryButtons.forEach(button => {
+            const category = button.dataset.category;
+            const submenu = document.querySelector(`[data-submenu="${category}"]`);
+            
+            // Desktop: Show submenu on hover
+            if (window.innerWidth > 768) {
+                button.addEventListener('mouseenter', function() {
+                    if (isThemeMenuOpen) {
+                        // Hide other submenus
+                        submenus.forEach(s => {
+                            if (s !== submenu) s.classList.remove('active');
+                        });
+                        categoryButtons.forEach(b => {
+                            if (b !== button) b.classList.remove('active');
+                        });
+                        // Show this submenu
+                        submenu.classList.add('active');
+                        button.classList.add('active');
+                        activeCategory = category;
+                    }
+                });
+            }
+            
+            // Mobile and desktop: Click to show submenu
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                if (activeCategory === category) {
+                    // Toggle off if clicking the same category
+                    submenu.classList.remove('active');
+                    button.classList.remove('active');
+                    activeCategory = null;
+                } else {
+                    // Hide other submenus
+                    submenus.forEach(s => {
+                        if (s !== submenu) s.classList.remove('active');
+                    });
+                    categoryButtons.forEach(b => {
+                        if (b !== button) b.classList.remove('active');
+                    });
+                    // Show this submenu
+                    submenu.classList.add('active');
+                    button.classList.add('active');
+                    activeCategory = category;
+                }
+            });
+        });
+        
+        // Close theme menu when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!themeSection.contains(e.target)) {
+                isThemeMenuOpen = false;
+                themeMainMenu.classList.remove('active');
+                themeSection.classList.remove('menu-open');
+                submenus.forEach(submenu => {
+                    submenu.classList.remove('active');
+                });
+                categoryButtons.forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                activeCategory = null;
+            }
+        });
+        
+        // Handle theme selection
+        const themeOptions = document.querySelectorAll('.theme-option');
+        themeOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                // Close all menus
+                isThemeMenuOpen = false;
+                themeMainMenu.classList.remove('active');
+                themeSection.classList.remove('menu-open');
+                submenus.forEach(submenu => {
+                    submenu.classList.remove('active');
+                });
+                categoryButtons.forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                activeCategory = null;
+                
+                // Close mobile menu if open
+                if (window.innerWidth <= 768) {
+                    navbar.classList.remove('nav-menu-open');
+                    mobileToggle.classList.remove('active');
+                    backdrop.classList.remove('active');
+                    document.body.classList.remove('menu-open');
+                }
+            });
+        });
+        
+        // Mobile theme categories
+        if (window.innerWidth <= 768) {
+            // Add theme categories to mobile menu
+            const mobileThemeContainer = document.createElement('div');
+            mobileThemeContainer.className = 'mobile-theme-container';
+            mobileThemeContainer.innerHTML = `
+                <div class="mobile-theme-section">
+                    <h3 class="mobile-theme-header">Themes</h3>
+                    <div class="mobile-theme-categories">
+                        <button class="mobile-theme-category" data-mobile-category="basic">Basic Themes</button>
+                        <button class="mobile-theme-category" data-mobile-category="afl">AFL Teams</button>
+                        <button class="mobile-theme-category" data-mobile-category="company">Companies</button>
+                        <button class="mobile-theme-category" data-mobile-category="fun">Fun Themes</button>
+                    </div>
+                    <div class="mobile-theme-options"></div>
+                </div>
+            `;
+            navbar.appendChild(mobileThemeContainer);
+            
+            const mobileCategories = mobileThemeContainer.querySelectorAll('.mobile-theme-category');
+            const mobileOptionsContainer = mobileThemeContainer.querySelector('.mobile-theme-options');
+            
+            mobileCategories.forEach(button => {
+                button.addEventListener('click', function() {
+                    const category = this.dataset.mobileCategory;
+                    const submenu = document.querySelector(`[data-submenu="${category}"]`);
+                    
+                    // Toggle active state
+                    mobileCategories.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Clone and show the options
+                    mobileOptionsContainer.innerHTML = submenu.innerHTML;
+                    mobileOptionsContainer.classList.add('active');
+                    
+                    // Re-attach click handlers to cloned options
+                    const clonedOptions = mobileOptionsContainer.querySelectorAll('.theme-option');
+                    clonedOptions.forEach(option => {
+                        option.addEventListener('click', function() {
+                            // Trigger the original option's click
+                            const originalOption = document.querySelector(`.theme-submenu .theme-option[data-theme="${this.dataset.theme}"]`);
+                            if (originalOption) originalOption.click();
+                        });
+                    });
+                });
+            });
+        }
+    });
+</script>

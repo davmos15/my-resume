@@ -1,0 +1,11 @@
+[
+  {
+    "id": 4,
+    "title": "Technical Skills",
+    "subtitle": null,
+    "date_range": null,
+    "description": "<ul><li>Business Applications: NetSuite, Salesforce, Freshdesk, KnowBe4, Bitwarden</li><li>Microsoft 365: Power Automate, PowerApps, SharePoint, Teams, Intune</li><li>Data Analysis: Google Data Studio, PowerBI, AgencyAnalytics</li><li>Marketing: Google Ads, SEO, SEM</li><li>Programming: HTML, CSS, JavaScript, SQL</li></ul>",
+    "details": null,
+    "order": 1
+  }
+]
